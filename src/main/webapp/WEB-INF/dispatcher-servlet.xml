@@ -22,10 +22,10 @@
     <mvc:resources mapping="/resources/**" location="/resources/" />
     <mvc:annotation-driven />
 
-       <!-- Tiles configuration -->
+    <!-- Tiles configuration -->
  
     <bean id="tilesConfigurer"
-        class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+          class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
         <property name="definitions">
             <list>
                 <value>/WEB-INF/TilesConfigFile.xml</value>
