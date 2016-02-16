@@ -1,0 +1,77 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 16/02/2016, 6:23:19 PM
+    Author     : kho01f
+*/
+
+img.setting{
+    position: absolute;
+    left: 5px;
+    bottom: 12px;
+    content:url("../img/setting1.png");
+    width:30px; height:30px;
+}
+div.first-div{
+    padding-top:3px;
+    float: left
+}
+div.second-div{
+    padding-top:7px;
+    padding-left: 35px
+}
+div.third-div{
+    position: relative;float: right
+}
+#sortable1, #sortable2 { list-style-type: none; margin: 0; float: left; margin-right: 25px; background: #fbfbfb; padding: 10px 0px 10px 20px; width: 240px; border: 1px solid #cccccc}
+#sortable1 li, #sortable2 li { font-family: Helvetica, Arial, sans-serif; margin: 5px; padding: 5px 5px 15px 10px; font-size: 14px; width: 190px;color: #262626}
+#sortable1 > li > .image{
+    display:block;
+    float:left;
+    margin:0px;
+}
+/*#sortable1 > li > .image,
+#sortable1 > li > .image > img{
+    width:30px; height:30px;
+}*/
+
+img.icon{
+    width:30px; height:30px;
+}
+
+#sortable2 > li > .image{
+    display:block;
+    float:left;
+    margin:0px;
+}
+
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+    border: 1px solid #d3d3d3;
+    background: #e6e6e6 50% 50% repeat-x;
+    font-weight: normal;
+    color: #555555;
+}
+
+.ui-state-default-start {
+    border: 1px solid #449d44;
+    background: #99cc00;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    
+
+}
+
+.ui-state-default-end {
+    border: 1px solid #a94442;
+    background: #ce8483;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    
+}

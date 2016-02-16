@@ -17,6 +17,6 @@ public class FlowLoaderController {
 
     @RequestMapping("/flowload")
     public String viewPage() {
-        return "flowloadbody";
+        return "flowload";
     }
 }

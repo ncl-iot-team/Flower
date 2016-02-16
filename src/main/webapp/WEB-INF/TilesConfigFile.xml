@@ -23,6 +23,6 @@
     <definition name="defaultfooter" extends="base.template">
         <put-attribute name="footer" value="/WEB-INF/jsp/defaultFooter.jsp" />
     </definition>
-
+    
         
 </tiles-definitions>
