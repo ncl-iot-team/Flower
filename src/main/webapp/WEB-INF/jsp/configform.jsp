@@ -135,7 +135,34 @@
     </head>
     <body>
 
-       
+               <div id="dialog-form" title="Platform config information">
+            <p class="validateTips">All form fields are required.</p>
+
+            <form>
+                <fieldset>
+                    <label for="CloudProvider">Cloud Provider</label>
+                    <select id="categories" class="text ui-widget-content ui-corner-all" style="margin-bottom:12px">
+                        <option value="">--Select--</option>
+                        <option value="Amazon">Amazon Cloud Services</option>
+                        <option value="Google">Google Cloud Platform</option>
+                        <option value="Microsoft">Microsoft Azure</option>
+                    </select>
+
+                    <!--<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">-->
+                    <label for="region">Region</label>
+                    <select id="subcats" class="text ui-widget-content ui-corner-all" style="margin-bottom:12px;width:165px">
+                    </select>
+
+                    <label for="access">Access Key</label>
+                    <input type="text" name="accesskey" id="accesskey" class="text ui-widget-content ui-corner-all">
+                    <label for="secret">Secret Key</label>
+                    <input type="text" name="secretkey" id="secretkey" class="text ui-widget-content ui-corner-all">
+                    
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <!--<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">-->
+                </fieldset>
+            </form>
+        </div>
 
         <div id="users-contain" class="ui-widget">
             <h1>Existing Users:</h1>

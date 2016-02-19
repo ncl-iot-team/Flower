@@ -14,12 +14,12 @@
                 position: absolute;
                 right: 0px;
                 bottom: 0px;
-                top: -10px;
+                top: -9px;
                 /*left:5px;*/
                 content:url("${pageContext.request.contextPath}/resources/img/setting1.png");
                 width:25px; 
                 height:23px;
-                visibility: hidden;
+                opacity: 0.3;
             }
             img.tick{
                 position: absolute;
@@ -77,6 +77,8 @@
                 background: #e6e6e6 50% 50% repeat-x;
                 font-weight: normal;
                 color: #555555;
+                height: 49px;
+                width: 205px;
             }
 
             .ui-state-default-start {
@@ -97,25 +99,7 @@
             }</style>
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <!--        <script>
-                    function dragStart(event) {
-                        event.dataTransfer.setData("Text", event.target.id);
-                        document.getElementById("d").innerHTML = "Started to drag the p element";
-                    }
-        
-                    function allowDrop(event) {
-                        event.preventDefault();
-                    }
-        
-                    function drop(event) {
-                        event.preventDefault();
-                        var data = event.dataTransfer.getData("Text");
-                        event.target.appendChild(document.getElementById(data));
-                        document.getElementById("d").innerHTML = "The p element was dropped";
-                    }
-                </script>-->
         <script>
-
             $(function() {
 //                $("ul.droptrue").sortable({
 //                    connectWith: "ul"
@@ -135,10 +119,17 @@
 
                 $('#sortable').droppable({
                     drop: function(ev, ui) {
-                        $(ui.draggable).html('<div class="first-div"> <img class="icon" src="${pageContext.request.contextPath}/resources/img/storm.png" /></div>     <div class="second-div">Apache Storm</div>               <div  class="third-div">     <img id = "img-visibility" class="setting" /> </div> '),
-                                document.getElementById("d").innerHTML = "a";
-
+                        var title = ui.draggable.attr('title');
+                        $(ui.draggable).html('<div class="first-div"> <img class="icon" \n\
+                        src="${pageContext.request.contextPath}/resources/img/' + title + '.png" /></div> \n\
+                        <div class="second-div">' + title + '</div> \n\
+                        <div  class="third-div"> \n\
+                        <img style="opacity: 1" class="setting" /> </div>');
                     }
+                });
+                $('#sortable').on('click', 'li', function(e) {
+                    e.stopPropagation();
+                    $(this).remove();
                 });
                 $('#draggables li').draggable({
                     connectToSortable: '#sortable',
@@ -185,16 +176,15 @@
             </p>
             <br>
         </div>
-        <p id="d">g</p>
         <div  class="jumbotron_body">
             <div class="container">
                 <div class="row">
                     <p style="font-weight: bold;color: #555555">Systems and Resources List</p>
                     <ul id="draggables" class="droptrue" >
 
-                        <li class="ui-state-default"> 
+                        <li class="ui-state-default" title='Apache Storm' > 
                             <div class="first-div"> 
-                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/storm.png" />
+                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Storm.png" />
                             </div> 
                             <div class="second-div">Apache Storm</div>
                             <div  class="third-div">
@@ -202,45 +192,45 @@
                                 <!--<img class="warning" />-->
                             </div>
                         </li>
-                        <li class="ui-state-default"> 
+                        <li id="2" class="ui-state-default" title='Amazon Kinesis'> 
                             <div class="image first-div"> 
-                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/kinesis.png" />
+                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/Amazon Kinesis.png" />
                             </div> 
                             <div class="second-div">Amazon Kinesis</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
                             </div>
                         </li>
-                        <li class="ui-state-default"> 
+                        <li id="3" class="ui-state-default" title='DynamoDB'> 
                             <div class="first-div"> 
-                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/dynamo.png" />
+                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/DynamoDB.png" />
                             </div> 
                             <div class="second-div">DynamoDB</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
                             </div>
                         </li>
-                        <li class="ui-state-default"> 
+                        <li id="4" class="ui-state-default"  title='Apache Kafka'> 
                             <div class="image first-div"> 
-                                <img class="icon" style="width: 25px" src="${pageContext.request.contextPath}/resources/img/kafka.png" />
+                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Kafka.png" />
                             </div> 
                             <div class="second-div">Apache Kafka</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
                             </div>
                         </li>
-                        <li class="ui-state-default"> 
+                        <li id="5" class="ui-state-default" title='Apache Spark'> 
                             <div class="image first-div"> 
-                                <img class="icon" style="height: 27px;width: 33px" src="${pageContext.request.contextPath}/resources/img/spark.png" />
+                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Spark.png" />
                             </div> 
                             <div class="second-div">Apache Spark</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
                             </div>
                         </li>
-                        <li class="ui-state-default"> 
+                        <li id="6" class="ui-state-default" title = 'Apache Cassandra'> 
                             <div class="image first-div"> 
-                                <img class="icon" style="height: 25px" src="${pageContext.request.contextPath}/resources/img/Cassandra.png" />
+                                <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Cassandra.png" />
                             </div> 
                             <div class="second-div">Apache Cassandra</div>
                             <div style="position: relative;float: right">
