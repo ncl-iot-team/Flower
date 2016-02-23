@@ -10,19 +10,17 @@
     <link rel="stylesheet" href="resources/css/general_config_form.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
     <script>
         $(function() {
-            var dialog, form,
-                    access = $("#accesskey"),
-                    secret = $("#secretkey"),
-                    category = $("#categories"),
-                    allFields = $([]).add(access).add(secret).add(category),
-                    tips = $(".validateTips");
+            var dialog, form;
+//                    allFields = $([]).add(access).add(secret).add(category),
+
 
             function updateTips(t) {
-                tips
-                        .text(t)
-                        .addClass("ui-state-highlight");
+                var tips = document.getElementById("validateTips");
+                tips.textContent = t;
+                tips.setAttribute('class',"ui-state-highlight");
                 setTimeout(function() {
                     tips.removeClass("ui-state-highlight", 1500);
                 }, 500);
@@ -30,18 +28,22 @@
 
             function saveData() {
                 var valid = true;
-                allFields.removeClass("ui-state-error");
+//                allFields.removeClass("ui-state-error");
+                var access = document.getElementById("accesskey").value;
+//                document.getElementById("pip").textContent = access;
+                var secret = document.getElementById("secretkey").value;
+                var category = document.getElementById("categories").value;
 
-                if (document.getElementById("accesskey").val() == "") {
+                if (category == "") {
                     updateTips("Please select the Cloud provider.");
                     return false;
                 }
-                if (access.val() == "" || access.val() == null) {
+                if (access == "" || access == null) {
                     updateTips("Access Key is empty.");
                     return false;
                 }
 
-                if (secret.val() == "" || secret.val() == null) {
+                if (secret == "" || secret == null) {
                     updateTips("Secret Key is empty.");
                     return false;
                 }
@@ -58,10 +60,10 @@
 
                 var divTag = document.createElement("div");
                 divTag.setAttribute('id', "dialog-form");
-                divTag.setAttribute('title', "Platform config information");
+//                divTag.setAttribute('title', "Platform config information");
 
                 var pTag = document.createElement("p");
-                pTag.setAttribute('class', "validateTips");
+                pTag.setAttribute('id', "validateTips");
                 pTag.textContent = "All form fields are required.";
 
                 var formTag = document.createElement("form");
@@ -185,8 +187,9 @@
             }
         });</script>
 </head>
-<div id="container"></div>
-<!--<div id="dialog-form" title="Platform config information">-->
+<div id="container" title="Platform config information"></div>
+<p id="pip">1222</p>
+<!--<div id="dialog-form" >-->
 <!--    <p class="validateTips">All form fields are required.</p>
     <form>
         <fieldset>
