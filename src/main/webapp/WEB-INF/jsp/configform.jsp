@@ -168,7 +168,6 @@
 
             form = dialog.find("form").on("save", function(event) {
                 event.preventDefault();
-//                    addUser();
             });
 
             $("#stormConf").button().on("click", function() {
