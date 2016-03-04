@@ -12,7 +12,12 @@
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
     <script>
+//        $(document).ready(function() {
+//            var t = document.getElementById('a');
+//            t.textContent = document.con ("xxx").length;
+//        });
         $(function() {
+
             var dialog, form;
 //                    allFields = $([]).add(access).add(secret).add(category),
 
@@ -20,7 +25,7 @@
             function updateTips(t) {
                 var tips = document.getElementById("validateTips");
                 tips.textContent = t;
-                tips.setAttribute('class',"ui-state-highlight");
+                tips.setAttribute('class', "ui-state-highlight");
                 setTimeout(function() {
                     tips.removeClass("ui-state-highlight", 1500);
                 }, 500);
@@ -49,18 +54,37 @@
                 }
 
                 if (valid) {
-                    $("#users").append('<img class="warning" />');
+//                    $("#users").append('<img class="warning" />');
                     dialog.dialog("close");
                 }
                 return valid;
             }
 
-            function setDialogForm() {
+            function createDialogForm() {
                 var divContainer = document.getElementById("container");
 
+//                divContainer.innerHTML = "<div id=\"dialog-form\" ><p class=\"validateTips\">All form fields are required.</p>\n\
+//                                            <form> <fieldset>\n\
+//                                            <label for=\"CloudProvider\">Cloud Provider</label>\n\
+//                                            <select id=\"categories\" class=\"text ui-widget-content ui-corner-all\" style=\"margin-bottom:12px\">\n\
+//                                                <option value=\"\">--Select--</option>\n\
+//                                                <option value=\"Amazon\">Amazon Cloud Services</option>\n\
+//                                                <option value=\"Google\">Google Cloud Platform</option>\n\
+//                                                <option value=\"Microsoft\">Microsoft Azure</option>\n\
+//                                            </select>\n\
+//                                            <label for=\"region\">Region</label>\n\
+//<select id=\"subcats\" class=\"text ui-widget-content ui-corner-all\" style=\"margin-bottom:12px;width:165px\">\n\
+//            </select>\n\
+//            <label for=\"access\">Access Key</label>\n\
+//            <input type=\"text\" name=\"accesskey\" id=\"accesskey\" class=\"text ui-widget-content ui-corner-all\">\n\
+//            <label for=\"secret\">Secret Key</label>\n\
+//            <input type=\"text\" name=\"secretkey\" id=\"secretkey\" class=\"text ui-widget-content ui-corner-all\">\n\
+//        </fieldset>\n\
+//    </form>\n\
+//</div>";
                 var divTag = document.createElement("div");
-                divTag.setAttribute('id', "dialog-form");
-//                divTag.setAttribute('title', "Platform config information");
+                divTag.setAttribute('id', "storm-dialog-form");
+                divTag.setAttribute('title', "Platform config information");
 
                 var pTag = document.createElement("p");
                 pTag.setAttribute('id', "validateTips");
@@ -120,6 +144,8 @@
                 divTag.appendChild(pTag);
                 divTag.appendChild(formTag);
                 divContainer.appendChild(divTag);
+
+                setLinkedSubCategory();
             }
 
             dialog = $("#container").dialog({
@@ -132,11 +158,12 @@
                     Cancel: function() {
                         dialog.dialog("close");
                     }
-                },
-                close: function() {
-                    //form[ 0 ].reset();
-                    allFields.removeClass("ui-state-error");
                 }
+//                ,
+//                close: function() {
+//                    //form[ 0 ].reset();
+//                    //allFields.removeClass("ui-state-error");
+//                }
             });
 
             form = dialog.find("form").on("save", function(event) {
@@ -145,50 +172,57 @@
             });
 
             $("#stormConf").button().on("click", function() {
-                setDialogForm();
+                var element = document.getElementById("storm-dialog-form");
+                if (typeof(element) == 'undefined' || element == null)
+                {
+                    createDialogForm();
+                }
                 dialog.dialog("open");
             });
-        });
 
-        $(document).ready(function() {
-            var AWS = [
-                {display: "US East (N. Virginia)", value: "us-east-1"},
-                {display: "US West (Oregon)", value: "us-west-2"},
-                {display: "EU (Ireland)", value: "eu-west-1"},
-                {display: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
-                {display: "Asia Pacific (Sydney)", value: "ap-southeast-2"}];
-            var Azure = [
-                {display: "R1", value: "R1"},
-                {display: "R2", value: "R2"},
-                {display: "R3", value: "R3"}];
-            $("#categories").change(function() {
-                var parent = $(this).val();
-                switch (parent) {
-                    case 'Amazon':
-                        list(AWS);
-                        break;
-                    case 'Microsoft':
-                        list(Azure);
-                        break;
-                    case 'Google':
-                        list(Azure);
-                        break;
-                    default: //default child option is blank
-                        $("#subcats").html('');
-                        break;
-                }
-            });
-            function list(array_list)
-            {
-                $("#subcats").html(""); //reset child options
-                $(array_list).each(function(i) { //populate child options
-                    $("#subcats").append("<option value=\"" + array_list[i].value + "\">" + array_list[i].display + "</option>");
+            function setLinkedSubCategory() {
+                var AWS = [
+                    {display: "US East (N. Virginia)", value: "us-east-1"},
+                    {display: "US West (Oregon)", value: "us-west-2"},
+                    {display: "EU (Ireland)", value: "eu-west-1"},
+                    {display: "Asia Pacific (Tokyo)", value: "ap-northeast-1"},
+                    {display: "Asia Pacific (Sydney)", value: "ap-southeast-2"}];
+                var Azure = [
+                    {display: "R1", value: "R1"},
+                    {display: "R2", value: "R2"},
+                    {display: "R3", value: "R3"}];
+                $("#categories").change(function() {
+                    var parent = $(this).val();
+                    switch (parent) {
+                        case 'Amazon':
+                            list(AWS);
+                            break;
+                        case 'Microsoft':
+                            list(Azure);
+                            break;
+                        case 'Google':
+                            list(Azure);
+                            break;
+                        default: //default child option is blank
+                            $("#subcats").html('');
+                            break;
+                    }
                 });
+                function list(array_list)
+                {
+                    $("#subcats").html(""); //reset child options
+                    $(array_list).each(function(i) { //populate child options
+                        $("#subcats").append("<option value=\"" + array_list[i].value + "\">" + array_list[i].display + "</option>");
+                    });
+                }
             }
-        });</script>
+
+        });
+    </script>
 </head>
-<div id="container" title="Platform config information"></div>
-<p id="pip">1222</p>
+<p id="a">awsdfrgthyju</p>
+<div id="container" title="Platform config information">
+</div>
 <!--<div id="dialog-form" >-->
 <!--    <p class="validateTips">All form fields are required.</p>
     <form>
@@ -211,6 +245,6 @@
             <input type="text" name="secretkey" id="secretkey" class="text ui-widget-content ui-corner-all">
 
         </fieldset>
-    </form>-->
-<!--</div>-->
+    </form>
+</div>-->
 <input type="image" src="${pageContext.request.contextPath}/resources/img/setting1.png" name="stormConfForm" id="stormConf" />
