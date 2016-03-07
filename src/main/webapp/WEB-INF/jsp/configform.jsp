@@ -12,14 +12,11 @@
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
     <script>
-//        $(document).ready(function() {
-//            var t = document.getElementById('a');
-//            t.textContent = document.con ("xxx").length;
-//        });
+
         $(function() {
 
             var dialog, form;
-//                    allFields = $([]).add(access).add(secret).add(category),
+            initDialog();
 
 
             function updateTips(t) {
@@ -33,9 +30,7 @@
 
             function saveData() {
                 var valid = true;
-//                allFields.removeClass("ui-state-error");
                 var access = document.getElementById("accesskey").value;
-//                document.getElementById("pip").textContent = access;
                 var secret = document.getElementById("secretkey").value;
                 var category = document.getElementById("categories").value;
 
@@ -148,23 +143,25 @@
                 setLinkedSubCategory();
             }
 
-            dialog = $("#container").dialog({
-                autoOpen: false,
-                height: 350,
-                width: 350,
-                modal: true,
-                buttons: {
-                    "Save": saveData,
-                    Cancel: function() {
-                        dialog.dialog("close");
+            function initDialog() {
+                dialog = $("#container").dialog({
+                    autoOpen: false,
+                    height: 350,
+                    width: 350,
+                    modal: true,
+                    buttons: {
+                        "Save": saveData,
+                        Cancel: function() {
+                            dialog.dialog("close");
+                        }
                     }
-                }
 //                ,
 //                close: function() {
 //                    //form[ 0 ].reset();
 //                    //allFields.removeClass("ui-state-error");
 //                }
-            });
+                });
+            }
 
             form = dialog.find("form").on("save", function(event) {
                 event.preventDefault();
@@ -172,7 +169,7 @@
 
             $("#stormConf").button().on("click", function() {
                 var element = document.getElementById("storm-dialog-form");
-                if (typeof(element) == 'undefined' || element == null)
+                if (typeof (element) == 'undefined' || element == null)
                 {
                     createDialogForm();
                 }
@@ -219,31 +216,6 @@
         });
     </script>
 </head>
-<p id="a">awsdfrgthyju</p>
 <div id="container" title="Platform config information">
 </div>
-<!--<div id="dialog-form" >-->
-<!--    <p class="validateTips">All form fields are required.</p>
-    <form>
-        <fieldset>
-            <label for="CloudProvider">Cloud Provider</label>
-            <select id="categories" class="text ui-widget-content ui-corner-all" style="margin-bottom:12px">
-                <option value="">--Select--</option>
-                <option value="Amazon">Amazon Cloud Services</option>
-                <option value="Google">Google Cloud Platform</option>
-                <option value="Microsoft">Microsoft Azure</option>
-            </select>
-
-            <label for="region">Region</label>
-            <select id="subcats" class="text ui-widget-content ui-corner-all" style="margin-bottom:12px;width:165px">
-            </select>
-
-            <label for="access">Access Key</label>
-            <input type="text" name="accesskey" id="accesskey" class="text ui-widget-content ui-corner-all">
-            <label for="secret">Secret Key</label>
-            <input type="text" name="secretkey" id="secretkey" class="text ui-widget-content ui-corner-all">
-
-        </fieldset>
-    </form>
-</div>-->
 <input type="image" src="${pageContext.request.contextPath}/resources/img/setting1.png" name="stormConfForm" id="stormConf" />
