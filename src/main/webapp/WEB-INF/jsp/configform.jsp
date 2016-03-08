@@ -16,11 +16,10 @@
         $(function() {
 
             var dialog, form;
-            initDialog();
+            initDialog("storm");
 
-
-            function updateTips(t) {
-                var tips = document.getElementById("validateTips");
+            function updateTips(t, platform) {
+                var tips = document.getElementById(platform + "-validateTips");
                 tips.textContent = t;
                 tips.setAttribute('class', "ui-state-highlight");
                 setTimeout(function() {
@@ -28,23 +27,23 @@
                 }, 500);
             }
 
-            function saveData() {
+            function saveData(platform) {
                 var valid = true;
-                var access = document.getElementById("accesskey").value;
-                var secret = document.getElementById("secretkey").value;
-                var category = document.getElementById("categories").value;
+                var access = document.getElementById(platform + "-accesskey").value;
+                var secret = document.getElementById(platform + "-secretkey").value;
+                var category = document.getElementById(platform + "-categories").value;
 
                 if (category == "") {
-                    updateTips("Please select the Cloud provider.");
+                    updateTips("Please select the Cloud provider.", platform);
                     return false;
                 }
                 if (access == "" || access == null) {
-                    updateTips("Access Key is empty.");
+                    updateTips("Access Key is empty.", platform);
                     return false;
                 }
 
                 if (secret == "" || secret == null) {
-                    updateTips("Secret Key is empty.");
+                    updateTips("Secret Key is empty.", platform);
                     return false;
                 }
 
@@ -55,8 +54,8 @@
                 return valid;
             }
 
-            function createDialogForm() {
-                var divContainer = document.getElementById("container");
+            function createDialogForm(platform) {
+                var divContainer = document.getElementById(platform);
 
 //                divContainer.innerHTML = "<div id=\"dialog-form\" ><p class=\"validateTips\">All form fields are required.</p>\n\
 //                                            <form> <fieldset>\n\
@@ -78,11 +77,11 @@
 //    </form>\n\
 //</div>";
                 var divTag = document.createElement("div");
-                divTag.setAttribute('id', "storm-dialog-form");
+                divTag.setAttribute('id', platform + "-dialog-form");
                 divTag.setAttribute('title', "Platform config information");
 
                 var pTag = document.createElement("p");
-                pTag.setAttribute('id', "validateTips");
+                pTag.setAttribute('id', platform + "-validateTips");
                 pTag.textContent = "All form fields are required.";
 
                 var formTag = document.createElement("form");
@@ -92,7 +91,7 @@
                 cloudLabelTag.textContent = "Cloud Provider";
 
                 var catSelectTag = document.createElement("select");
-                catSelectTag.setAttribute('id', "categories");
+                catSelectTag.setAttribute('id', platform + "-categories");
                 catSelectTag.setAttribute('class', "text ui-widget-content ui-corner-all");
                 catSelectTag.setAttribute('style', "margin-bottom:12px");
                 catSelectTag.options.add(new Option("--Select--", "", true, true));
@@ -104,7 +103,7 @@
                 regionLabelTag.textContent = "Region";
 
                 var subSelectTag = document.createElement("select");
-                subSelectTag.setAttribute('id', "subcats");
+                subSelectTag.setAttribute('id', platform + "-subcats");
                 subSelectTag.setAttribute('class', "text ui-widget-content ui-corner-all");
                 subSelectTag.setAttribute('style', "margin-bottom:12px;width:165px");
 
@@ -114,7 +113,7 @@
                 var accessInputTag = document.createElement("input");
                 accessInputTag.setAttribute('type', "text");
                 accessInputTag.setAttribute('name', "accesskey");
-                accessInputTag.setAttribute('id', "accesskey");
+                accessInputTag.setAttribute('id', platform + "-accesskey");
                 accessInputTag.setAttribute('class', "text ui-widget-content ui-corner-all");
 
                 var secretKeyLabelTag = document.createElement("label");
@@ -123,7 +122,7 @@
                 var secretInputTag = document.createElement("input");
                 secretInputTag.setAttribute('type', "text");
                 secretInputTag.setAttribute('name', "secretkey");
-                secretInputTag.setAttribute('id', "secretkey");
+                secretInputTag.setAttribute('id', platform + "-secretkey");
                 secretInputTag.setAttribute('class', "text ui-widget-content ui-corner-all");
 
                 fieldsetTag.appendChild(cloudLabelTag);
@@ -140,26 +139,23 @@
                 divTag.appendChild(formTag);
                 divContainer.appendChild(divTag);
 
-                setLinkedSubCategory();
+                setLinkedSubCategory(platform);
             }
 
-            function initDialog() {
-                dialog = $("#container").dialog({
+            function initDialog(platform) {
+                dialog = $("#" + platform).dialog({
                     autoOpen: false,
                     height: 350,
                     width: 350,
                     modal: true,
                     buttons: {
-                        "Save": saveData,
+                        "Save": function() { 
+                            saveData(platform);
+                        },
                         Cancel: function() {
                             dialog.dialog("close");
                         }
                     }
-//                ,
-//                close: function() {
-//                    //form[ 0 ].reset();
-//                    //allFields.removeClass("ui-state-error");
-//                }
                 });
             }
 
@@ -168,15 +164,16 @@
             });
 
             $("#stormConf").button().on("click", function() {
-                var element = document.getElementById("storm-dialog-form");
+                var platform = "storm";
+                var element = document.getElementById(platform + "-dialog-form");
                 if (typeof (element) == 'undefined' || element == null)
                 {
-                    createDialogForm();
+                    createDialogForm(platform);
                 }
                 dialog.dialog("open");
             });
 
-            function setLinkedSubCategory() {
+            function setLinkedSubCategory(platform) {
                 var AWS = [
                     {display: "US East (N. Virginia)", value: "us-east-1"},
                     {display: "US West (Oregon)", value: "us-west-2"},
@@ -187,7 +184,7 @@
                     {display: "R1", value: "R1"},
                     {display: "R2", value: "R2"},
                     {display: "R3", value: "R3"}];
-                $("#categories").change(function() {
+                $("#" + platform + "-categories").change(function() {
                     var parent = $(this).val();
                     switch (parent) {
                         case 'Amazon':
@@ -200,15 +197,15 @@
                             list(Azure);
                             break;
                         default: //default child option is blank
-                            $("#subcats").html('');
+                            $("#" + platform + "-subcats").html('');
                             break;
                     }
                 });
                 function list(array_list)
                 {
-                    $("#subcats").html(""); //reset child options
+                    $("#" + platform + "-subcats").html(""); //reset child options
                     $(array_list).each(function(i) { //populate child options
-                        $("#subcats").append("<option value=\"" + array_list[i].value + "\">" + array_list[i].display + "</option>");
+                        $("#" + platform + "-subcats").append("<option value=\"" + array_list[i].value + "\">" + array_list[i].display + "</option>");
                     });
                 }
             }
@@ -216,6 +213,6 @@
         });
     </script>
 </head>
-<div id="container" title="Platform config information">
+<div id="storm" title="Platform config information">
 </div>
-<input type="image" src="${pageContext.request.contextPath}/resources/img/setting1.png" name="stormConfForm" id="stormConf" />
+<input type="image" src="${pageContext.request.contextPath}/resources/img/setting1.png" id="stormConf" />
