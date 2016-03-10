@@ -16,45 +16,23 @@
         <style>
             img.setting{
                 position: absolute;
-                right: 0px;
+                right: 17px;
                 bottom: 0px;
-                top: -9px;
-                /*left:5px;*/
+                top: -5px;
                 content:url("${pageContext.request.contextPath}/resources/img/conf.png");
-                width:25px; 
-                height:23px;
-                opacity: 0.3;
-            }
-            img.tick{
-                position: absolute;
-                right: 0px;
-                bottom: 0px;
-                top: -34px;
-                /*left:5px;*/
-                content:url("${pageContext.request.contextPath}/resources/img/don.png");
                 width:20px; 
-                height:20px;
+                height:19px;
+                opacity: 0.3;
             }
             img.bin{
                 position: absolute;
-                right: 0px;
+                right: -3px;
                 bottom: 0px;
-                top: -34px;
-                /*left:5px;*/
+                top: -4px;
                 content:url("${pageContext.request.contextPath}/resources/img/bin.png");
-                width:20px; 
-                height:20px;
+                width:17px; 
+                height:17px;
                 opacity: 0.3;
-            }
-            img.warning{
-                position: absolute;
-                right: 0px;
-                bottom: 0px;
-                top: -34px;
-                /*left:5px;*/
-                content:url("${pageContext.request.contextPath}/resources/img/warning.png");
-                width:25px; 
-                height:23px;
             }
             div.first-div{
                 padding-top:3px;
@@ -85,17 +63,18 @@
                 margin:0px;
             }
 
-            .ui-state-default,
-            .ui-widget-content .ui-state-default,
-            .ui-widget-header .ui-state-default {
-                border: 1px solid #d3d3d3;
-                background: #e6e6e6 50% 50% repeat-x;
-                font-weight: normal;
-                color: #555555;
-                height: 49px;
-                width: 205px;
-            }
-
+            /*            .ui-state-default,
+                        .ui-widget-content .ui-state-default,
+                        .ui-widget-header .ui-state-default {
+                            border: 1px solid #d3d3d3;
+                            background: #e6e6e6 50% 50% repeat-x;
+                            font-weight: normal;
+                            color: #555555;
+                            height: 49px;
+                            width: 205px;
+                        }
+            
+            */            
             .ui-state-default-start {
                 border: 1px solid #449d44;
                 background: #99cc00;
@@ -110,41 +89,44 @@
                 font-weight: bold;
                 color: white;
                 text-align: center;
+            }
 
-            }</style>
+        </style>
 
         <script>
 
             $(function() {
 
-//                var dialog, form;
-
                 function updateTips(t, platform) {
                     var tips = document.getElementById(platform + "-validateTips");
                     tips.textContent = t;
                     tips.setAttribute('class', "ui-state-highlight");
+                    tips.setAttribute('style', "font-size:12px");
                     setTimeout(function() {
-                        tips.removeClass("ui-state-highlight", 1500);
+                        $(".validateTips").removeClass("ui-state-highlight", 1500);
                     }, 500);
                 }
 
                 function saveData(platform) {
                     var valid = true;
-                    var access = document.getElementById(platform + "-accesskey").value;
-                    var secret = document.getElementById(platform + "-secretkey").value;
-                    var category = document.getElementById(platform + "-categories").value;
+                    var accessElem = document.getElementById(platform + "-accesskey");
+                    var secretElem = document.getElementById(platform + "-secretkey");
+                    var categoryElem = document.getElementById(platform + "-categories");
 
-                    if (category == "") {
+                    if (categoryElem.value == "") {
                         updateTips("Please select the Cloud provider.", platform);
+                        categoryElem.setAttribute('class', "ui-state-error");
                         return false;
                     }
-                    if (access == "" || access == null) {
+                    if (accessElem.value == "" || accessElem.value == null) {
                         updateTips("Access Key is empty.", platform);
+                        accessElem.setAttribute('class', "ui-state-error");
                         return false;
                     }
 
-                    if (secret == "" || secret == null) {
+                    if (secretElem.value == "" || secretElem.value == null) {
                         updateTips("Secret Key is empty.", platform);
+                        secretElem.setAttribute('class', "ui-state-error");
                         return false;
                     }
 
@@ -159,17 +141,15 @@
                     var divContainer = document.getElementById(platform);
                     var divTag = document.createElement("div");
                     divTag.setAttribute('id', platform + "-dialog-form");
-
                     var pTag = document.createElement("p");
                     pTag.setAttribute('id', platform + "-validateTips");
                     pTag.textContent = "All form fields are required.";
-
+                    pTag.setAttribute('class', "conf-p");
                     var formTag = document.createElement("form");
                     var fieldsetTag = document.createElement("fieldset");
-
                     var cloudLabelTag = document.createElement("label");
                     cloudLabelTag.textContent = "Cloud Provider";
-
+                    cloudLabelTag.setAttribute('class', "conf");
                     var catSelectTag = document.createElement("select");
                     catSelectTag.setAttribute('id', platform + "-categories");
                     catSelectTag.setAttribute('class', "text ui-widget-content ui-corner-all");
@@ -178,26 +158,25 @@
                     catSelectTag.options.add(new Option("Amazon Cloud Services", "Amazon"));
                     catSelectTag.options.add(new Option("Google Cloud Platform", "Google"));
                     catSelectTag.options.add(new Option("Microsoft Azure", "Microsoft"));
-
                     var regionLabelTag = document.createElement("label");
                     regionLabelTag.textContent = "Region";
-
+                    regionLabelTag.setAttribute('class', "conf");
                     var subSelectTag = document.createElement("select");
                     subSelectTag.setAttribute('id', platform + "-subcats");
                     subSelectTag.setAttribute('class', "text ui-widget-content ui-corner-all");
                     subSelectTag.setAttribute('style', "margin-bottom:12px;width:165px");
-
                     var accessKeyLabelTag = document.createElement("label");
                     accessKeyLabelTag.textContent = "Access Key";
+                    accessKeyLabelTag.setAttribute('class', "conf");
 
                     var accessInputTag = document.createElement("input");
                     accessInputTag.setAttribute('type', "text");
                     accessInputTag.setAttribute('name', "accesskey");
                     accessInputTag.setAttribute('id', platform + "-accesskey");
                     accessInputTag.setAttribute('class', "text ui-widget-content ui-corner-all");
-
                     var secretKeyLabelTag = document.createElement("label");
                     secretKeyLabelTag.textContent = "Secret Key";
+                    secretKeyLabelTag.setAttribute('class', "conf");
 
                     var secretInputTag = document.createElement("input");
                     secretInputTag.setAttribute('type', "text");
@@ -213,12 +192,10 @@
                     fieldsetTag.appendChild(accessInputTag);
                     fieldsetTag.appendChild(secretKeyLabelTag);
                     fieldsetTag.appendChild(secretInputTag);
-
                     formTag.appendChild(fieldsetTag);
                     divTag.appendChild(pTag);
                     divTag.appendChild(formTag);
                     divContainer.appendChild(divTag);
-
                     setLinkedSubCategory(platform);
                 }
 
@@ -238,10 +215,6 @@
                         }
                     });
                 }
-
-//                form = dialog.find("form").on("save", function(event) {
-//                    event.preventDefault();
-//                });
 
                 function setLinkedSubCategory(platform) {
                     var AWS = [
@@ -280,41 +253,92 @@
                     }
                 }
 
-//            });
-//            $(function() {
 
                 $('#sortable').sortable();
                 $('#draggables').sortable();
 
+                var confBtnElem = document.getElementById('sortable');
+                confBtnElem.addEventListener('click', removeDraggableLi);
+                confBtnElem.addEventListener('click', configPlt);
+
                 $('#sortable').droppable({
                     drop: function(ev, ui) {
                         var title = ui.draggable.attr('title');
+                        var platform;
+                        switch (title) {
+                            case 'Apache Storm':
+                                platform = 'sto';
+                                break;
+                            case 'Amazon Kinesis':
+                                platform = 'kin';
+                                break;
+                            case 'DynamoDB':
+                                platform = 'dyn';
+                                break;
+                            default:
+                                return false;
+                        }
                         $(ui.draggable).html('<div class="first-div"> <img class="icon" \n\
                         src="${pageContext.request.contextPath}/resources/img/' + title + '.png" /></div> \n\
                         <div class="second-div">' + title + '</div> \n\
                         <div  class="third-div"> \n\
-                        <img id="stormConf" style="opacity: 1" class="setting" />\n\
-                        <img id="stormBinBtn" style="opacity: 1" class="bin" /> </div>');
+                        <img id="' + platform + 'Conf"  style="opacity: 1" class="setting" />\n\
+                        <img id="' + platform + 'Btn" style="opacity: 1" class="bin" /> </div>');
                     }
                 });
-                $("#sortable").on("click", 'img#stormConf', function() {
-                    var platform = "storm";
-                    $('body').append("<div id=\"storm\" title=\"Platform config information\"></div>");
-                    initDialog(platform);
 
-                    var element = document.getElementById(platform + "-dialog-form");
+
+                function removeDraggableLi(e) {
+                    var divDialogName;
+                    var deleteEnabled = false;
+                    e.stopPropagation();
+                    switch (e.target.id) {
+                        case 'stoBtn':
+                            divDialogName = 'storm';
+                            deleteEnabled = true;
+                            break;
+                        case 'kinBtn':
+                            divDialogName = 'kinesis';
+                            deleteEnabled = true;
+                            break;
+                        case 'dynBtn':
+                            divDialogName = 'dynamo';
+                            deleteEnabled = true;
+                            break;
+                        default:
+                            deleteEnabled = false;
+                    }
+                    if (deleteEnabled) {
+                        $(e.target).parents('li').remove();
+                        $("#" + divDialogName).empty();
+                    }
+                }
+
+                function configPlt(e) {
+                    var divDialogName;
+                    switch (e.target.id) {
+                        case 'stoConf':
+                            divDialogName = 'storm';
+                            break;
+                        case 'kinConf':
+                            divDialogName = 'kinesis';
+                            break;
+                        case 'dynConf':
+                            divDialogName = 'dynamo';
+                            break;
+                        default:
+                            return false;
+                    }
+                    $('body').append('<div style="" id="' + divDialogName + '" title="Platform config information"></div>');
+                    initDialog(divDialogName);
+                    var element = document.getElementById(divDialogName + "-dialog-form");
                     if (typeof (element) == 'undefined' || element == null)
                     {
-                        createDialogForm(platform);
+                        createDialogForm(divDialogName);
                     }
                     dialog.dialog("open");
-                });
-                $('#sortable').on('click', 'img#stormBinBtn', function(e) {
-                    var platform = "storm";
-                    e.stopPropagation();
-                    $(this).parents('li').remove();
-                    $("#"+platform).empty();
-                });
+                }
+
                 $('#draggables li').draggable({
                     connectToSortable: '#sortable',
                     helper: 'clone',
@@ -324,7 +348,6 @@
                 $("#sortable").sortable({
                     items: "li:not(.disabled1)"
                 });
-
                 $("#sortable").sortable({
                     cancel: ".disabled2"
                 });
@@ -362,12 +385,6 @@
         </div>
 
 
-
-        <div id="kinesis" title="Platform config information">
-        </div>
-        <div id="dynamodb" title="Platform config information">
-        </div>
-
         <div  class="jumbotron_body">
             <div class="container">
                 <div class="row">
@@ -381,7 +398,7 @@
                             <div class="second-div">Apache Storm</div>
                             <div  class="third-div">
                                 <img class="setting" />
-                                <img id="stormBinBtn" class="bin" />
+                                <img class="bin" />
                                 <!--<img class="warning" />-->
                             </div>
                         </li>
@@ -392,6 +409,7 @@
                             <div class="second-div">Amazon Kinesis</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
+                                <img class="bin" />
                             </div>
                         </li>
                         <li id="3" class="ui-state-default" title='DynamoDB'> 
@@ -401,6 +419,7 @@
                             <div class="second-div">DynamoDB</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
+                                <img class="bin" />
                             </div>
                         </li>
                         <li id="4" class="ui-state-default"  title='Apache Kafka'> 
@@ -410,6 +429,7 @@
                             <div class="second-div">Apache Kafka</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
+                                <img class="bin" />
                             </div>
                         </li>
                         <li id="5" class="ui-state-default" title='Apache Spark'> 
@@ -419,6 +439,7 @@
                             <div class="second-div">Apache Spark</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
+                                <img class="bin" />
                             </div>
                         </li>
                         <li id="6" class="ui-state-default" title = 'Apache Cassandra'> 
@@ -428,13 +449,14 @@
                             <div class="second-div">Apache Cassandra</div>
                             <div style="position: relative;float: right">
                                 <img class="setting" />
+                                <img class="bin" />
                             </div>
                         </li>
                     </ul>
-                    <!--<p style="font-weight: bold;color: #555555">Data Analytics Flow</p>-->
+
                     <ul id="sortable" class="dropfalse">
                         <li class="ui-state-default-start disabled2 disabled1" style="color:white;padding: 3px 6.5px 5px 8px" >Start</li>
-                        <li class="ui-state-default-end disabled2" style="color:white;padding: 3px 6.5px 5px 8px">End</li>
+                        <li class="ui-state-default-end ui-disabled2" style="color:white;padding: 3px 6.5px 5px 8px">End</li>
 
                     </ul>
                 </div>
