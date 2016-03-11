@@ -5,8 +5,11 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <html><head>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-2.0.0.min.js"></script>
+        <!--<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-2.0.0.min.js"></script>-->
+                <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.smartWizard.js"></script>
         <script type="text/javascript">
@@ -16,8 +19,44 @@
             });
         </script>
     </head>
-    <body>
-        <div id="wizard" class="swMain">
+        
+          <body>
+        <tiles:insertDefinition name="defaultbar" />
+<!--        <div class="col-xs-12">
+            <h3><strong style="color: #555">Load the Analytics Flow</strong></h3>
+            <hr>
+            <p>Select the template that describes the data analytics flow that you want to create. A flow describes a group of related platforms and resources that you manage as a single unit.
+            </p>
+            <br>
+        </div>
+        <div  class="jumbotron1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-9 col-lg-5">
+                        <input type="file" id="fileinput" />
+                    </div>
+                    <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
+                        <a class="btn btn-action" href="#" title="">Load Template</a> 
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+        <div class="col-xs-12">
+            <h3><strong style="color: #555">Or Drag and Drop!</strong></h3>
+            <hr>
+            <p>Drag the platforms that constitute your analytics flow from the left canvas and drop it to the right canvas.
+                Next, configure each system as per its current deployment.
+            </p>
+            <br>
+        </div>
+
+
+        <div  class="jumbotron_body">
+            <div class="container">
+                <div class="row">
+                    
+ <div id="wizard" class="swMain">
             <ul>
                 <li><a href="#step-1">
                         <label class="stepNumber">1</label>
@@ -65,5 +104,31 @@
                 <!-- step content -->                         
             </div>
         </div>
+
+                </div>
+            </div>            
+        </div>
+
+        <div class="jumbotron2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-9 col-lg-5">
+                        
+                    </div>
+                    <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
+                        <a class="btn btn-action" href="#" title="">Cancel</a> 
+
+                        <a class="btn btn-action" href="#" title="">Next</a> 
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <tiles:insertDefinition name="defaultfooter" />
+
+
     </body>
 </html>

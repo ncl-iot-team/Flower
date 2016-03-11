@@ -20,7 +20,7 @@ public class FlowLoaderController {
 
     @RequestMapping("/flowload")
     public String viewPage() {
-        return "flowload";
+        return "stepform";
     }
 
 

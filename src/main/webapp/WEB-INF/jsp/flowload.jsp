@@ -10,89 +10,9 @@
 <html><head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" href="resources/css/general_config_form.css">
+        <link rel="stylesheet" href="resources/css/flow_load.css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <style>
-            img.setting{
-                position: absolute;
-                right: 17px;
-                bottom: 0px;
-                top: -5px;
-                content:url("${pageContext.request.contextPath}/resources/img/conf.png");
-                width:20px; 
-                height:19px;
-                opacity: 0.3;
-            }
-            img.bin{
-                position: absolute;
-                right: -3px;
-                bottom: 0px;
-                top: -4px;
-                content:url("${pageContext.request.contextPath}/resources/img/bin.png");
-                width:17px; 
-                height:17px;
-                opacity: 0.3;
-            }
-            div.first-div{
-                padding-top:3px;
-                float: left
-            }
-            div.second-div{
-                padding-top:7px;
-                padding-left: 35px
-            }
-            div.third-div{
-                position: relative
-
-            }
-            #draggables, #sortable { list-style-type: none; margin: 0; float: left; margin-right: 194px; background: #fbfbfb; padding: 10px 0px 10px 20px; width: 257px; border: 1px solid #cccccc}
-            #draggables li, #sortable li { font-family: Helvetica, Arial, sans-serif; margin: 5px; padding: 5px 5px 15px 10px; font-size: 14px; width: 205px;color: #262626}
-            #draggables > li > .image{
-                display:block;
-                float:left;
-                margin:0px;
-            }
-            img.icon{
-                width:30px; height:30px;
-            }
-
-            #sortable > li > .image{
-                display:block;
-                float:left;
-                margin:0px;
-            }
-
-            /*            .ui-state-default,
-                        .ui-widget-content .ui-state-default,
-                        .ui-widget-header .ui-state-default {
-                            border: 1px solid #d3d3d3;
-                            background: #e6e6e6 50% 50% repeat-x;
-                            font-weight: normal;
-                            color: #555555;
-                            height: 49px;
-                            width: 205px;
-                        }
-            
-            */            
-            .ui-state-default-start {
-                border: 1px solid #449d44;
-                background: #99cc00;
-                font-weight: bold;
-                color: white;
-                text-align: center;
-            }
-
-            .ui-state-default-end {
-                border: 1px solid #a94442;
-                background: #ce8483;
-                font-weight: bold;
-                color: white;
-                text-align: center;
-            }
-
-        </style>
-
         <script>
 
             $(function() {
@@ -102,10 +22,11 @@
                     tips.textContent = t;
                     tips.setAttribute('class', "ui-state-highlight");
                     tips.setAttribute('style', "font-size:12px");
-                    setTimeout(function() {
-                        $(".validateTips").removeClass("ui-state-highlight", 1500);
-                    }, 500);
+//                    setTimeout(function() {
+//                        tips.setAttribute('class', "conf-p");
+//                    }, 1500);
                 }
+
 
                 function saveData(platform) {
                     var valid = true;
@@ -115,18 +36,27 @@
 
                     if (categoryElem.value == "") {
                         updateTips("Please select the Cloud provider.", platform);
-                        categoryElem.setAttribute('class', "ui-state-error");
+                        categoryElem.setAttribute('class', "ui-state-error text ui-widget-content ui-corner-all");
+                        setTimeout(function() {
+                            categoryElem.setAttribute('class', "text ui-widget-content ui-corner-all");
+                        }, 1500);
                         return false;
                     }
                     if (accessElem.value == "" || accessElem.value == null) {
                         updateTips("Access Key is empty.", platform);
-                        accessElem.setAttribute('class', "ui-state-error");
+                        accessElem.setAttribute('class', "ui-state-error text ui-widget-content ui-corner-all");
+                        setTimeout(function() {
+                            accessElem.setAttribute('class', "text ui-widget-content ui-corner-all");
+                        }, 1500);
                         return false;
                     }
 
                     if (secretElem.value == "" || secretElem.value == null) {
                         updateTips("Secret Key is empty.", platform);
-                        secretElem.setAttribute('class', "ui-state-error");
+                        secretElem.setAttribute('class', "ui-state-error text ui-widget-content ui-corner-all");
+                        setTimeout(function() {
+                            secretElem.setAttribute('class', "text ui-widget-content ui-corner-all");
+                        }, 1500);
                         return false;
                     }
 
@@ -137,8 +67,11 @@
                     return valid;
                 }
 
+
+
                 function createDialogForm(platform) {
                     var divContainer = document.getElementById(platform);
+                    divContainer.setAttribute("class", 'dialog-setting');
                     var divTag = document.createElement("div");
                     divTag.setAttribute('id', platform + "-dialog-form");
                     var pTag = document.createElement("p");
@@ -329,7 +262,7 @@
                         default:
                             return false;
                     }
-                    $('body').append('<div style="" id="' + divDialogName + '" title="Platform config information"></div>');
+                    $('body').append('<div id="' + divDialogName + '" title="Platform config information"></div>');
                     initDialog(divDialogName);
                     var element = document.getElementById(divDialogName + "-dialog-form");
                     if (typeof (element) == 'undefined' || element == null)
@@ -391,7 +324,7 @@
                     <p style="font-weight: bold;color: #555555">Systems and Resources List</p>
                     <ul id="draggables" class="droptrue" >
 
-                        <li class="ui-state-default" title='Apache Storm'> 
+                        <li class="ui-state-default-extention" title='Apache Storm'> 
                             <div class="first-div"> 
                                 <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Storm.png" />
                             </div> 
@@ -402,7 +335,7 @@
                                 <!--<img class="warning" />-->
                             </div>
                         </li>
-                        <li id="2" class="ui-state-default" title='Amazon Kinesis'> 
+                        <li id="2" class="ui-state-default-extention" title='Amazon Kinesis'> 
                             <div class="image first-div"> 
                                 <img class="icon" src="${pageContext.request.contextPath}/resources/img/Amazon Kinesis.png" />
                             </div> 
@@ -412,7 +345,7 @@
                                 <img class="bin" />
                             </div>
                         </li>
-                        <li id="3" class="ui-state-default" title='DynamoDB'> 
+                        <li id="3" class="ui-state-default-extention" title='DynamoDB'> 
                             <div class="first-div"> 
                                 <img class="icon" src="${pageContext.request.contextPath}/resources/img/DynamoDB.png" />
                             </div> 
@@ -422,7 +355,7 @@
                                 <img class="bin" />
                             </div>
                         </li>
-                        <li id="4" class="ui-state-default"  title='Apache Kafka'> 
+                        <li id="4" class="ui-state-default-extention"  title='Apache Kafka'> 
                             <div class="image first-div"> 
                                 <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Kafka.png" />
                             </div> 
@@ -432,7 +365,7 @@
                                 <img class="bin" />
                             </div>
                         </li>
-                        <li id="5" class="ui-state-default" title='Apache Spark'> 
+                        <li id="5" class="ui-state-default-extention" title='Apache Spark'> 
                             <div class="image first-div"> 
                                 <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Spark.png" />
                             </div> 
@@ -442,7 +375,7 @@
                                 <img class="bin" />
                             </div>
                         </li>
-                        <li id="6" class="ui-state-default" title = 'Apache Cassandra'> 
+                        <li id="6" class="ui-state-default-extention" title = 'Apache Cassandra'> 
                             <div class="image first-div"> 
                                 <img class="icon" src="${pageContext.request.contextPath}/resources/img/Apache Cassandra.png" />
                             </div> 
@@ -462,9 +395,6 @@
                 </div>
             </div>            
         </div>
-
-
-
 
         <div class="jumbotron2">
             <div class="container">
