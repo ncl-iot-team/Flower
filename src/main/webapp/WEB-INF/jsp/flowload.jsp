@@ -86,7 +86,7 @@
                     var catSelectTag = document.createElement("select");
                     catSelectTag.setAttribute('id', platform + "-categories");
                     catSelectTag.setAttribute('class', "text ui-widget-content ui-corner-all");
-                    catSelectTag.setAttribute('style', "margin-bottom:12px");
+                    catSelectTag.setAttribute('style', "margin-bottom:12px;height: 25px");
                     catSelectTag.options.add(new Option("--Select--", "", true, true));
                     catSelectTag.options.add(new Option("Amazon Cloud Services", "Amazon"));
                     catSelectTag.options.add(new Option("Google Cloud Platform", "Google"));
@@ -97,7 +97,7 @@
                     var subSelectTag = document.createElement("select");
                     subSelectTag.setAttribute('id', platform + "-subcats");
                     subSelectTag.setAttribute('class', "text ui-widget-content ui-corner-all");
-                    subSelectTag.setAttribute('style', "margin-bottom:12px;width:165px");
+                    subSelectTag.setAttribute('style', "margin-bottom:12px;width:165px;height: 25px");
                     var accessKeyLabelTag = document.createElement("label");
                     accessKeyLabelTag.textContent = "Access Key";
                     accessKeyLabelTag.setAttribute('class', "conf");
@@ -288,28 +288,34 @@
         </script>
     </head><body>
         <tiles:insertDefinition name="defaultbar" />
-        <div class="col-xs-12">
-            <h3><strong style="color: #555">Load the Analytics Flow</strong></h3>
-            <hr>
-            <p>Select the template that describes the data analytics flow that you want to create. A flow describes a group of related platforms and resources that you manage as a single unit.
-            </p>
-            <br>
-        </div>
-        <div  class="jumbotron1">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-12 col-md-9 col-lg-5">
-                        <input type="file" id="fileinput" />
-                    </div>
-                    <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
-                        <a class="btn btn-action" href="#" title="">Load Template</a> 
-                    </div>
+        <!--        <div class="col-xs-12">
+                    <h3><strong style="color: #555">Create Your Analytics Flow</strong></h3>
+                    <hr>
+                    <p>Select the template that describes the data analytics flow that you want to create. A flow describes a group of related platforms and resources that you manage as a single unit.
+                    </p>
+                    <br>
                 </div>
-            </div>
-        </div>
+                <div  class="jumbotron1">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-9 col-lg-5">
+                                <input type="file" id="fileinput" />
+        
+        
+                                <label class="conf">Analytics Flow Name</label>
+                                <input type="text" name="flowName" id="storm-accesskey" class="text ui-widget-content ui-corner-all"/>
+        
+        
+                            </div>
+                            <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
+                                <a class="btn btn-action" href="#" title="">Load Template</a> 
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
 
         <div class="col-xs-12">
-            <h3><strong style="color: #555">Or Drag and Drop!</strong></h3>
+            <h3><strong style="color: #555">Create Your Analytics Flow</strong></h3>
             <hr>
             <p>Drag the platforms that constitute your analytics flow from the left canvas and drop it to the right canvas.
                 Next, configure each system as per its current deployment.
@@ -320,8 +326,22 @@
 
         <div  class="jumbotron_body">
             <div class="container">
+                <div class="row">   
+                    <h5><strong style="color: #555">Analytics Flow settings</strong></h5>
+                    <hr style="width:85%;" align="left">
+                    <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
+                        <input type="text" name="flowName" id="flow-Name" class="text ui-widget-content ui-corner-all"/></div>
+                    <div style="float:left; margin-left: 50px"><label class="conf">Flow Owner*</label>
+                        <select name="Owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
+                            <option value=""></option>
+                            <option value="currentUser">Current User</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="row">
-                    <p style="font-weight: bold;color: #555555">Systems and Resources List</p>
+                    <h5><strong style="color: #555">Drag and Drop!</strong></h5>
+                    <hr style="width:85%;" align="left">
+                    <p style="color: #555555">Systems and Resources List</p>
                     <ul id="draggables" class="droptrue" >
 
                         <li class="ui-state-default-extention" title='Apache Storm'> 
@@ -402,8 +422,7 @@
                     <div class="col-xs-12 col-md-9 col-lg-5">
                     </div>
                     <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
-                        <a class="btn btn-action" href="#" title="">Cancel</a> 
-
+                        <a class="btn btn-action" href="#" title="">Save</a> 
                         <a class="btn btn-action" href="#" title="">Next</a> 
 
                     </div>
