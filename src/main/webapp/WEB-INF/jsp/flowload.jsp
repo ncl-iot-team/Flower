@@ -67,8 +67,6 @@
                     return valid;
                 }
 
-
-
                 function createDialogForm(platform) {
                     var divContainer = document.getElementById(platform);
                     divContainer.setAttribute("class", 'dialog-setting');
@@ -186,6 +184,15 @@
                     }
                 }
 
+                var platformList = new Array();
+
+                $('#flow-general-setting').submit(function() {
+                     $('#sortable').each(function(){
+                         platformList.push($(this).text());
+                     });
+                     $('#hiddenListInput').val(platformList);
+                    return true;
+                });
 
                 $('#sortable').sortable();
                 $('#draggables').sortable();
@@ -219,7 +226,6 @@
                         <img id="' + platform + 'Btn" style="opacity: 1" class="bin" /> </div>');
                     }
                 });
-
 
                 function removeDraggableLi(e) {
                     var divDialogName;
@@ -272,6 +278,13 @@
                     dialog.dialog("open");
                 }
 
+                $('#saveBtn').on('click', function() {
+                    var analyticsName = $('#flow-name').val();
+                    if (analyticsName) {
+
+                    }
+                });
+
                 $('#draggables li').draggable({
                     connectToSortable: '#sortable',
                     helper: 'clone',
@@ -286,7 +299,8 @@
                 });
             });
         </script>
-    </head><body>
+    </head>
+    <body>
         <tiles:insertDefinition name="defaultbar" />
         <!--        <div class="col-xs-12">
                     <h3><strong style="color: #555">Create Your Analytics Flow</strong></h3>
@@ -318,7 +332,6 @@
             <h3><strong style="color: #555">Create Your Analytics Flow</strong></h3>
             <hr>
             <p>Drag the platforms that constitute your analytics flow from the left canvas and drop it to the right canvas.
-                Next, configure each system as per its current deployment.
             </p>
             <br>
         </div>
@@ -329,14 +342,20 @@
                 <div class="row">   
                     <h5><strong style="color: #555">Analytics Flow settings</strong></h5>
                     <hr style="width:85%;" align="left">
-                    <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
-                        <input type="text" name="flowName" id="flow-Name" class="text ui-widget-content ui-corner-all"/></div>
-                    <div style="float:left; margin-left: 50px"><label class="conf">Flow Owner*</label>
-                        <select name="Owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
-                            <option value=""></option>
-                            <option value="currentUser">Current User</option>
-                        </select>
-                    </div>
+                    <form id="flow-general-setting" action="submitFlowFormSetting" method="post">
+                        <fieldset>
+                            <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
+                                <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/></div>
+                            <div style="float:left; margin-left: 50px"><label class="conf">Flow Owner*</label>
+                                <select name="owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
+                                    <option value=""></option>
+                                    <option value="currentUser">Current User</option>
+                                </select>
+                            </div>
+                            <input type="text" name="list[]" id="hiddenListInput" />
+                        </fieldset>
+                    </form>
+
                 </div>
                 <div class="row">
                     <h5><strong style="color: #555">Drag and Drop!</strong></h5>
@@ -410,7 +429,6 @@
                     <ul id="sortable" class="dropfalse">
                         <li class="ui-state-default-start disabled2 disabled1" style="color:white;padding: 3px 6.5px 5px 8px" >Start</li>
                         <li class="ui-state-default-end ui-disabled2" style="color:white;padding: 3px 6.5px 5px 8px">End</li>
-
                     </ul>
                 </div>
             </div>            
@@ -418,19 +436,19 @@
 
         <div class="jumbotron2">
             <div class="container">
-                <div class="row">
-                    <div class="col-xs-12 col-md-9 col-lg-5">
-                    </div>
-                    <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
-                        <a class="btn btn-action" href="#" title="">Save</a> 
-                        <a class="btn btn-action" href="#" title="">Next</a> 
-
-                    </div>
+                <div class="row" style="text-align: center">
+                    <!--                    <div class="col-xs-12 col-md-9 col-lg-5">
+                                        </div>-->
+                    <!--<div class="text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2" style="width:300px;text-align: right">-->
+                    <input type="button" class="btn btn-action" value="Cancel">
+                    <input class="btn btn-action" type="submit" form="flow-general-setting" value="Next: Config Systems">
+                    <!--</div>-->
 
                 </div>
             </div>
 
         </div>
+
 
         <tiles:insertDefinition name="defaultfooter" />
     </body>

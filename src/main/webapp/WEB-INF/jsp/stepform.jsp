@@ -43,7 +43,7 @@
         </div>-->
 
         <div class="col-xs-12">
-            <h3><strong style="color: #555">Or Drag and Drop!</strong></h3>
+            <h3><strong style="color: #555">${msg}</strong></h3>
             <hr>
             <p>Drag the platforms that constitute your analytics flow from the left canvas and drop it to the right canvas.
                 Next, configure each system as per its current deployment.

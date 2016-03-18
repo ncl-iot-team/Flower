@@ -32,7 +32,7 @@ div#users-contain {width: 350px; margin: 20px 0; }
     margin-left:10px;  
     font-size:10px;
 }
-img.setting{
+/*img.setting{
     position: absolute;
     right: 17px;
     bottom: 0px;
@@ -41,7 +41,7 @@ img.setting{
     width:20px; 
     height:19px;
     opacity: 0.3;
-}
+}*/
 img.bin{
     position: absolute;
     right: -3px;
