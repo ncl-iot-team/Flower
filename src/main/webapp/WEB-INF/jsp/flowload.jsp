@@ -184,13 +184,19 @@
                     }
                 }
 
-                var platformList = new Array();
 
                 $('#flow-general-setting').submit(function() {
-                     $('#sortable').each(function(){
-                         platformList.push($(this).text());
-                     });
-                     $('#hiddenListInput').val(platformList);
+                    var platformList = "";
+                    var systemName =  $('#sortable li').text();
+                    var res = systemName.split("");
+//                        if (platformList !== "") {
+//                            platformList += $(this).text() + ',';
+//                        }
+//                        systemName = this.id;
+//                        if (systemName != 'Start' && systemName != 'End' && systemName != 'undefined') {
+//                            platformList += systemName + ',';
+//                        }
+                    $('#hiddenListInput').val(res[0]);
                     return true;
                 });
 
@@ -352,7 +358,7 @@
                                     <option value="currentUser">Current User</option>
                                 </select>
                             </div>
-                            <input type="text" name="list[]" id="hiddenListInput" />
+                            <input type="hidden" name="list" id="hiddenListInput" />
                         </fieldset>
                     </form>
 
