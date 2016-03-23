@@ -184,20 +184,59 @@
                     }
                 }
 
+                $('#flow-name').on('blur', function() {
+                    if (!$('#flow-name').val()) {
+                        $('#flow-name').attr('style', 'border:1px solid red');
+                    } else {
+                        $('#flow-name').removeAttr('style');
+                    }
+                });
 
-                $('#flow-general-setting').submit(function() {
+                $('#flow-owner').on('blur', function() {
+                    if (!$('#flow-owner').val()) {
+                        $('#flow-owner').css('border', '1px solid red');
+                    } else {
+                        $('#flow-owner').css('border','');
+                    }
+                });
+                
+                function validateFlowSettingForm() {
+                    var isValid = true;
+                    if (!$('#flow-name').val()) {
+                        $('#flow-name').attr('style', 'border:1px solid red');
+                        isValid = false;
+                    }
+                    if (!$('#flow-owner').val()) {
+                        $('#flow-owner').css('border', '1px solid red');
+                        isValid = false;
+                    }
+                    return isValid;
+                }
+
+                $('#flow-general-setting').on('submit', function(event) {
                     var platformList = "";
-                    var systemName =  $('#sortable li').text();
-                    var res = systemName.split("");
-//                        if (platformList !== "") {
-//                            platformList += $(this).text() + ',';
-//                        }
-//                        systemName = this.id;
-//                        if (systemName != 'Start' && systemName != 'End' && systemName != 'undefined') {
-//                            platformList += systemName + ',';
-//                        }
-                    $('#hiddenListInput').val(res[0]);
-                    return true;
+                    if (!validateFlowSettingForm()) {
+                        event.preventDefault();
+                    }
+                    var $list = $('#sortable li');
+                    $list.each(function() {
+                        var $systemName = $(this).text().trim();
+                        if ($systemName != 'Start' && $systemName != 'End'
+                                && $systemName != 'undefined' && $systemName.length != 0) {
+                            if (platformList == "") {
+                                platformList = $systemName;
+                            } else {
+                                platformList += ',' + $systemName;
+                            }
+                        }
+                    });
+
+                    if (platformList == "") {
+                        $("#sortable").attr('style', 'border:1px solid red');
+                        event.preventDefault();
+                    } else {
+                        $('#hiddenListInput').val(platformList);
+                    }
                 });
 
                 $('#sortable').sortable();
@@ -308,31 +347,6 @@
     </head>
     <body>
         <tiles:insertDefinition name="defaultbar" />
-        <!--        <div class="col-xs-12">
-                    <h3><strong style="color: #555">Create Your Analytics Flow</strong></h3>
-                    <hr>
-                    <p>Select the template that describes the data analytics flow that you want to create. A flow describes a group of related platforms and resources that you manage as a single unit.
-                    </p>
-                    <br>
-                </div>
-                <div  class="jumbotron1">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-xs-12 col-md-9 col-lg-5">
-                                <input type="file" id="fileinput" />
-        
-        
-                                <label class="conf">Analytics Flow Name</label>
-                                <input type="text" name="flowName" id="storm-accesskey" class="text ui-widget-content ui-corner-all"/>
-        
-        
-                            </div>
-                            <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
-                                <a class="btn btn-action" href="#" title="">Load Template</a> 
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
 
         <div class="col-xs-12">
             <h3><strong style="color: #555">Create Your Analytics Flow</strong></h3>
@@ -353,12 +367,12 @@
                             <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
                                 <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/></div>
                             <div style="float:left; margin-left: 50px"><label class="conf">Flow Owner*</label>
-                                <select name="owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
+                                <select name="owner" id="flow-owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
                                     <option value=""></option>
                                     <option value="currentUser">Current User</option>
                                 </select>
                             </div>
-                            <input type="hidden" name="list" id="hiddenListInput" />
+                            <input type="hidden" name="systems" id="hiddenListInput" />
                         </fieldset>
                     </form>
 

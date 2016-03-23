@@ -17,13 +17,14 @@ import java.util.logging.Logger;
  *
  * @author kho01f
  */
-public class Datasource {
+public class Datasource implements IDatasource{
 
     Connection con = null;
     String url = "jdbc:postgresql://localhost:5433/flowerDB";
     String user = "postgres";
     String pass = "300";
-
+    
+    @Override
     public Connection openCon() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -38,6 +39,7 @@ public class Datasource {
         return con;
     }
 
+    @Override
     public void closeCon(ResultSet rs, Statement st, Connection con) {
         try {
             if (rs != null) {

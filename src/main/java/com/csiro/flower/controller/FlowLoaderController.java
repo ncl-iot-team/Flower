@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
@@ -36,9 +35,14 @@ import sun.util.calendar.CalendarUtils;
 public class FlowLoaderController {
 
     Connection con = null;
-    Datasource ds = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
+    
+    IDatasource ds;
+    
+    public void setDatasource(IDatasource datasource){
+        this.ds = datasource;
+    }
 
     @RequestMapping("/flowload")
     public String viewFlowLoadPage() {
@@ -49,12 +53,11 @@ public class FlowLoaderController {
     public String submitFlowSetting(@RequestParam Map<String, String> reqPar) {
         String flowName = reqPar.get("flowName");
         String owner = reqPar.get("owner");
-        String platforms = reqPar.get("list");
+        String platforms = reqPar.get("systems");
 
         Date date = new Date();
         long milis = date.getTime();
         Calendar calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        ds = new Datasource();
         con = ds.openCon();
 
         try {

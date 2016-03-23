@@ -19,6 +19,12 @@
         </property>  
     </bean>  
     
+    <bean id = "flowLoaderController" class="com.csiro.flower.controller.FlowLoaderController">
+        <property name="datasource" ref="DBCon"/>
+    </bean>
+    
+    <bean id="DBCon" class="com.csiro.flower.controller.Datasource"></bean>
+    
     <mvc:resources mapping="/resources/**" location="/resources/" />
     <mvc:annotation-driven />
 
