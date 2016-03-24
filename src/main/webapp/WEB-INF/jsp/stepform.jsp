@@ -10,7 +10,6 @@
         <!--<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-2.0.0.min.js"></script>-->
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <!--<link rel="stylesheet" href="resources/css/flow_load.css">-->
 
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.smartWizard.js"></script>
@@ -18,22 +17,21 @@
             #sortable { list-style-type: none; margin: 0; float: left; margin-right: 194px; background: #fbfbfb; padding: 10px 0px 10px 20px; width: 257px}
             #sortable li { font-family: Helvetica, Arial, sans-serif; margin: 5px; padding: 5px 5px 15px 10px; font-size: 14px; width: 150px;color: #262626}
             .ui-state-default-start {
-                border: 1px solid #449d44;
+                /*border: 1px solid #449d44;*/
                 background: #99cc00;
                 font-weight: bold;
-                color: white;
                 text-align: center;
             }
 
             .ui-state-default-end {
-                border: 1px solid #a94442;
+                /*border: 1px solid #a94442;*/
                 background: #ce8483;
                 font-weight: bold;
-                color: white;
+                color: #fbfbfb;
                 text-align: center;
             }
             img.icon{
-                width:30px; height:30px;
+                width:20px; height:20px;
             }
 
             #sortable > li > .image{
@@ -42,12 +40,12 @@
                 margin:0px;
             }
             div.first-div{
-                padding-top:3px;
+                padding-top:0px;
                 float: left
             }
             div.second-div{
-                padding-top:7px;
-                padding-left: 35px
+                padding-top:0px;
+                padding-left: 25px
             }
             div.third-div{
                 position: relative
@@ -59,7 +57,7 @@
                 background: #e6e6e6 50% 50% repeat-x;
                 font-weight: normal;
                 color: #555555;
-                height: 49px;
+                height: 32px;
                 width: 205px;
             }
         </style>
@@ -95,9 +93,9 @@
         <div  class="jumbotron_body">
             <div style="float:left" >
                 <ul id="sortable">
-                    <li class="ui-state-default-start" style="color:white;padding: 3px 6.5px 5px 8px">Start</li>
+                    <li class="ui-state-default-start" style="color:#fbfbfb;padding: 3px 6.5px 5px 8px">Analytics Flow</li>
 
-                    <li class="ui-state-default-end" style="color:white;padding: 3px 6.5px 5px 8px">End</li>
+                    <!--<li class="ui-state-default-end" style="color:white;padding: 3px 6.5px 5px 8px">End</li>-->
                 </ul>
             </div>
             <div class="container">
@@ -107,50 +105,50 @@
                     <div id="wizard" class="swMain">
                         <ul>
                             <li><a href="#step-1">
-                                    <label class="stepNumber">1</label>
+                                    <!--<label class="stepNumber">1</label>-->
                                     <span class="stepDesc">
-                                        Step 1<br />
-                                        <small>Step 1 description</small>
+                                        Cloud Settings <br/>
+                                        <small>Step 1</small>
                                     </span>
                                 </a></li>
                             <li><a href="#step-2">
-                                    <label class="stepNumber">2</label>
+                                    <!--<label class="stepNumber">2</label>-->
                                     <span class="stepDesc">
-                                        Step 2<br />
-                                        <small>Step 2 description</small>
+                                        Platform Settings<br />
+                                        <small>Step 2</small>
                                     </span>
                                 </a></li>
                             <li><a href="#step-3">
-                                    <label class="stepNumber">3</label>
+                                    <!--<label class="stepNumber">3</label>-->
                                     <span class="stepDesc">
-                                        Step 3<br />
-                                        <small>Step 3 description</small>
+                                        Service Settings<br />
+                                        <small>Step 3</small>
                                     </span>                   
                                 </a></li>
-                            <li><a href="#step-4">
-                                    <label class="stepNumber">4</label>
-                                    <span class="stepDesc">
-                                        Step 4<br />
-                                        <small>Step 4 description</small>
-                                    </span>                   
-                                </a></li>
+                            <!--                            <li><a href="#step-4">
+                                                                <label class="stepNumber">4</label>
+                                                                <span class="stepDesc">
+                                                                    Step 4<br />
+                                                                    <small>Step 4 description</small>
+                                                                </span>                   
+                                                            </a></li>-->
                         </ul>
                         <div id="step-1">   
-                            <h2 class="StepTitle">Step 1 Content</h2>
+                            <!--<h2 class="StepTitle">Step 1 Content</h2>-->
                             <!-- step content -->
                         </div>
                         <div id="step-2">
-                            <h2 class="StepTitle">Step 2 Content</h2> 
+                            <!--<h2 class="StepTitle">Step 2 Content</h2>--> 
                             <!-- step content -->
                         </div>                      
                         <div id="step-3">
-                            <h2 class="StepTitle">Step 3 Title</h2>   
+                            <!--<h2 class="StepTitle">Step 3 Title</h2>-->   
                             <!-- step content -->
                         </div>
-                        <div id="step-4">
-                            <h2 class="StepTitle">Step 4 Title</h2>   
-                            <!-- step content -->                         
-                        </div>
+                        <!--                        <div id="step-4">
+                                                    <h2 class="StepTitle">Step 4 Title</h2>   
+                                                     step content                          
+                                                </div>-->
                     </div>
 
                 </div>
@@ -159,17 +157,9 @@
 
         <div class="jumbotron2">
             <div class="container">
-                <div class="row">
-                    <div class="col-xs-12 col-md-9 col-lg-5">
-
-                    </div>
-                    <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2">
-                        <a class="btn btn-action" href="#" title="">Cancel</a> 
-
-                        <a class="btn btn-action" href="#" title="">Next</a> 
-
-                    </div>
-
+                <div class="row" style="text-align: center;">
+                    <input type="button" class="btn btn-action" value="Cancel"/>
+                    <input class="btn btn-action" type="submit" form="flow-general-setting" value="Next: Launch Service"/>
                 </div>
             </div>
 
