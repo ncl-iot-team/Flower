@@ -50,7 +50,7 @@ function SmartWizard(target, options) {
                 var s = $(e).attr("id")
                 // if referenced div has no id, add one.
                 if (s==undefined){
-                    s = "step-"+(i+1)
+                    s = "step-"+(i+1);
                     $(e).attr("id",s);
                 }
                 var span = $("<span/>").addClass("stepDesc").text(title);

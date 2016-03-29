@@ -14,7 +14,7 @@
     border: 0 solid #CCC;
     overflow:visible;
     float:left;
-    width:718px;
+    width:755px;
 }
 .swMain .stepContainer {
     display:block;
@@ -44,9 +44,9 @@
     text-align:left;
     overflow:visible;    
     z-index:88; 
-/*    -webkit-border-radius: 5px;
-    -moz-border-radius  : 5px;*/
-    width:617px;
+    /*    -webkit-border-radius: 5px;
+        -moz-border-radius  : 5px;*/
+    width:750px;
     clear:both;
 }
 
@@ -55,7 +55,8 @@
     position: relative; 
     clear:both;
     margin:             3px 0 0 0;   
-    border:             1px solid #CCC;
+    border-bottom:    1px solid #C1E2B3;
+    border-top:    1px solid #C1E2B3;
     padding:            0;    
     color:              #5A5655;   
     background-color:   #F8F8F8;
@@ -63,10 +64,10 @@
     text-align:left;
     overflow:auto;    
     z-index:88; 
-    width: 617px;
+    width: 750px;
 
-/*    -webkit-border-radius: 5px;
-    -moz-border-radius  : 5px;*/
+    /*    -webkit-border-radius: 5px;
+        -moz-border-radius  : 5px;*/
     left:0;
 }
 
@@ -76,14 +77,14 @@
     margin:0;   
     border:1px solid #E0E0E0;
     padding:5px;   
-    font: bold 16px Verdana, Arial, Helvetica, sans-serif; 
+    font: bold 12px Verdana, Arial, Helvetica, sans-serif; 
     color:#5A5655;   
     background-color:#E0E0E0;
     clear:both;
     text-align:left; 
     z-index:88;
-    -webkit-border-radius: 5px;
-    -moz-border-radius  : 5px;    
+/*    -webkit-border-radius: 5px;
+    -moz-border-radius  : 5px;    */
 }
 .swMain ul.anchor {
     position: relative;
@@ -111,12 +112,12 @@
     float:left;
     margin: 5px 0 0 0;
     padding:1px;
-    height:40px;
-    width:200px;
+    height:30px;
+    width:144.5px;
     text-decoration: none;
     outline-style:none;
-/*    -moz-border-radius  : 5px;
-    -webkit-border-radius: 5px;*/
+    /*    -moz-border-radius  : 5px;
+        -webkit-border-radius: 5px;*/
     z-index:99;
 }
 .swMain ul.anchor li a .stepNumber{
@@ -125,17 +126,17 @@
     width:30px;
     text-align: center;
     padding: 0 5px 5px;
-    font: bold 45px Verdana, Arial, Helvetica, sans-serif;
+    font: 12px Verdana, Arial, Helvetica, sans-serif;
 }
 .swMain ul.anchor li a .stepDesc{
     position:relative;
     display:block;
     float:left;
     text-align: left;
-    padding:2px;
-    margin-left: 10px;
+    padding-top: 1px;
+    margin-left: 2px;
 
-    font: bold 15px Verdana, Arial, Helvetica, sans-serif;
+    font: 10px Verdana, Arial, Helvetica, sans-serif;
 }
 .swMain ul.anchor li a .stepDesc small{
     font: normal 12px Verdana, Arial, Helvetica, sans-serif;
@@ -215,7 +216,7 @@
     padding:5px;
     text-decoration: none;
     text-align: center;
-    font: bold 13px Verdana, Arial, Helvetica, sans-serif;
+    font: 12px Verdana, Arial, Helvetica, sans-serif;
     width:100px;
     color:#FFF;
     outline-style:none;
@@ -231,7 +232,7 @@
     padding:5px;
     text-decoration: none;
     text-align: center;
-    font: bold 13px Verdana, Arial, Helvetica, sans-serif;
+    font: 12px Verdana, Arial, Helvetica, sans-serif;
     width:100px;
     color:#FFF;
     outline-style:none;

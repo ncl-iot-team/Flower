@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.csiro.flower.controller;
+package com.csiro.flower.dao;
 
+import com.csiro.flower.dao.I;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author kho01f
  */
-public class Datasource implements IDatasource{
+public class D implements I{
 
     Connection con = null;
     String url = "jdbc:postgresql://localhost:5433/flowerDB";
@@ -30,10 +31,10 @@ public class Datasource implements IDatasource{
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection(url, user, pass);
         } catch (ClassNotFoundException ex) {
-            Logger lgr = Logger.getLogger(Datasource.class.getName());
+            Logger lgr = Logger.getLogger(D.class.getName());
             lgr.log(Level.WARNING, ex.getMessage(), ex);
         } catch (SQLException ex) {
-            Logger lgr = Logger.getLogger(Datasource.class.getName());
+            Logger lgr = Logger.getLogger(D.class.getName());
             lgr.log(Level.WARNING, ex.getMessage(), ex);
         }
         return con;
@@ -52,7 +53,7 @@ public class Datasource implements IDatasource{
                 con.close();
             }
         } catch (SQLException ex) {
-            Logger lgr = Logger.getLogger(Datasource.class.getName());
+            Logger lgr = Logger.getLogger(D.class.getName());
             lgr.log(Level.WARNING, ex.getMessage(), ex);
         }
     }

@@ -5,7 +5,8 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"  
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">  
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">  
   
     <mvc:annotation-driven></mvc:annotation-driven>  
     <context:component-scan base-package="com.csiro.flower.controller"></context:component-scan>  
@@ -19,17 +20,37 @@
         </property>  
     </bean>  
     
-    <bean id = "flowLoaderController" class="com.csiro.flower.controller.FlowLoaderController">
+<!--    <bean id = "flowLoaderController" class="com.csiro.flower.controller.FlowLoaderController">
         <property name="datasource" ref="DBCon"/>
     </bean>
     
     <bean id="DBCon" class="com.csiro.flower.controller.Datasource"></bean>
+    -->
+    
+    <!--    <bean
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+    p:location="db.properties"/> -->
+    
+    <bean id="ds"
+          class="org.springframework.jndi.JndiObjectFactoryBean" >
+        <property name="jndiName" value="java:comp/env/jdbc/flowerDB"/>
+    </bean>
+    
+<!--    <jee:jndi-lookup id="datasource"
+   jndi-name="jdbc/flowerDB"
+   expected-type="javax.sql.DataSource" />-->
+    
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="ds"/>
+    </bean>
+        
+        
+            
     
     <mvc:resources mapping="/resources/**" location="/resources/" />
     <mvc:annotation-driven />
 
     <!-- Tiles configuration -->
- 
     <bean id="tilesConfigurer"
           class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
         <property name="definitions">
