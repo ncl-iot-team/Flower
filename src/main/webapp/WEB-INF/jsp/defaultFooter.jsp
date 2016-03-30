@@ -4,14 +4,17 @@
     Author     : kho01f
 --%>
 <script>
+    $(function(){
     var date = new Date();
     var year = date.getFullYear();
+    $('#year').html(year);
+    });
 </script>
 <footer class="text-center">
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <p>Copyright © <script>document.write(year);</script> Data61, CSIRO.</p>
+                <p>Copyright © <span id="year"></span> Data61, CSIRO.</p>
             </div>
         </div>
     </div>

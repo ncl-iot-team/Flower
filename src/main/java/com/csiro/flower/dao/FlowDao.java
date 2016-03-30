@@ -16,9 +16,11 @@ public interface FlowDao {
 
     public List<Flow> getAll() throws Exception;
 
-    public void save(Flow flow);
+    public int save(Flow flow);
 
     public void delete(int flowId);
 
     public Flow get(int flowId);
+    
+    public void update(Flow flow);
 }

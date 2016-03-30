@@ -45,7 +45,7 @@
             }
             div.second-div{
                 padding-top:0px;
-                padding-left: 25px
+                padding-left: 25px;
             }
             div.third-div{
                 position: relative
@@ -64,11 +64,27 @@
         <script type="text/javascript">
             $(document).ready(function() {
 
-                var title = 'Apache Storm';
-                $('#sortable').children().first().after('<li class=\"ui-state-default-extention\"> <div class="first-div"> <img class="icon" \n\
-                        src="${pageContext.request.contextPath}/resources/img/' + title + '.png" /></div> \n\
-                        <div class="second-div">' + title + '</div></li>');
+                var flow = '${platforms}';
+                var systems = flow.split(",");
+                systems.unshift("Cloud Setting");
+                for (var i = 0; i < systems.length; i++) {
 
+                    if (i > 0) {
+                        $('#sortable').children().last().after('<li class=\"ui-state-default-extention\"> \n\
+                        <div class="first-div"> <img class="icon" \n\
+                        src="${pageContext.request.contextPath}/resources/img/' + systems[i] + '.png" /></div> \n\
+                        <div class="second-div">' + systems[i] + '</div></li>');
+                    }
+
+                    var $wizardRef = $('#wizard ul');
+                    $wizardRef.append('<li><a href=\"#step-' + i + '\"><span class=\"stepDesc\">\n\
+                        ' + (i + 1) + '. ' + systems[i] + '</span></a></li>');
+
+
+
+                    // the order is wrong!
+                    $wizardRef.after('<div id=\"step-' + i + '\"></div>');
+                }
                 // Initialize Smart Wizard
                 $('#wizard').smartWizard();
             });
@@ -82,7 +98,7 @@
         <tiles:insertDefinition name="defaultbar" />
 
         <div class="col-xs-12">
-            <h3><strong style="color: #555">Config</strong></h3>
+            <h3><strong style="color: #555"></strong>Flow Configuration</h3>
             <hr>
             <p>Drag the platforms that constitute your analytics flow from the left canvas and drop it to the right canvas.
                 Next, configure each system as per its current deployment.
@@ -105,70 +121,24 @@
 
                     <div id="wizard" class="swMain">
                         <ul>
-                            <li><a href="#step-1">
-                                    <!--<label class="stepNumber">1</label>-->
-                                    <span class="stepDesc">
-                                        1. Cloud Settings
-                                    </span>
-                                </a></li>
-                            <li><a href="#step-2">
-                                    <!--<label class="stepNumber">2</label>-->
-                                    <span class="stepDesc">
-                                        Platform Settings
-                                    </span>
-                                </a></li>
-                            <li><a href="#step-3">
-                                    <!--<label class="stepNumber">3</label>-->
-                                    <span class="stepDesc">
-                                        Service Settings
-                                    </span>                   
-                                </a></li>
-                            <li><a href="#step-4">
-                                    <span class="stepDesc">
-                                        Step 4
-                                    </span>                   
-                                </a></li>
-                            <li><a href="#step-5">
-                                    <span class="stepDesc">
-                                        1. Step 5
-                                    </span>                   
-                                </a></li>
+
                         </ul>
-                        <div id="step-1">   
-                            <!--<h2 class="StepTitle">Step 1 Content</h2>-->
-                            <!-- step content -->
-                        </div>
-                        <div id="step-2">
-                            <!--<h2 class="StepTitle">Step 2 Content</h2>--> 
-                            <!-- step content -->
-                        </div>                      
-                        <div id="step-3">
-                            <!--<h2 class="StepTitle">Step 3 Title</h2>-->   
-                            <!-- step content -->
-                        </div>
-                        <div id="step-4">
-
-                        </div>
-                        <div id="step-5">
-
-                        </div>
 
                     </div>
                 </div>            
             </div>
-
-            <div class="jumbotron2">
-                <div class="container">
-                    <div class="row" style="text-align: center;">
-                        <input type="button" class="btn btn-action" value="Cancel"/>
-                        <input class="btn btn-action" type="submit" form="flow-general-setting" value="Next: Launch Service"/>
-                    </div>
+        </div>
+        <div class="jumbotron2">
+            <div class="container">
+                <div class="row" style="text-align: center;">
+                    <input type="button" class="btn btn-action" value="Cancel"/>
+                    <input class="btn btn-action" type="submit" form="flow-general-setting" value="Next: Launch Service"/>
                 </div>
-
             </div>
 
-            <tiles:insertDefinition name="defaultfooter" />
+        </div>
 
+        <tiles:insertDefinition name="defaultfooter" />
 
     </body>
 </html>
