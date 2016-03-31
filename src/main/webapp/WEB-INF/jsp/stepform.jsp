@@ -12,55 +12,16 @@
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
+        <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
+
+        <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">-->
+
+
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.smartWizard.js"></script>
-        <style>
-            #sortable { list-style-type: none; margin: 0; float: left; margin-right: 194px; background: #fbfbfb; padding: 10px 0px 10px 20px; width: 257px}
-            #sortable li { font-family: Helvetica, Arial, sans-serif; margin: 5px; padding: 5px 5px 15px 10px; font-size: 14px; width: 150px;color: #262626}
-            .ui-state-default-start {
-                /*border: 1px solid #449d44;*/
-                background: #99cc00;
-                font-weight: bold;
-                text-align: center;
-            }
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/cloudSetting.form.js"></script>
 
-            .ui-state-default-end {
-                /*border: 1px solid #a94442;*/
-                background: #ce8483;
-                font-weight: bold;
-                color: #fbfbfb;
-                text-align: center;
-            }
-            img.icon{
-                width:20px; height:20px;
-            }
 
-            #sortable > li > .image{
-                display:block;
-                float:left;
-                margin:0px;
-            }
-            div.first-div{
-                padding-top:0px;
-                float: left
-            }
-            div.second-div{
-                padding-top:0px;
-                padding-left: 25px;
-            }
-            div.third-div{
-                position: relative
-
-            }
-
-            .ui-state-default-extention {
-                border: 1px solid #d3d3d3;
-                background: #e6e6e6 50% 50% repeat-x;
-                font-weight: normal;
-                color: #555555;
-                height: 32px;
-                width: 205px;
-            }
-        </style>
         <script type="text/javascript">
             $(document).ready(function() {
 
@@ -68,27 +29,34 @@
                 var systems = flow.split(",");
                 systems.unshift("Cloud Setting");
                 for (var i = 0; i < systems.length; i++) {
-
                     if (i > 0) {
                         $('#sortable').children().last().after('<li class=\"ui-state-default-extention\"> \n\
                         <div class="first-div"> <img class="icon" \n\
                         src="${pageContext.request.contextPath}/resources/img/' + systems[i] + '.png" /></div> \n\
                         <div class="second-div">' + systems[i] + '</div></li>');
                     }
-
+                    // j is sued for ordering divs
+                    var j = (systems.length - 1) - i;
                     var $wizardRef = $('#wizard ul');
                     $wizardRef.append('<li><a href=\"#step-' + i + '\"><span class=\"stepDesc\">\n\
                         ' + (i + 1) + '. ' + systems[i] + '</span></a></li>');
-
-
-
-                    // the order is wrong!
-                    $wizardRef.after('<div id=\"step-' + i + '\"></div>');
+                    $wizardRef.after('<div id=\"step-' + j + '\"></div>');
                 }
+
                 // Initialize Smart Wizard
                 $('#wizard').smartWizard();
-            });
+                $('.stepContainer').wrap('<form id="stepForms" action="" method="post"></form>');
+//                $('div[id^="step-"]').last().after('</form>');
+                createCloudSettingForm('#step-0');
+                $("#stepForms").validate({
+                rules: {
+                        accessKey: {
+                            required: true
+                        }
+                    }
+                    });
 
+            });
 
 
         </script>
@@ -110,7 +78,7 @@
         <div  class="jumbotron_body">
             <div style="float:left" >
                 <ul id="sortable">
-                    <li class="ui-state-default-start" style="color:#fbfbfb;padding: 3px 6.5px 5px 8px">Analytics Flow</li>
+                    <li class="ui-state-default-start" style="color:#fbfbfb; padding: 3px 6.5px 5px 8px">Analytics Flow</li>
 
                     <!--<li class="ui-state-default-end" style="color:white;padding: 3px 6.5px 5px 8px">End</li>-->
                 </ul>
@@ -123,6 +91,11 @@
                         <ul>
 
                         </ul>
+                        <!--                        <div id="test" class="form-style-2">
+                                                    <form id="forms" action="" method="post">
+                                                        
+                                                    </form>
+                                                </div>-->
 
                     </div>
                 </div>            
@@ -132,7 +105,7 @@
             <div class="container">
                 <div class="row" style="text-align: center;">
                     <input type="button" class="btn btn-action" value="Cancel"/>
-                    <input class="btn btn-action" type="submit" form="flow-general-setting" value="Next: Launch Service"/>
+                    <input class="btn btn-action" type="submit" id="submit-button" form="flow-general-setting" value="Next: Launch Service"/>
                 </div>
             </div>
 

@@ -58,6 +58,12 @@ public class FlowLoaderController {
         modelAndView.addObject("platforms",flow.getPlatforms());
         return modelAndView;
     }
+    
+    @RequestMapping("/configform")
+    public String viewConfigForm(){
+        return "configform";
+        
+    }
 
 //    public ModelAndView t(@PathVariable Map<String, String> varMap) {
 //        ModelAndView m = new ModelAndView("configform");
