@@ -318,11 +318,9 @@ function SmartWizard(target, options) {
 
     SmartWizard.prototype.goForward = function() {
         
-        
         if (!$('#stepForms').valid()) {
             return false;
         }
-        
         
         var nextStepIdx = this.curStepIdx + 1;
         if (this.steps.length <= nextStepIdx) {

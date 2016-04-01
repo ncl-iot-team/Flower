@@ -7,23 +7,27 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <html><head>
-        <!--<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-2.0.0.min.js"></script>-->
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
         <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
 
-        <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">-->
-
-
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.smartWizard.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/cloudSetting.form.js"></script>
 
+        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid.min.css" />
+        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid-theme.min.css" />
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid.min.js"></script>
 
         <script type="text/javascript">
             $(document).ready(function() {
+
+                jQuery.extend(jQuery.validator.messages, {
+                    required: "Required."
+                });
 
                 var flow = '${platforms}';
                 var systems = flow.split(",");
@@ -46,16 +50,22 @@
                 // Initialize Smart Wizard
                 $('#wizard').smartWizard();
                 $('.stepContainer').wrap('<form id="stepForms" action="" method="post"></form>');
-//                $('div[id^="step-"]').last().after('</form>');
-                createCloudSettingForm('#step-0');
-                $("#stepForms").validate({
-                rules: {
-                        accessKey: {
-                            required: true
-                        }
-                    }
-                    });
 
+//                createCloudSettingForm('#step-0');
+                createKinesisCtrlForm('#step-0');
+
+
+                $("#stepForms").validate({
+                    errorPlacement: function(error, element) {
+                        error.addClass('arrow');
+                        error.insertAfter(element);
+                    },
+                    rules: {
+                        accessKey: "required",
+                        secretKey: "required",
+                        cloudProviderCat: "required",
+                        cloudProviderSubcatat: "required"
+                    }});
             });
 
 
@@ -96,7 +106,6 @@
                                                         
                                                     </form>
                                                 </div>-->
-
                     </div>
                 </div>            
             </div>
