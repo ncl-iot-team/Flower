@@ -26,7 +26,8 @@ and open the template in the editor.
     margin: 0px 0px 15px 0px;
 }
 .form-style-2 label > span{
-    width: 110px;
+    /*width: 110px;*/
+    width: 133px;
     font-weight: normal;
     float: left;
     padding-top: 8px;
@@ -43,6 +44,10 @@ and open the template in the editor.
     width: 35%;
     font-weight: normal;
 }
+
+/*input.input-field-ctrls{
+    width: 100px;
+}*/
 
 label.error {
     color: #ff3300;
@@ -129,36 +134,36 @@ table {
 table th {
         text-align: center;
 	padding:8px 17px 5px;
-	border-top:1px solid #e0e0e0;
-	border-bottom:1px solid #e0e0e0;
+	border:1px solid #e0e0e0;
+	/*border-bottom:1px solid #e0e0e0;*/
 
 	background: #ededed;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
 	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
 }
-table th:first-child {
+/*table th:first-child {
 	text-align: center;
-	/*padding-left:20px;*/
-}
-table tr:first-child th:first-child {
+	padding-left:20px;
+}*/
+/*table tr:first-child th:first-child {
 	-moz-border-radius-topleft:3px;
 	-webkit-border-top-left-radius:3px;
 	border-top-left-radius:3px;
-}
-table tr:first-child th:last-child {
+}*/
+/*table tr:first-child th:last-child {
 	-moz-border-radius-topright:3px;
 	-webkit-border-top-right-radius:3px;
 	border-top-right-radius:3px;
-}
+}*/
 table tr {
 	text-align: center;
 	padding-left:20px;
 }
-table td:first-child {
+/*table td:first-child {
 	text-align: center;
-	/*padding-left:10px;*/
+	padding-left:10px;
 	border-left: 0;
-}
+}*/
 table td {
 	padding:5px;
 	border-top: 1px solid #ffffff;
@@ -174,10 +179,27 @@ table tr.even td {
 	background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6));
 	background: -moz-linear-gradient(top,  #f8f8f8,  #f6f6f6);
 }
-table tr:last-child td {
-	border-bottom:0;
+table td:last-child {
+	width: 5px;  
 }
-table tr:last-child td:first-child {
+
+table td:nth-child(5){
+	width: 5%;
+}
+table td:nth-child(4){
+	width: 20%;
+}
+table td:nth-child(3){
+	width: 20%;
+}
+
+img.bin{
+    position: relative;
+    content:url("../img/bin.png");
+    width:17px; 
+    height:17px;
+}
+/*table tr:last-child td:first-child {
 	-moz-border-radius-bottomleft:3px;
 	-webkit-border-bottom-left-radius:3px;
 	border-bottom-left-radius:3px;
@@ -186,7 +208,7 @@ table tr:last-child td:last-child {
 	-moz-border-radius-bottomright:3px;
 	-webkit-border-bottom-right-radius:3px;
 	border-bottom-right-radius:3px;
-}
+}*/
 
 
 

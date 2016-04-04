@@ -50,7 +50,7 @@
     clear:both;
 }
 
-.swMain div.actionBar {
+div.actionBar {
     display:block;
     position: relative; 
     clear:both;
@@ -203,7 +203,7 @@
     -moz-border-radius  : 2px; 
     -webkit-border-radius: 2px;    
 }
-.swMain .buttonDisabled {
+.buttonDisabled {
     color:#F8F8F8  !important;
     background-color: #CCCCCC !important;
     border: 1px solid #CCCCCC  !important;

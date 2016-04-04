@@ -17,13 +17,15 @@ function SmartWizard(target, options) {
     this.curStepIdx = options.selected;
     this.steps = $(target).children("ul").children("li").children("a"); // Get all anchors
     this.contentWidth = 0;
-    this.msgBox = $('<div class="msgBox"><div class="content"></div><a href="#" class="close">X</a></div>');
+//    this.msgBox = $('<div class="msgBox"><div class="content"></div>');
+//    <a href="#" class="close">X</a></div>
     this.elmStepContainer = $('<div></div>').addClass("stepContainer");
     this.loader = $('<div>Loading</div>').addClass("loader");
     this.buttons = {
-        next: $('<a>' + options.labelNext + '</a>').attr("href", "#").addClass("buttonNext"),
-        previous: $('<a>' + options.labelPrevious + '</a>').attr("href", "#").addClass("buttonPrevious"),
-        finish: $('<a>' + options.labelFinish + '</a>').attr("href", "#").addClass("buttonFinish")
+        cancel: $('<input type="button" value="' + options.labelCancel + '" />').attr("href", "#").addClass("btn btn-action"),
+        next: $('<input type="button" value="' + options.labelNext + '" />').attr("href", "#").addClass("btn btn-action"),
+        previous: $('<input type="button" value="' + options.labelPrevious + '" />').attr("href", "#").addClass("btn btn-action"),
+        finish: $('<input type="button" value="' + options.labelFinish + '" />').attr("href", "#").addClass("btn btn-action")
     };
 
     /*
@@ -31,7 +33,8 @@ function SmartWizard(target, options) {
      */
 
     var _init = function($this) {
-        var elmActionBar = $('<div></div>').addClass("actionBar");
+//        var elmActionBar = $('<div></div>').addClass("actionBar");
+        var elmActionBar = $('<div></div>').addClass('row').attr('style', 'text-align: center');
         elmActionBar.append($this.msgBox);
         $('.close', $this.msgBox).click(function() {
             $this.msgBox.fadeOut("normal");
@@ -71,16 +74,17 @@ function SmartWizard(target, options) {
         }
 
         $this.elmStepContainer.append(allDivs);
-        elmActionBar.append($this.loader);
+//        elmActionBar.append($this.loader);
         $this.target.append($this.elmStepContainer);
 
+
+        elmActionBar.append($this.buttons.cancel)
+        elmActionBar.append($this.buttons.previous)
+                .append($this.buttons.next);
         if ($this.options.includeFinishButton) {
             elmActionBar.append($this.buttons.finish)
         }
-
-        elmActionBar.append($this.buttons.next)
-                .append($this.buttons.previous);
-        $this.target.append(elmActionBar);
+        $('#buttonContainer').append(elmActionBar);
         this.contentWidth = $this.elmStepContainer.width();
 
         $($this.buttons.next).click(function() {
@@ -317,11 +321,11 @@ function SmartWizard(target, options) {
      */
 
     SmartWizard.prototype.goForward = function() {
-        
+
         if (!$('#stepForms').valid()) {
             return false;
         }
-        
+
         var nextStepIdx = this.curStepIdx + 1;
         if (this.steps.length <= nextStepIdx) {
             if (!this.options.cycleSteps) {
@@ -441,7 +445,6 @@ function SmartWizard(target, options) {
 
 
 (function($) {
-
     $.fn.smartWizard = function(method) {
         var args = arguments;
         var rv = undefined;
@@ -481,9 +484,10 @@ function SmartWizard(target, options) {
         enableFinishButton: false, // make finish button enabled always
         hideButtonsOnDisabled: false, // when the previous/next/finish buttons are disabled, hide them instead?
         errorSteps: [], // Array Steps with errors
+        labelCancel: 'Cancel',
         labelNext: 'Next',
         labelPrevious: 'Previous',
-        labelFinish: 'Finish',
+        labelFinish: 'Launch Service',
         noForwardJumping: false,
         ajaxType: "POST",
         onLeaveStep: null, // triggers when leaving a step

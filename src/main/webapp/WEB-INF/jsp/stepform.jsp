@@ -26,8 +26,10 @@
             $(document).ready(function() {
 
                 jQuery.extend(jQuery.validator.messages, {
-                    required: "Required."
+                    required: ""
                 });
+
+                $('#submit-button').prop('disabled', true).css("cursor","default");
 
                 var flow = '${platforms}';
                 var systems = flow.split(",");
@@ -51,8 +53,28 @@
                 $('#wizard').smartWizard();
                 $('.stepContainer').wrap('<form id="stepForms" action="" method="post"></form>');
 
+                for (var i = 0; i < systems.length; i++) {
+                    switch (systems[i]) {
+                        case 'Cloud Setting':
+                            createCloudSettingForm('#step-' + i);
+                            break;
+                        case 'Apache Storm':
+                            createStormCtrlForm('#step-' + i);
+                            break;
+                        case 'Amazon Kinesis':
+                            createKinesisCtrlForm('#step-' + i);
+                            break;
+                        case 'DynamoDB':
+                            createDynamoCtrlForm('#step-' + i);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
 //                createCloudSettingForm('#step-0');
-                createKinesisCtrlForm('#step-0');
+//                createKinesisCtrlForm('#step-0');
+//                createDynamoCtrlForm('#step-0');
 
 
                 $("#stepForms").validate({
@@ -64,8 +86,22 @@
                         accessKey: "required",
                         secretKey: "required",
                         cloudProviderCat: "required",
-                        cloudProviderSubcatat: "required"
+                        cloudProviderSubcatat: "required",
+                        tblMeasure: "required",
+                        tblRef: "required",
+                        strMeasure: "required",
+                        strRef: "required",
+                        stormMeasurment: "required",
+                        stormRef: "required",
+                        topologyList: "required",
+                        nimbusIP: "required",
+                        zookeeper: "required"
                     }});
+
+
+                $(".bin").on('click', function(e) {
+                    $(e.target).parents('tr').remove();
+                });
             });
 
 
@@ -90,32 +126,23 @@
                 <ul id="sortable">
                     <li class="ui-state-default-start" style="color:#fbfbfb; padding: 3px 6.5px 5px 8px">Analytics Flow</li>
 
-                    <!--<li class="ui-state-default-end" style="color:white;padding: 3px 6.5px 5px 8px">End</li>-->
                 </ul>
             </div>
             <div class="container">
 
-                <div class="row">
+                <div class="row" >
 
                     <div id="wizard" class="swMain">
                         <ul>
 
                         </ul>
-                        <!--                        <div id="test" class="form-style-2">
-                                                    <form id="forms" action="" method="post">
-                                                        
-                                                    </form>
-                                                </div>-->
+          
                     </div>
                 </div>            
             </div>
         </div>
         <div class="jumbotron2">
-            <div class="container">
-                <div class="row" style="text-align: center;">
-                    <input type="button" class="btn btn-action" value="Cancel"/>
-                    <input class="btn btn-action" type="submit" id="submit-button" form="flow-general-setting" value="Next: Launch Service"/>
-                </div>
+            <div id="buttonContainer" class="container">
             </div>
 
         </div>
