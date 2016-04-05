@@ -79,12 +79,11 @@ function createCloudSettingForm(divLoc) {
         <option value="Microsoft">Microsoft Azure</option></select>\n\
         </label><label for="field3">\n\
         <span>Region <span class="required">*</span></span>\n\
-        <select id="-subcats" class="select-field" name="cloudProviderSubcatat"/></label>\n\
-        </select>\n\
+        <select id="-subcats" class="select-field" name="region"> </select></label>\n\
         <label for="field4"><span>Access Key <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="accessKey"/>\n\
         </label><label for="field5"><span>Secret Key<span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="secretKey" value=""/>\n\
+        <input type="password" class="input-field" name="secretKey" value=""/>\n\
         </label><label></label></div>');
 
     setLinkedSubCategory();

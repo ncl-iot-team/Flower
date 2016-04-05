@@ -103,7 +103,7 @@ function SmartWizard(target, options) {
                         return false;
                     }
                 } else {
-                    var frm = $this.target.parents('form');
+                    var frm = $('#stepForms');
                     if (frm && frm.length) {
                         frm.submit();
                     }

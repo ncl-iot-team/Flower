@@ -6,7 +6,9 @@
 package com.csiro.flower.controller;
 
 //import java.util.Map;
+import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.FlowDao;
+import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.Flow;
 import java.util.Date;
 import java.sql.Timestamp;
@@ -29,14 +31,16 @@ import org.springframework.web.servlet.ModelAndView;
 public class FlowLoaderController {
 
     @Autowired
-    FlowDao dao;
+    FlowDao flowDao;
+    @Autowired
+    CloudSettingDao cloudSettingDao;
 
     @RequestMapping("/flowload")
     public String viewFlowLoadPage() {
-        return "flowload";
+        return "flowLoad";
     }
 
-    @RequestMapping(value = "/submitFlowFormSetting", method = {RequestMethod.POST})
+    @RequestMapping(value = "/submitFlowSettingForm", method = {RequestMethod.POST})
     public String submitFlowSetting(@RequestParam Map<String, String> reqPar) {
 
         Flow flow = new Flow();
@@ -46,24 +50,46 @@ public class FlowLoaderController {
         Date date = new Date();
         long milis = date.getTime();
         flow.setCreationDate(new Timestamp(milis));
-        int flowId = dao.save(flow);
+        int flowId = flowDao.save(flow);
 
         return "redirect:stepform/" + flowId;
     }
 
     @RequestMapping(value = "/stepform/{id}", method = {RequestMethod.GET})
     public ModelAndView viewStepFormPage(@PathVariable("id") int flowId) {
-        Flow flow = dao.get(flowId);
-        ModelAndView modelAndView = new ModelAndView("stepform");
-        modelAndView.addObject("platforms",flow.getPlatforms());
+        Flow flow = flowDao.get(flowId);
+        ModelAndView modelAndView = new ModelAndView("stepForm");
+        modelAndView.addObject("platforms", flow.getPlatforms());
+        modelAndView.addObject("flow_Id", flowId);
         return modelAndView;
     }
-    
+
     @RequestMapping("/configform")
-    public String viewConfigForm(){
-        return "configform";
-        
+    public String viewConfigForm() {
+        return "configForm";
     }
+
+    @RequestMapping(value = "stepform/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
+    public String submitFlowCtrlSetting(@RequestParam Map<String, String> reqPar) {
+
+        CloudSetting cloudSetting = new CloudSetting();
+        int flowId = Integer.parseInt(reqPar.get("flowId"));
+        cloudSetting.setFlowIdFk(flowId);
+        cloudSetting.setCloudProvider(reqPar.get("cloudProviderCat"));
+        cloudSetting.setAccessKey(reqPar.get("accessKey"));
+        cloudSetting.setSecretKey(reqPar.get("secretKey"));
+        cloudSetting.setRegion(reqPar.get("region"));
+        cloudSettingDao.save(cloudSetting);
+
+        return "redirect:flowCtrlService/" + flowId;
+    }
+    
+    @RequestMapping(value = "stepform/flowCtrlService/{id}", method = {RequestMethod.GET})
+    public String viewFlowCtrlServicePage(){
+        return "flowCtrlServicePage";
+    }
+    
+    
 
 //    public ModelAndView t(@PathVariable Map<String, String> varMap) {
 //        ModelAndView m = new ModelAndView("configform");
