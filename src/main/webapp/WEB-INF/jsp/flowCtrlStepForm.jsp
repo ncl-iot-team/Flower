@@ -51,7 +51,8 @@
 
                 // Initialize Smart Wizard
                 $('#wizard').smartWizard();
-                $('.stepContainer').wrap('<form id="stepForms" action="" method="post"></form>');
+                $('.stepContainer').wrap('<form id="stepForms" action="submitFlowCtrlSettingForm" method="post"> \n\
+                                         <input type="hidden" name="flowId" value="${flow_Id}"></form>');
 
                 for (var i = 0; i < systems.length; i++) {
                     switch (systems[i]) {
@@ -71,10 +72,6 @@
                             break;
                     }
                 }
-
-//                createCloudSettingForm('#step-0');
-//                createKinesisCtrlForm('#step-0');
-//                createDynamoCtrlForm('#step-0');
 
 
                 $("#stepForms").validate({
@@ -102,6 +99,7 @@
                 $(".bin").on('click', function(e) {
                     $(e.target).parents('tr').remove();
                 });
+                
             });
 
 
@@ -114,8 +112,7 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555"></strong>Flow Configuration</h3>
             <hr>
-            <p>Drag the platforms that constitute your analytics flow from the left canvas and drop it to the right canvas.
-                Next, configure each system as per its current deployment.
+            <p>Placeholder
             </p>
             <br>
         </div>
