@@ -362,7 +362,7 @@
                 <div class="row">   
                     <h5><strong style="color: #555">Analytics Flow settings</strong></h5>
                     <hr style="width:85%;" align="left">
-                    <form id="flow-general-setting" action="submitFlowFormSetting" method="post">
+                    <form id="flow-general-setting" action="submitFlowSettingForm" method="post">
                         <fieldset>
                             <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
                                 <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/></div>
