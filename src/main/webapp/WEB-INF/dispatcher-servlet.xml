@@ -13,6 +13,8 @@
     <context:component-scan base-package="com.csiro.flower.controller"/> 
     <context:component-scan base-package="com.csiro.flower.dao" />
     <context:component-scan base-package="com.csiro.flower.model" />
+    <context:component-scan base-package="com.csiro.flower.service" />
+
   
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
         <property name="prefix">  

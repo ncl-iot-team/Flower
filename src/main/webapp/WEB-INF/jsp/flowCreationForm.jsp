@@ -367,12 +367,12 @@
                             <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
                                 <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/></div>
                             <div style="float:left; margin-left: 50px"><label class="conf">Flow Owner*</label>
-                                <select name="owner" id="flow-owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
+                                <select name="flowOwner" id="flow-owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
                                     <option value=""></option>
                                     <option value="currentUser">Current User</option>
                                 </select>
                             </div>
-                            <input type="hidden" name="systems" id="hiddenListInput" />
+                            <input type="hidden" name="platforms" id="hiddenListInput" />
                         </fieldset>
                     </form>
 

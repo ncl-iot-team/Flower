@@ -52,7 +52,7 @@
                 // Initialize Smart Wizard
                 $('#wizard').smartWizard();
                 $('.stepContainer').wrap('<form id="stepForms" action="submitFlowCtrlSettingForm" method="post"> \n\
-                                         <input type="hidden" name="flowId" value="${flow_Id}"></form>');
+                                         <input type="hidden" name="cloudSetting.flowIdFk" value="${flowId}"></form>');
 
                 for (var i = 0; i < systems.length; i++) {
                     switch (systems[i]) {
@@ -80,10 +80,10 @@
                         error.insertAfter(element);
                     },
                     rules: {
-                        accessKey: "required",
-                        secretKey: "required",
-                        cloudProviderCat: "required",
-                        cloudProviderSubcatat: "required",
+                        "cloudSetting.accessKey": "required",
+                        "cloudSetting.secretKey": "required",
+                        "cloudSetting.cloudProvider": "required",
+                        "cloudSetting.region": "required",
                         tblMeasure: "required",
                         tblRef: "required",
                         strMeasure: "required",

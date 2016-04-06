@@ -10,11 +10,14 @@ import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.FlowDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.Flow;
+import com.csiro.flower.model.FlowDetailSetting;
+import com.csiro.flower.service.FlowCtrlsService;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,64 +35,52 @@ public class FlowLoaderController {
 
     @Autowired
     FlowDao flowDao;
-    @Autowired
-    CloudSettingDao cloudSettingDao;
 
-    @RequestMapping("/flowload")
+    @Autowired
+    FlowCtrlsService flowCtrlsService;
+
+    @RequestMapping("/flowCreationForm")
     public String viewFlowLoadPage() {
-        return "flowLoad";
+        return "flowCreationForm";
     }
 
     @RequestMapping(value = "/submitFlowSettingForm", method = {RequestMethod.POST})
-    public String submitFlowSetting(@RequestParam Map<String, String> reqPar) {
+    public String submitFlowSetting(@ModelAttribute Flow flow) {
 
-        Flow flow = new Flow();
-        flow.setFlowName(reqPar.get("flowName"));
-        flow.setFlowOwner(reqPar.get("owner"));
-        flow.setPlatforms(reqPar.get("systems"));
         Date date = new Date();
         long milis = date.getTime();
         flow.setCreationDate(new Timestamp(milis));
         int flowId = flowDao.save(flow);
 
-        return "redirect:stepform/" + flowId;
+        return "redirect:flowCtrlStepForm/" + flowId;
     }
 
-    @RequestMapping(value = "/stepform/{id}", method = {RequestMethod.GET})
+    @RequestMapping(value = "/flowCtrlStepForm/{id}", method = {RequestMethod.GET})
     public ModelAndView viewStepFormPage(@PathVariable("id") int flowId) {
         Flow flow = flowDao.get(flowId);
-        ModelAndView modelAndView = new ModelAndView("stepForm");
+        ModelAndView modelAndView = new ModelAndView("flowCtrlStepForm");
         modelAndView.addObject("platforms", flow.getPlatforms());
-        modelAndView.addObject("flow_Id", flowId);
+        modelAndView.addObject("flowId", flowId);
         return modelAndView;
     }
 
-    @RequestMapping("/configform")
+    @RequestMapping("/configTestForm")
     public String viewConfigForm() {
-        return "configForm";
+        return "configTestForm";
     }
 
-    @RequestMapping(value = "stepform/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
-    public String submitFlowCtrlSetting(@RequestParam Map<String, String> reqPar) {
+    @RequestMapping(value = "flowCtrlStepForm/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
+    public String submitFlowCtrlSetting(@ModelAttribute FlowDetailSetting flowSetting) {
+        String [] s = null;
+        flowCtrlsService.saveFlowControllerSettings(s, flowSetting);
 
-        CloudSetting cloudSetting = new CloudSetting();
-        int flowId = Integer.parseInt(reqPar.get("flowId"));
-        cloudSetting.setFlowIdFk(flowId);
-        cloudSetting.setCloudProvider(reqPar.get("cloudProviderCat"));
-        cloudSetting.setAccessKey(reqPar.get("accessKey"));
-        cloudSetting.setSecretKey(reqPar.get("secretKey"));
-        cloudSetting.setRegion(reqPar.get("region"));
-        cloudSettingDao.save(cloudSetting);
-
-        return "redirect:flowCtrlService/" + flowId;
+        return "redirect:/";// + flowId;
     }
-    
-    @RequestMapping(value = "stepform/flowCtrlService/{id}", method = {RequestMethod.GET})
-    public String viewFlowCtrlServicePage(){
+
+    @RequestMapping(value = "flowCtrlStepForm/flowCtrlService/{id}", method = {RequestMethod.GET})
+    public String viewFlowCtrlServicePage() {
         return "flowCtrlServicePage";
     }
-    
-    
 
 //    public ModelAndView t(@PathVariable Map<String, String> varMap) {
 //        ModelAndView m = new ModelAndView("configform");

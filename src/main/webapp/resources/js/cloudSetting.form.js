@@ -11,7 +11,7 @@ function createDynamoCtrlForm(divLoc) {
         <div class="form-style-2-heading">DynamoDB controller setting</div> \n\
         <table><thead>\n\
         <tr><th>Table Name</th><th>Measurement Target <span class="required">*</span></th> <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
-         <tr> <td>Test Table</td><td>\n\
+         <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" readonly=true value="Sample"></td><td>\n\
         <select id="dynamoCat" name="tblMeasure" class="select-field">\n\
         <option value=""></option> \n\
         <option value="Write">Write Capacity</option>\n\
@@ -72,18 +72,18 @@ function createCloudSettingForm(divLoc) {
         <div class="form-style-2-heading">Cloud hosting information</div> \n\
         <label for="field1">\n\
         <span>Cloud Provider <span class="required">*</span></span></label>\n\
-        <label for="field2"><select id="-categories" name="cloudProviderCat" class="select-field">\n\
+        <label for="field2"><select id="-categories" name="cloudSetting.cloudProvider" class="select-field">\n\
         <option value=""></option> \n\
         <option value="Amazon">Amazon Cloud Services</option>\n\
         <option value="Google">Google Cloud Platform</option>\n\
         <option value="Microsoft">Microsoft Azure</option></select>\n\
         </label><label for="field3">\n\
         <span>Region <span class="required">*</span></span>\n\
-        <select id="-subcats" class="select-field" name="region"> </select></label>\n\
+        <select id="-subcats" class="select-field" name="cloudSetting.region"> </select></label>\n\
         <label for="field4"><span>Access Key <span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="accessKey"/>\n\
+        <input type="text" class="input-field" name="cloudSetting.accessKey"/>\n\
         </label><label for="field5"><span>Secret Key<span class="required">*</span></span>\n\
-        <input type="password" class="input-field" name="secretKey" value=""/>\n\
+        <input type="password" class="input-field" name="cloudSetting.secretKey" value=""/>\n\
         </label><label></label></div>');
 
     setLinkedSubCategory();
