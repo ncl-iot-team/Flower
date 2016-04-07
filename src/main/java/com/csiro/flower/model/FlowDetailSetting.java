@@ -13,6 +13,11 @@ package com.csiro.flower.model;
 public class FlowDetailSetting {
     
     private CloudSetting cloudSetting;
+    private StormCluster stormCluster;
+    private StormCtrl stormCtrl;
+    private DynamoCtrl dynamoCtrl;
+    private KinesisCtrl kinesisCtrl;
+    
 
     public CloudSetting getCloudSetting() {
         return cloudSetting;
@@ -20,6 +25,38 @@ public class FlowDetailSetting {
 
     public void setCloudSetting(CloudSetting cloudSetting) {
         this.cloudSetting = cloudSetting;
+    }
+
+    public StormCluster getStormCluster() {
+        return stormCluster;
+    }
+
+    public void setStormCluster(StormCluster stormCluster) {
+        this.stormCluster = stormCluster;
+    }
+
+    public StormCtrl getStormCtrl() {
+        return stormCtrl;
+    }
+
+    public void setStormCtrl(StormCtrl stormCtrl) {
+        this.stormCtrl = stormCtrl;
+    }
+
+    public DynamoCtrl getDynamoCtrl() {
+        return dynamoCtrl;
+    }
+
+    public void setDynamoCtrl(DynamoCtrl dynamoCtrl) {
+        this.dynamoCtrl = dynamoCtrl;
+    }
+
+    public KinesisCtrl getKinesisCtrl() {
+        return kinesisCtrl;
+    }
+
+    public void setKinesisCtrl(KinesisCtrl kinesisCtrl) {
+        this.kinesisCtrl = kinesisCtrl;
     }
 
 }

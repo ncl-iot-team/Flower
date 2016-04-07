@@ -47,7 +47,7 @@ public class CloudSettingDaoImpl implements CloudSettingDao {
 
     @Override
     public CloudSetting get(int flowId) {
-        String sqlSelect = "SELECT * FROM cloud_setting_tbl WHERE flow_id=" + flowId;
+        String sqlSelect = "SELECT * FROM cloud_setting_tbl WHERE flow_id_fk=" + flowId;
         return jdbcTemplate.queryForObject(sqlSelect, new RowMapper<CloudSetting>(){
             @Override
             public CloudSetting mapRow(ResultSet result, int rowNum) throws SQLException{

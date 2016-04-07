@@ -29,7 +29,7 @@
                     required: ""
                 });
 
-                $('#submit-button').prop('disabled', true).css("cursor","default");
+                $('#submit-button').prop('disabled', true).css("cursor", "default");
 
                 var flow = '${platforms}';
                 var systems = flow.split(",");
@@ -51,28 +51,32 @@
 
                 // Initialize Smart Wizard
                 $('#wizard').smartWizard();
-                $('.stepContainer').wrap('<form id="stepForms" action="submitFlowCtrlSettingForm" method="post"> \n\
-                                         <input type="hidden" name="cloudSetting.flowIdFk" value="${flowId}"></form>');
+                $('.stepContainer').wrap('<form id="stepForms" action="submitFlowCtrlSettingForm" method="post">');
 
                 for (var i = 0; i < systems.length; i++) {
                     switch (systems[i]) {
                         case 'Cloud Setting':
                             createCloudSettingForm('#step-' + i);
+                            $('#step-' + i).append('<input type="hidden" name="cloudSetting.flowIdFk" value="${flowId}"></form>');
+                            $('#step-' + i).append('<input type="hidden" name="platforms" value="${platforms}"></form>');
                             break;
                         case 'Apache Storm':
                             createStormCtrlForm('#step-' + i);
+                            $('#step-' + i).append('<input type="hidden" name="StormCluster.flowIdFk" value="${flowId}"></form>');
+                            $('#step-' + i).append('<input type="hidden" name="StormCtrl.flowIdFk" value="${flowId}"></form>');
                             break;
                         case 'Amazon Kinesis':
                             createKinesisCtrlForm('#step-' + i);
+                            $('#step-' + i).append('<input type="hidden" name="kinesisCtrl.flowIdFk" value="${flowId}"></form>');
                             break;
                         case 'DynamoDB':
                             createDynamoCtrlForm('#step-' + i);
+                            $('#step-' + i).append('<input type="hidden" name="dynamoCtrl.flowIdFk" value="${flowId}"></form>');
                             break;
                         default:
                             break;
                     }
                 }
-
 
                 $("#stepForms").validate({
                     errorPlacement: function(error, element) {
@@ -99,7 +103,7 @@
                 $(".bin").on('click', function(e) {
                     $(e.target).parents('tr').remove();
                 });
-                
+
             });
 
 
@@ -133,7 +137,7 @@
                         <ul>
 
                         </ul>
-          
+
                     </div>
                 </div>            
             </div>

@@ -14,6 +14,7 @@ public class StormCluster {
     private String nimbusIp;
     private String zookeeperEndpoint;
     private int flowIdFk;
+    private String supervisorPrefix;
 
     public int getFlowIdFk() {
         return flowIdFk;
@@ -38,6 +39,14 @@ public class StormCluster {
 
     public void setZookeeperEndpoint(String zookeeperEndpoint) {
         this.zookeeperEndpoint = zookeeperEndpoint;
+    }
+
+    public String getSupervisorPrefix() {
+        return supervisorPrefix;
+    }
+
+    public void setSupervisorPrefix(String supervisorPrefix) {
+        this.supervisorPrefix = supervisorPrefix;
     }
 
 }

@@ -6,15 +6,12 @@
 package com.csiro.flower.controller;
 
 //import java.util.Map;
-import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.FlowDao;
-import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.service.FlowCtrlsService;
 import java.util.Date;
 import java.sql.Timestamp;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -69,25 +66,16 @@ public class FlowLoaderController {
         return "configTestForm";
     }
 
-    @RequestMapping(value = "flowCtrlStepForm/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
-    public String submitFlowCtrlSetting(@ModelAttribute FlowDetailSetting flowSetting) {
-        String [] s = null;
-        flowCtrlsService.saveFlowControllerSettings(s, flowSetting);
+    @RequestMapping(value = "/flowCtrlStepForm/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
+    public String submitFlowCtrlSetting(@ModelAttribute FlowDetailSetting flowSetting, @RequestParam("platforms") String platforms) {
+        flowCtrlsService.saveFlowControllerSettings(platforms.split(","), flowSetting);
 
         return "redirect:/";// + flowId;
     }
 
-    @RequestMapping(value = "flowCtrlStepForm/flowCtrlService/{id}", method = {RequestMethod.GET})
-    public String viewFlowCtrlServicePage() {
-        return "flowCtrlServicePage";
-    }
-
-//    public ModelAndView t(@PathVariable Map<String, String> varMap) {
-//        ModelAndView m = new ModelAndView("configform");
-//        String fname = varMap.get("ali");
-//        String lname = varMap.get("reza");
-//
-//        m.addObject("msg", "hello" + fname + lname);
-//        return m;
+//    @RequestMapping(value = "/flowCtrlStepForm/flowCtrlService/{id}", method = {RequestMethod.GET})
+//    public String viewFlowCtrlServicePage() {
+//        return "flowCtrlServicePage";
 //    }
+
 }

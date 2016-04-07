@@ -14,8 +14,8 @@ public class StormCtrl {
     private String measurementTarget;
     private String targetTopology;
     private int refValue;
-    private int monitoringPeriod;
-    private int backoffNo;
+    private int monitoringPeriod = 5;
+    private int backoffNo = 0;
     private int flowIdFk;
 
     public String getMeasurementTarget() {

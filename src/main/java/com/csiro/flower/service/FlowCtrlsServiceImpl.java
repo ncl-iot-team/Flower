@@ -31,17 +31,18 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
     @Autowired
     CloudSettingDao cloudSettingDao;
 
-//    @Autowired
-//    DynamoCtrlDao dynamoCtrlDao;
-//
-//    @Autowired
-//    KinesisCtrlDao kinesisCtrlDao;
-//
-//    @Autowired
-//    StormClusterDao stormClusterDao;
-//
-//    @Autowired
-//    StormCtrlDao stormCtrlDao;
+    @Autowired
+    DynamoCtrlDao dynamoCtrlDao;
+
+    @Autowired
+    KinesisCtrlDao kinesisCtrlDao;
+
+    @Autowired
+    StormClusterDao stormClusterDao;
+
+    @Autowired
+    StormCtrlDao stormCtrlDao;
+
     @Override
     public void runFlowController(int flowId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -50,8 +51,8 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
     @Override
 //    @Transactional
     public void saveFlowControllerSettings(String[] platforms, FlowDetailSetting flowSetting) {
-//        int flowId = Integer.parseInt(paramSettings.get("flowId"));
-//        for (String platform : platforms) {
+        cloudSettingDao.save(flowSetting.getCloudSetting());
+        for (String platform : platforms) {
 //            if (platform.equals("Cloud Setting")) {
 //                CloudSetting cloudSetting = new CloudSetting();
 //                cloudSetting.setFlowIdFk(flowId);
@@ -59,9 +60,8 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
 //                cloudSetting.setAccessKey(paramSettings.get("accessKey"));
 //                cloudSetting.setSecretKey(paramSettings.get("secretKey"));
 //                cloudSetting.setRegion(paramSettings.get("region"));
-        cloudSettingDao.save(flowSetting.getCloudSetting());
 //            }
-//            if (platform.equals("Apache Storm")) {
+            if (platform.equals("Apache Storm")) {
 //
 //                StormCluster stormCluster = new StormCluster();
 //                stormCluster.setFlowIdFk(flowId);
@@ -77,22 +77,26 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
 //                stormCtrl.setMonitoringPeriod(Integer.parseInt(paramSettings.get("stormMonitoring")));
 //                stormCtrl.setBackoffNo(Integer.parseInt(paramSettings.get("stormBackoff")));
 //                stormCtrlDao.save(stormCtrl);
+                stormClusterDao.save(flowSetting.getStormCluster());
+                stormCtrlDao.save(flowSetting.getStormCtrl());
 //
-//            }
-//            if (platform.equals("DynamoDB")) {
+            }
+            if (platform.equals("DynamoDB")) {
 //                DynamoCtrl dynamoCtrl = new DynamoCtrl();
 //                dynamoCtrl.setFlowIdFk(flowId);
 //                dynamoCtrl.setMeasurementTarget("");
-//            }
-//            if (platform.equals("Amazon Kinesis")) {
+                dynamoCtrlDao.save(flowSetting.getDynamoCtrl());
+            }
+            if (platform.equals("Amazon Kinesis")) {
+                kinesisCtrlDao.save(flowSetting.getKinesisCtrl());
 //                KinesisCtrl kinesisCtrl = new KinesisCtrl();
 //                kinesisCtrl.setFlowIdFk(flowId);
 //                kinesisCtrl.setStreamName(platform);
 //                kinesisCtrl.setMeasurementTarget("strMeasure");
 //                kinesisCtrl.setRefValue(Integer.parseInt("strRef"));
 //                kinesisCtrl.setMonitoringPeriod(Integer.parseInt("strMonitoring"));
-//            }
-
+            }
+        }
     }
 
 }

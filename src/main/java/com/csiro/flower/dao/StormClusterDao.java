@@ -13,7 +13,7 @@ import com.csiro.flower.model.StormCluster;
  */
 public interface StormClusterDao {
 
-    public int save(StormCluster stormCluster);
+    public void save(StormCluster stormCluster);
 
     public void delete(int id);
 

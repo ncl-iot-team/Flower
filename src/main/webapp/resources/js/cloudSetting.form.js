@@ -11,13 +11,13 @@ function createDynamoCtrlForm(divLoc) {
         <div class="form-style-2-heading">DynamoDB controller setting</div> \n\
         <table><thead>\n\
         <tr><th>Table Name</th><th>Measurement Target <span class="required">*</span></th> <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
-         <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" readonly=true value="Sample"></td><td>\n\
-        <select id="dynamoCat" name="tblMeasure" class="select-field">\n\
+         <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" name="dynamoCtrl.tableName" readonly=true value="Sample"></td><td>\n\
+        <select id="dynamoCat" name="dynamoCtrl.measurementTarget" class="select-field">\n\
         <option value=""></option> \n\
         <option value="Write">Write Capacity</option>\n\
-        </td><td> <input type="text" class="input-field" name="tblRef" value=""/></td> \n\
-            <td><input type="text" class="input-field" name="tblMonitoring" value=""/>\n\
-            </td><td><input type="text" class="input-field" name="tblBackoff" value=""/></td><td><img class="bin"/></td></tr>\n\
+        </td><td> <input type="text" class="input-field" name="dynamoCtrl.refValue" value=""/></td> \n\
+            <td><input type="text" class="input-field" name="dynamoCtrl.monitoringPeriod" value=""/>\n\
+            </td><td><input type="text" class="input-field" name="dynamoCtrl.backoffNo" value=""/></td><td><img class="bin"/></td></tr>\n\
         </tbody></table>');
 }
 
@@ -26,26 +26,26 @@ function createStormCtrlForm(divLoc) {
     divContainer.html('<div class="form-style-2"> \n\
      <div class="form-style-2-heading">Storm cluster settings</div> \n\
         <label for="field0"><span>Nimbus IP <span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="nimbusIP"/>\n\
+        <input type="text" class="input-field" name="stormCluster.nimbusIp"/>\n\
         </label><label for="field7"><span>Zookeeper Endpoint<span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="zookeeper" value=""/> </label>\n\
+        <input type="text" class="input-field" name="stormCluster.zookeeperEndpoint" value=""/> </label>\n\
         <div class="form-style-2-heading">Storm cntroller settings</div> \n\
         <label for="field1">\n\
         <span>Measurement Target <span class="required">*</span></span></label>\n\
-        <label for="field2"><select id="stormCat" name="stormMeasurment" class="select-field">\n\
+        <label for="field2"><select id="stormCat" name="stormCtrl.measurementTarget" class="select-field">\n\
         <option value=""></option> \n\
         <option value="CPU">CPU</option>\n\
         <option value="Memory">Memory</option>\n\</select>\n\
         </label><label for="field3">\n\
         <span>Target Topology <span class="required">*</span></span>\n\
-        <select id="topology" class="select-field" name="topologyList">\n\
+        <select id="topology" class="select-field" name="stormCtrl.targetTopology">\n\
         <option value=""></option><option value="test">test</option></select></label>\n\
         <label for="field4"><span>Reference Value <span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="stormRef" style="width:50px"/>\n\
+        <input type="text" class="input-field" name="stormCtrl.refValue" style="width:50px"/>\n\
         </label><label for="field5"><span>Monitoring Period</span>\n\
-        <input type="text" class="input-field" name="stormMonitoring" value="" style="width:50px"/>\n\
+        <input type="text" class="input-field" name="stormCtrl.monitoringPeriod" value="" style="width:50px"/>\n\
         </label><label for="field6"><span>Backoff No.</span>\n\
-        <input type="text" class="input-field" name="stormBackoff" value="" style="width:50px"/>\n\
+        <input type="text" class="input-field" name="stormCtrl.backoffNo" value="" style="width:50px"/>\n\
         </label><label></label></div>');
 }
 
@@ -55,13 +55,13 @@ function createKinesisCtrlForm(divLoc) {
         <div class="form-style-2-heading">Kinesis controller setting</div> \n\
         <table><thead>\n\
         <tr><th>Stream Name</th><th>Measurement Target <span class="required">*</span></th> <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
-         <tr> <td>Test Stream</td><td>\n\
-        <select id="kinesisCat" name="strMeasure" class="select-field">\n\
+         <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" name="kinesisCtrl.streamName" readonly=true value="Sample"></td><td>\n\
+        <select id="kinesisCat" name="kinesisCtrl.measurementTarget" class="select-field">\n\
         <option value=""></option> \n\
         <option value="IncRecord">Incoming Records</option>\n\
-        </td><td> <input type="text" class="input-field" name="strRef" value=""/></td> \n\
-            <td><input type="text" class="input-field" name="strMonitoring" value=""/>\n\
-            </td><td><input type="text" class="input-field" name="strBackoff" value=""/></td><td><img class="bin"/></td></tr>\n\
+        </td><td> <input type="text" class="input-field" name="kinesisCtrl.refValue" value=""/></td> \n\
+            <td><input type="text" class="input-field" name="kinesisCtrl.monitoringPeriod" value=""/>\n\
+            </td><td><input type="text" class="input-field" name="kinesisCtrl.backoffNo" value=""/></td><td><img class="bin"/></td></tr>\n\
         </tbody></table>');
 }
 

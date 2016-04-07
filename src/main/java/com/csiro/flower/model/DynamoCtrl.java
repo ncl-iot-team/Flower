@@ -14,8 +14,8 @@ public class DynamoCtrl {
     private String measurementTarget;
     private String tableName;
     private int refValue;
-    private int monitoringPeriod;
-    private int backoffNo;
+    private int monitoringPeriod = 2;
+    private int backoffNo = 0;
     private int flowIdFk;
 
     public String getMeasurementTarget() {

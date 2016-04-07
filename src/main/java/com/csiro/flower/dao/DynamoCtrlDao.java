@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface DynamoCtrlDao {
 
-    public int save(DynamoCtrl dynamoCtrl);
+    public void save(DynamoCtrl dynamoCtrl);
 
     public void delete(int id);
 

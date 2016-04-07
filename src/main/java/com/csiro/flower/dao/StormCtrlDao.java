@@ -13,7 +13,7 @@ import com.csiro.flower.model.StormCtrl;
  */
 public interface StormCtrlDao {
 
-    public int save(StormCtrl stormCtrl);
+    public void save(StormCtrl stormCtrl);
 
     public void delete(int id);
 

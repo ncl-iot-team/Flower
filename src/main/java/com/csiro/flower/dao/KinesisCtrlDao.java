@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface KinesisCtrlDao {
 
-    public int save(KinesisCtrl kinesisCtrl);
+    public void save(KinesisCtrl kinesisCtrl);
 
     public void delete(int id);
 
