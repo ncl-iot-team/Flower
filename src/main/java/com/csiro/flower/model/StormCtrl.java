@@ -14,9 +14,16 @@ public class StormCtrl {
     private String measurementTarget;
     private String targetTopology;
     private int refValue;
-    private int monitoringPeriod = 5;
-    private int backoffNo = 0;
+    private int monitoringPeriod;
+    private int backoffNo;
     private int flowIdFk;
+//    private int defaultBackoffNo = 0;
+//    private int deafultMonitoringPeriod = 5;
+//
+//    public StormCtrl() {
+//        setBackoffNo(defaultBackoffNo);
+//        setMonitoringPeriod(deafultMonitoringPeriod);
+//    }
 
     public String getMeasurementTarget() {
         return measurementTarget;

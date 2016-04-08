@@ -14,8 +14,8 @@ public class KinesisCtrl {
     private String measurementTarget;
     private String streamName;
     private int refValue;
-    private int monitoringPeriod = 5;
-    private int backoffNo = 0;
+    private int monitoringPeriod;
+    private int backoffNo;
     private int flowIdFk;
 
     public String getMeasurementTarget() {
