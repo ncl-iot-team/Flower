@@ -104,7 +104,9 @@ function SmartWizard(target, options) {
                     }
                 } else {
                     var frm = $('#stepForms');
-                    if (frm && frm.length) {
+                    if (!frm.valid()) {
+                        return false;
+                    } else if (frm && frm.length) {
                         frm.submit();
                     }
                 }

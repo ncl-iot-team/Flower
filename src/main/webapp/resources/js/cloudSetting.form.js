@@ -38,8 +38,8 @@ function createStormCtrlForm(divLoc) {
         <option value="Memory">Memory</option>\n\</select>\n\
         </label><label for="field3">\n\
         <span>Target Topology <span class="required">*</span></span>\n\
-        <select id="topology" class="select-field" name="stormCtrl.targetTopology">\n\
-        <option value=""></option><option value="test">test</option></select></label>\n\
+        <input type="text" id="topology" class="select-field" name="stormCtrl.targetTopology" \>\n\
+        </label>\n\
         <label for="field4"><span>Reference Value <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="stormCtrl.refValue" style="width:50px"/>\n\
         </label><label for="field5"><span>Monitoring Period</span>\n\

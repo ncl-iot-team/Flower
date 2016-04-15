@@ -10,16 +10,9 @@ import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.dao.StormCtrlDao;
-import com.csiro.flower.model.CloudSetting;
-import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.FlowDetailSetting;
-import com.csiro.flower.model.KinesisCtrl;
-import com.csiro.flower.model.StormCluster;
-import com.csiro.flower.model.StormCtrl;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *

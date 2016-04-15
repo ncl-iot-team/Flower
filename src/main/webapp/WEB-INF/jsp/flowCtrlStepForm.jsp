@@ -88,15 +88,15 @@
                         "cloudSetting.secretKey": "required",
                         "cloudSetting.cloudProvider": "required",
                         "cloudSetting.region": "required",
-                        tblMeasure: "required",
-                        tblRef: "required",
-                        strMeasure: "required",
-                        strRef: "required",
-                        stormMeasurment: "required",
-                        stormRef: "required",
-                        topologyList: "required",
-                        nimbusIP: "required",
-                        zookeeper: "required"
+                        "dynamoCtrl.measurementTarget": "required",
+                        "dynamoCtrl.refValue": "required",
+                        "kinesisCtrl.measurementTarget": "required",
+                        "kinesisCtrl.refValue": "required",
+                        "stormCtrl.measurementTarget": "required",
+                        "stormCtrl.refValue": "required",
+                        "stormCtrl.targetTopology": "required",
+                        "stormCluster.nimbusIp": "required",
+                        "stormCluster.zookeeperEndpoint": "required"
                     }});
 
 
