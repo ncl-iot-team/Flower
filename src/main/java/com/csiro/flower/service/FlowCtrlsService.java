@@ -15,5 +15,5 @@ public interface FlowCtrlsService {
 
     public void runFlowController(int flowId);
 
-    public void saveFlowControllerSettings(String[] platforms, FlowDetailSetting flowSetting);
+    public void saveFlowControllerSettings(String[] platforms, int flowId, FlowDetailSetting flowSetting);
 }

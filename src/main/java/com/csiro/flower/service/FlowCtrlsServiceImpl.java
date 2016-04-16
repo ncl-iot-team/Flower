@@ -13,6 +13,7 @@ import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.FlowDetailSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -42,8 +43,8 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
     }
 
     @Override
-//    @Transactional
-    public void saveFlowControllerSettings(String[] platforms, FlowDetailSetting flowSetting) {
+    @Transactional
+    public void saveFlowControllerSettings(String[] platforms, int flowId, FlowDetailSetting flowSetting) {
         cloudSettingDao.save(flowSetting.getCloudSetting());
         for (String platform : platforms) {
 //            if (platform.equals("Cloud Setting")) {
@@ -70,7 +71,10 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
 //                stormCtrl.setMonitoringPeriod(Integer.parseInt(paramSettings.get("stormMonitoring")));
 //                stormCtrl.setBackoffNo(Integer.parseInt(paramSettings.get("stormBackoff")));
 //                stormCtrlDao.save(stormCtrl);
+                flowSetting.getStormCluster().setFlowIdFk(flowId);
                 stormClusterDao.save(flowSetting.getStormCluster());
+                
+                flowSetting.getStormCtrl().setFlowIdFk(flowId);
                 stormCtrlDao.save(flowSetting.getStormCtrl());
 //
             }
@@ -78,9 +82,11 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
 //                DynamoCtrl dynamoCtrl = new DynamoCtrl();
 //                dynamoCtrl.setFlowIdFk(flowId);
 //                dynamoCtrl.setMeasurementTarget("");
+                flowSetting.getDynamoCtrl().setFlowIdFk(flowId);
                 dynamoCtrlDao.save(flowSetting.getDynamoCtrl());
             }
             if (platform.equals("Amazon Kinesis")) {
+                flowSetting.getKinesisCtrl().setFlowIdFk(flowId);
                 kinesisCtrlDao.save(flowSetting.getKinesisCtrl());
 //                KinesisCtrl kinesisCtrl = new KinesisCtrl();
 //                kinesisCtrl.setFlowIdFk(flowId);

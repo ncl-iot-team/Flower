@@ -31,7 +31,7 @@
 
                 $('#submit-button').prop('disabled', true).css("cursor", "default");
 
-                var flow = '${platforms}';
+                var flow = '${flow.platforms}';
                 var systems = flow.split(",");
                 systems.unshift("Cloud Setting");
                 for (var i = 0; i < systems.length; i++) {
@@ -57,21 +57,21 @@
                     switch (systems[i]) {
                         case 'Cloud Setting':
                             createCloudSettingForm('#step-' + i);
-                            $('#step-' + i).append('<input type="hidden" name="cloudSetting.flowIdFk" value="${flowId}"/>');
-                            $('#step-' + i).append('<input type="hidden" name="platforms" value="${platforms}"/>');
+//                            $('#step-' + i).append('<input type="hidden" name="cloudSetting.flowIdFk" value="${flowId}"/>');
+//                            $('#step-' + i).append('<input type="hidden" name="platforms" value="${platforms}"/>');
                             break;
                         case 'Apache Storm':
                             createStormCtrlForm('#step-' + i);
-                            $('#step-' + i).append('<input type="hidden" name="StormCluster.flowIdFk" value="${flowId}"/>');
-                            $('#step-' + i).append('<input type="hidden" name="StormCtrl.flowIdFk" value="${flowId}"/>');
+//                            $('#step-' + i).append('<input type="hidden" name="StormCluster.flowIdFk" value="${flowId}"/>');
+//                            $('#step-' + i).append('<input type="hidden" name="StormCtrl.flowIdFk" value="${flowId}"/>');
                             break;
                         case 'Amazon Kinesis':
                             createKinesisCtrlForm('#step-' + i);
-                            $('#step-' + i).append('<input type="hidden" name="kinesisCtrl.flowIdFk" value="${flowId}"/>');
+//                            $('#step-' + i).append('<input type="hidden" name="kinesisCtrl.flowIdFk" value="${flowId}"/>');
                             break;
                         case 'DynamoDB':
                             createDynamoCtrlForm('#step-' + i);
-                            $('#step-' + i).append('<input type="hidden" name="dynamoCtrl.flowIdFk" value="${flowId}"/>');
+//                            $('#step-' + i).append('<input type="hidden" name="dynamoCtrl.flowIdFk" value="${flowId}"/>');
                             break;
                         default:
                             break;
