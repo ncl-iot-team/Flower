@@ -9,6 +9,7 @@ function createDynamoCtrlForm(divLoc) {
     var divContainer = $(divLoc);
     divContainer.html('<div class="form-style-2"> \n\
         <div class="form-style-2-heading">DynamoDB controller setting</div> \n\
+        <input type="button" value="Load Tables" class="btn btn-default" style="margin-bottom:10px; height:30px; font-size:12px;"/>\n\
         <table><thead>\n\
         <tr><th>Table Name</th><th>Measurement Target <span class="required">*</span></th> <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
          <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" name="dynamoCtrl.tableName" readonly=true value="Sample"></td><td>\n\
@@ -53,7 +54,8 @@ function createKinesisCtrlForm(divLoc) {
     var divContainer = $(divLoc);
     divContainer.html('<div class="form-style-2"> \n\
         <div class="form-style-2-heading">Kinesis controller setting</div> \n\
-        <table><thead>\n\
+        <input type="button" value="Load Streams" class="btn btn-default" style="margin-bottom:10px; height:30px; font-size:12px;"/>\n\
+        <br/><table><thead>\n\
         <tr><th>Stream Name</th><th>Measurement Target <span class="required">*</span></th> <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
          <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" name="kinesisCtrl.streamName" readonly=true value="Sample"></td><td>\n\
         <select id="kinesisCat" name="kinesisCtrl.measurementTarget" class="select-field">\n\
