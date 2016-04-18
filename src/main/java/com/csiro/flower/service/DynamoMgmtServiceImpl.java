@@ -11,9 +11,11 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableCollection;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
+import com.csiro.flower.util.CloudServiceRegionMgmt;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,12 +25,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class DynamoMgmtServiceImpl implements DynamoMgmtService {
 
+    @Autowired
+    CloudServiceRegionMgmt cloudServiceRegionMgmt;
+
     DynamoDB dynamoDB;
 
     @Override
-    public void DynamoMgmtService(String accessKey, String secretKey, String dynamoEndpoint) {
+    public void initService(String provider, String accessKey, String secretKey, String region) {
         AmazonDynamoDBClient client = (new AmazonDynamoDBClient(
                 new BasicAWSCredentials(accessKey, secretKey)));
+        String serviceName = "dynamodb";
+        String dynamoEndpoint = cloudServiceRegionMgmt.resolveEndpoint(provider, serviceName, region);
         client.setEndpoint(dynamoEndpoint);
         dynamoDB = new DynamoDB(client);
     }

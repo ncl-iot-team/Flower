@@ -99,10 +99,42 @@
                         "stormCluster.zookeeperEndpoint": "required"
                     }});
 
+                $('#loadTbls').on('click', function() {
+                    var data = {};
+                    data["cloudProvider"] = $("#-categories").val();
+                    data["region"] = $("#-subcats").val();
+                    data["accessKey"] = $("#accessKey").val();
+                    data["secretKey"] = $("#secretKey").val();
 
-                $(".bin").on('click', function(e) {
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        url: "loadTables",
+                        data: JSON.stringify(data),
+                        success: function(data) {
+                            $.each(data, function(index, tbl) {
+                                $('#dynamoTbl tr:last').after('<tr><td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
+                                                        name="dynamoCtrl' + index + '.tableName" readonly=true value="' + tbl + '"></td><td>\n\
+                                                        <select id="dynamoCat" name="dynamoCtrl' + index + '.measurementTarget" class="select-field">\n\
+                                                        <option value=""></option><option value="Write">Write Capacity</option></td>\n\
+                                                        <td> <input type="text" class="input-field" name="dynamoCtrl' + index + '.refValue"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="dynamoCtrl' + index + '.monitoringPeriod"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="dynamoCtrl' + index + '.backoffNo"/></td><td class="nothing"><img class="bin"/>\n\
+                                                        </td></tr>');
+                            });
+                        },
+                        error: function(e) {
+                            console.log("Error: ", e);
+                        }
+                    });
+                });
+
+                $('#dynamoTbl').on('click', '.bin', function(e) {
                     $(e.target).parents('tr').remove();
                 });
+
+
 
             });
 
@@ -116,7 +148,7 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555"></strong>Flow Configuration</h3>
             <hr>
-            <p>Placeholder
+            <p id="ssman">Say something!
             </p>
             <br>
         </div>

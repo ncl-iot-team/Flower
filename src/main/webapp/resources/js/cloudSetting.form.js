@@ -9,17 +9,11 @@ function createDynamoCtrlForm(divLoc) {
     var divContainer = $(divLoc);
     divContainer.html('<div class="form-style-2"> \n\
         <div class="form-style-2-heading">DynamoDB controller setting</div> \n\
-        <input type="button" value="Load Tables" class="btn btn-default" style="margin-bottom:10px; height:30px; font-size:12px;"/>\n\
-        <table><thead>\n\
-        <tr><th>Table Name</th><th>Measurement Target <span class="required">*</span></th> <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
-         <tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" name="dynamoCtrl.tableName" readonly=true value="Sample"></td><td>\n\
-        <select id="dynamoCat" name="dynamoCtrl.measurementTarget" class="select-field">\n\
-        <option value=""></option> \n\
-        <option value="Write">Write Capacity</option>\n\
-        </td><td> <input type="text" class="input-field" name="dynamoCtrl.refValue" value=""/></td> \n\
-            <td><input type="text" class="input-field" name="dynamoCtrl.monitoringPeriod" value=""/>\n\
-            </td><td><input type="text" class="input-field" name="dynamoCtrl.backoffNo" value=""/></td><td><img class="bin"/></td></tr>\n\
-        </tbody></table>');
+        <input type="button" id="loadTbls" value="Load Tables" class="btn btn-default" style="margin-bottom:10px; height:30px; font-size:12px;"/>\n\
+        <table id="dynamoTbl"><thead>\n\
+        <tr><th>Table Name</th><th>Measurement Target <span class="required">*</span></th> \n\
+        <th>Reference Value <span class="required">*</span></th><th>Monitoring Period</th> <th>Backoff</th> <th></th></tr></thead> <tbody>\n\
+         </tbody></table>');
 }
 
 function createStormCtrlForm(divLoc) {
@@ -83,9 +77,9 @@ function createCloudSettingForm(divLoc) {
         <span>Region <span class="required">*</span></span>\n\
         <select id="-subcats" class="select-field" name="cloudSetting.region"> </select></label>\n\
         <label for="field4"><span>Access Key <span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="cloudSetting.accessKey"/>\n\
+        <input id="accessKey" type="text" class="input-field" name="cloudSetting.accessKey"/>\n\
         </label><label for="field5"><span>Secret Key<span class="required">*</span></span>\n\
-        <input type="password" class="input-field" name="cloudSetting.secretKey" value=""/>\n\
+        <input id="secretKey" type="password" class="input-field" name="cloudSetting.secretKey"/>\n\
         </label><label></label></div>');
 
     setLinkedSubCategory();

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface DynamoMgmtService {
 
-    public void DynamoMgmtService(String accessKey, String secretKey, String dynamoEndpoint);
+    public void initService(String provider, String accessKey, String secretKey, String dynamoEndpoint);
 
     public List<String> getTableList();
 
