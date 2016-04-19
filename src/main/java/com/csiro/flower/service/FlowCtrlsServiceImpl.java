@@ -10,7 +10,9 @@ import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.dao.StormCtrlDao;
+import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.FlowDetailSetting;
+import com.csiro.flower.model.KinesisCtrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,12 +62,19 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
             }
             if (platform.equals("DynamoDB")) {
 
-                flowSetting.getDynamoCtrl().setFlowIdFk(flowId);
-                dynamoCtrlDao.save(flowSetting.getDynamoCtrl());
+                //further improvement: Batch insertion
+                for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
+                    dynamoCtrl.setFlowIdFk(flowId);
+                    dynamoCtrlDao.save(dynamoCtrl);
+                }
             }
             if (platform.equals("Amazon Kinesis")) {
-                flowSetting.getKinesisCtrl().setFlowIdFk(flowId);
-                kinesisCtrlDao.save(flowSetting.getKinesisCtrl());
+                
+                //further improvement: Batch insertion
+                for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
+                    kinesisCtrl.setFlowIdFk(flowId);
+                    kinesisCtrlDao.save(kinesisCtrl);
+                }
             }
         }
     }

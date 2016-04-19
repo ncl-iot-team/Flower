@@ -98,6 +98,61 @@
                         "stormCluster.nimbusIp": "required",
                         "stormCluster.zookeeperEndpoint": "required"
                     }});
+                function addValidationRule() {
+                    $('select[name*=measurementTarget],input[name*=refValue]').each(function() {
+                        $(this).rules('add', {
+                            required: true
+                        });
+                    });
+                }
+
+//                var data = {};
+//                data["cloudProvider"] = $("#-categories").val();
+//                data["region"] = $("#-subcats").val();
+//                data["accessKey"] = $("#accessKey").val();
+//                data["secretKey"] = $("#secretKey").val();
+
+                var faildReqMsg = '<p class="failed-request">Request failed! \n\
+                Please check the provided Cloud hosting information again.</p>';
+
+                var noTblMsg = '<p class="failed-request">Oops! No tables were found.</p>'
+
+                var noStreamMsg = '<p class="failed-request">Oops! No Streams were found.</p>'
+
+                $('#loadStreams').on('click', function() {
+                    var data = {};
+                    data["cloudProvider"] = $("#-categories").val();
+                    data["region"] = $("#-subcats").val();
+                    data["accessKey"] = $("#accessKey").val();
+                    data["secretKey"] = $("#secretKey").val();
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        url: "loadKinesisStreams",
+                        data: JSON.stringify(data),
+                        success: function(data) {
+                            if (!data) {
+                                ajaxReqMsg('#loadStreams', '.failed-request', noStreamMsg);
+                            } else {
+                                $.each(data, function(index, str) {
+                                    $('#kinesisTbl tr:last').after('<tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
+                                                                name="kinesisCtrl[' + index + '].streamName" readonly=true value="' + str + '"></td><td>\n\
+                                                                <select name="kinesisCtrl[' + index + '].measurementTarget" class="select-field">\n\
+                                                                <option value=""></option><option value="IncRecord">Incoming Records</option>\n\
+                                                                </td><td> <input type="text" class="input-field" name="kinesisCtrl[' + index + '].refValue" value=""/></td> \n\
+                                                                <td><input type="text" class="input-field" name="kinesisCtrl[' + index + '].monitoringPeriod" value=""/>\n\
+                                                                </td><td><input type="text" class="input-field" name="kinesisCtrl[' + index + '].backoffNo" value=""/></td>\n\
+                                                                <td><img class="bin"/></td></tr>');
+                                });
+                                addValidationRule();
+                            }
+                        },
+                        error: function(e) {
+                            ajaxReqMsg('#loadStreams', '.failed-request', faildReqMsg);
+                        }
+                    });
+                });
 
                 $('#loadTbls').on('click', function() {
                     var data = {};
@@ -105,35 +160,50 @@
                     data["region"] = $("#-subcats").val();
                     data["accessKey"] = $("#accessKey").val();
                     data["secretKey"] = $("#secretKey").val();
-
                     $.ajax({
                         type: 'POST',
                         contentType: 'application/json',
                         dataType: 'json',
-                        url: "loadTables",
+                        url: "loadDynamoTables",
                         data: JSON.stringify(data),
                         success: function(data) {
-                            $.each(data, function(index, tbl) {
-                                $('#dynamoTbl tr:last').after('<tr><td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
-                                                        name="dynamoCtrl' + index + '.tableName" readonly=true value="' + tbl + '"></td><td>\n\
-                                                        <select id="dynamoCat" name="dynamoCtrl' + index + '.measurementTarget" class="select-field">\n\
+                            if (!data) {
+                                ajaxReqMsg('#loadTbls', '.failed-request', noTblMsg);
+                            } else {
+                                $.each(data, function(index, tbl) {
+                                    $('#dynamoTbl tr:last').after('<tr><td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
+                                                        name="dynamoCtrls[' + index + '].tableName" readonly=true value="' + tbl + '"></td><td>\n\
+                                                        <select name="dynamoCtrls[' + index + '].measurementTarget" class="select-field">\n\
                                                         <option value=""></option><option value="Write">Write Capacity</option></td>\n\
-                                                        <td> <input type="text" class="input-field" name="dynamoCtrl' + index + '.refValue"/></td>\n\
-                                                        <td><input type="text" class="input-field" name="dynamoCtrl' + index + '.monitoringPeriod"/></td>\n\
-                                                        <td><input type="text" class="input-field" name="dynamoCtrl' + index + '.backoffNo"/></td><td class="nothing"><img class="bin"/>\n\
-                                                        </td></tr>');
-                            });
+                                                        <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].refValue"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].monitoringPeriod"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].backoffNo"/></td>\n\
+                                                        <td><img class="bin"/></td></tr>');
+                                });
+                                addValidationRule();
+                            }
                         },
                         error: function(e) {
-                            console.log("Error: ", e);
+                            ajaxReqMsg('#loadTbls', '.failed-request', faildReqMsg);
                         }
                     });
                 });
 
+                function ajaxReqMsg(position, selectorCls, msg) {
+                    if (!$(selectorCls).length) {
+                        $(position).after(msg);
+                        setTimeout(function() {
+                            $(selectorCls).remove();
+                        }, 10000);
+                    }
+                }
+
                 $('#dynamoTbl').on('click', '.bin', function(e) {
                     $(e.target).parents('tr').remove();
                 });
-
+                $('#kinesisTbl').on('click', '.bin', function(e) {
+                    $(e.target).parents('tr').remove();
+                });
 
 
             });

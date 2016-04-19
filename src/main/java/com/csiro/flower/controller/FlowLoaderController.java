@@ -13,6 +13,7 @@ import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsService;
+import com.csiro.flower.service.KinesisMgmtService;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -43,8 +44,9 @@ public class FlowLoaderController {
     @Autowired
     FlowCtrlsService flowCtrlsService;
 
-//    @Autowired
-//    CloudSettingDao cloudSettingDao;
+    @Autowired
+    KinesisMgmtService kinesisMgmtService;
+    
     @Autowired
     DynamoMgmtService dynamoMgmtService;
 
@@ -97,7 +99,7 @@ public class FlowLoaderController {
         return "redirect:/";// + flowId;
     }
 
-    @RequestMapping(value = "/loadTables", method = RequestMethod.POST)
+    @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
     public @ResponseBody
     List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
         dynamoMgmtService.initService(
@@ -106,9 +108,17 @@ public class FlowLoaderController {
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
         return dynamoMgmtService.getTableList();
-//        dynamoMgmtService.initService("Amazon",
-//                "AKIAJJOK3DKPUOG7UZUQ",
-//                "6mu7vz5jp2lmEewgNna2eYFgZAHgHGr+3VOG48MY",
-//                "us-west-2");
+
+    }
+    
+    @RequestMapping(value="/loadKinesisStreams", method = RequestMethod.POST)
+    public @ResponseBody
+    List<String> getStreamList(@RequestBody CloudSetting cloudSetting){
+        kinesisMgmtService.initService(
+                cloudSetting.getCloudProvider(), 
+                cloudSetting.getAccessKey(),
+                cloudSetting.getSecretKey(),
+                cloudSetting.getRegion());
+        return kinesisMgmtService.getStreamList();
     }
 }

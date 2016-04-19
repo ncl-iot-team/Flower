@@ -32,10 +32,10 @@ public class DynamoMgmtServiceImpl implements DynamoMgmtService {
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {
-        AmazonDynamoDBClient client = (new AmazonDynamoDBClient(
-                new BasicAWSCredentials(accessKey, secretKey)));
         String serviceName = "dynamodb";
         String dynamoEndpoint = cloudServiceRegionMgmt.resolveEndpoint(provider, serviceName, region);
+        AmazonDynamoDBClient client = (new AmazonDynamoDBClient(
+                new BasicAWSCredentials(accessKey, secretKey)));
         client.setEndpoint(dynamoEndpoint);
         dynamoDB = new DynamoDB(client);
     }

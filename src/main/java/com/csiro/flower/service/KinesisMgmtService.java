@@ -11,10 +11,9 @@ import java.util.List;
  *
  * @author kho01f
  */
-public interface DynamoMgmtService {
+public interface KinesisMgmtService {
 
     public void initService(String provider, String accessKey, String secretKey, String region);
 
-    public List<String> getTableList();
-
+    public List<String> getStreamList();
 }

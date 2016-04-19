@@ -6,6 +6,8 @@
 
 package com.csiro.flower.model;
 
+import java.util.List;
+
 /**
  *
  * @author kho01f
@@ -15,8 +17,8 @@ public class FlowDetailSetting {
     private CloudSetting cloudSetting;
     private StormCluster stormCluster;
     private StormCtrl stormCtrl;
-    private DynamoCtrl dynamoCtrl;
-    private KinesisCtrl kinesisCtrl;
+    private List<DynamoCtrl> dynamoCtrls;
+    private List<KinesisCtrl> kinesisCtrls;
     
 
     public CloudSetting getCloudSetting() {
@@ -43,20 +45,36 @@ public class FlowDetailSetting {
         this.stormCtrl = stormCtrl;
     }
 
-    public DynamoCtrl getDynamoCtrl() {
-        return dynamoCtrl;
+//    public DynamoCtrl getDynamoCtrl() {
+//        return dynamoCtrl;
+//    }
+//
+//    public void setDynamoCtrl(DynamoCtrl dynamoCtrl) {
+//        this.dynamoCtrl = dynamoCtrl;
+//    }
+//
+//    public KinesisCtrl getKinesisCtrl() {
+//        return kinesisCtrl;
+//    }
+//
+//    public void setKinesisCtrl(KinesisCtrl kinesisCtrl) {
+//        this.kinesisCtrl = kinesisCtrl;
+//    }
+
+    public List<DynamoCtrl> getDynamoCtrls() {
+        return dynamoCtrls;
     }
 
-    public void setDynamoCtrl(DynamoCtrl dynamoCtrl) {
-        this.dynamoCtrl = dynamoCtrl;
+    public void setDynamoCtrls(List<DynamoCtrl> dynamoCtrls) {
+        this.dynamoCtrls = dynamoCtrls;
     }
 
-    public KinesisCtrl getKinesisCtrl() {
-        return kinesisCtrl;
+    public List<KinesisCtrl> getKinesisCtrls() {
+        return kinesisCtrls;
     }
 
-    public void setKinesisCtrl(KinesisCtrl kinesisCtrl) {
-        this.kinesisCtrl = kinesisCtrl;
+    public void setKinesisCtrls(List<KinesisCtrl> kinesisCtrls) {
+        this.kinesisCtrls = kinesisCtrls;
     }
 
 }
