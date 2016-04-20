@@ -104,6 +104,21 @@ function SmartWizard(target, options) {
                     }
                 } else {
                     var frm = $('#stepForms');
+
+                    // -----------------------------------------------
+                    // adhoc validation here, should be improved later
+                    if ($('#kinesisTbl')) {
+                        if ($('#kinesisTbl tr').length === 1) {
+                            return false;
+                        }
+                    }
+                    if ($('#dynamoTbl')) {
+                        if ($('#dynamoTbl tr').length === 1) {
+                            return false;
+                        }
+                    }
+                    //------------------------------------------------
+
                     if (!frm.valid()) {
                         return false;
                     } else if (frm && frm.length) {
@@ -321,6 +336,14 @@ function SmartWizard(target, options) {
     /*
      * Public methods
      */
+
+    function customValidation() {
+        if ($('#kinesisTbl')) {
+            if ($('#kinesisTbl tr').length === 1) {
+                return false;
+            }
+        }
+    }
 
     SmartWizard.prototype.goForward = function() {
 

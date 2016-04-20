@@ -72,9 +72,9 @@ function createCloudSettingForm(divLoc) {
         <span>Region <span class="required">*</span></span>\n\
         <select id="-subcats" class="select-field" name="cloudSetting.region"> </select></label>\n\
         <label for="field4"><span>Access Key <span class="required">*</span></span>\n\
-        <input id="accessKey" type="text" class="input-field" name="cloudSetting.accessKey"/>\n\
+        <input id="accessKey" type="text" class="input-field" name="cloudSetting.accessKey" value="AKIAJJOK3DKPUOG7UZUQ"/>\n\
         </label><label for="field5"><span>Secret Key<span class="required">*</span></span>\n\
-        <input id="secretKey" type="password" class="input-field" name="cloudSetting.secretKey"/>\n\
+        <input id="secretKey" type="password" class="input-field" name="cloudSetting.secretKey" value="6mu7vz5jp2lmEewgNna2eYFgZAHgHGr+3VOG48MY"/>\n\
         </label><label></label></div>');
 
     setLinkedSubCategory();
