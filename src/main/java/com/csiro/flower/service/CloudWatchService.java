@@ -5,23 +5,16 @@
  */
 package com.csiro.flower.service;
 
-import com.amazonaws.services.kinesis.model.Shard;
-import java.util.List;
+import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 
 /**
  *
  * @author kho01f
  */
-public interface KinesisMgmtService {
+public interface CloudWatchService {
 
     public void initService(String provider, String accessKey, String secretKey, String region);
 
-    public List<String> getStreamList();
-
-    public void decreaseShards(String streamName, int mergeSize);
-
-    public void increaseShards(String streamName, int splitSize);
-
-    public List<Shard> getOpenShards(String streamName);
+    public GetMetricStatisticsResult getCriticalResourceStats(String resource, String resourceId, String metric, long startTime);
 
 }

@@ -5,15 +5,13 @@
  */
 package com.csiro.flower.service;
 
-import analytics.flow.resource.control.StormClusterManagement;
-import analytics.flow.util.HashMapUtil;
+//import analytics.flow.resource.control.StormClusterManagement;
 import backtype.storm.generated.Nimbus;
 import backtype.storm.generated.RebalanceOptions;
 import backtype.storm.generated.SupervisorSummary;
 import backtype.storm.generated.TopologySummary;
 import backtype.storm.utils.NimbusClient;
 import backtype.storm.utils.Utils;
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
@@ -26,6 +24,7 @@ import com.amazonaws.services.ec2.model.StartInstancesResult;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
+import com.csiro.flower.util.HashMapUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +33,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
-import storm.applications.constants.AmazonResourceConstants;
 
 /**
  *
@@ -45,7 +43,13 @@ public class StormMgmtServiceImpl implements StormMgmtService {
 
     AmazonEC2 ec2;
     private static final int WAIT_FOR_TRANSITION_INTERVAL = 5000;
-
+    String stoppedState = "stopped";
+    String runningState = "running";
+    String activeStatus = "ACTIVE";
+    String supervisorPrefix = "Worker";
+    String nimbusHost = "nimbus.host";
+    Nimbus.Client nimbusClient;
+    
     @Override
     public String getInstanceState(String instanceId) {
         DescribeInstancesRequest describeInstanceRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
@@ -61,12 +65,11 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         DescribeInstancesResult result = ec2.describeInstances(request);
         List<Reservation> reservations = result.getReservations();
         List<String> instanceIds = new ArrayList<String>();
-
         for (Reservation reservation : reservations) {
             List<Instance> instances = reservation.getInstances();
             for (Instance instance : instances) {
                 for (Tag tag : instance.getTags()) {
-                    if ((tag.getValue().startsWith("Worker")) && (getInstanceState(instance.getInstanceId()).equals("running"))) {
+                    if ((tag.getValue().startsWith(supervisorPrefix)) && (getInstanceState(instance.getInstanceId()).equals(runningState))) {
                         instanceIds.add(instance.getInstanceId());
                     }
                 }
@@ -86,7 +89,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
             List<Instance> instances = reservation.getInstances();
             for (Instance instance : instances) {
                 for (Tag tag : instance.getTags()) {
-                    if ((tag.getValue().startsWith("Worker")) && (getInstanceState(instance.getInstanceId()).equals("stopped"))) {
+                    if ((tag.getValue().startsWith(supervisorPrefix)) && (getInstanceState(instance.getInstanceId()).equals(stoppedState))) {
                         instanceIds.add(instance.getInstanceId());
                     }
                 }
@@ -105,7 +108,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         int startedWorkerCount = 0;
         HashMap<String, String> startedInstances = startInstances(getStoppedWorkerIds().subList(0, no));
         for (String state : startedInstances.values()) {
-            if (state.matches("running")) {
+            if (state.matches(runningState)) {
                 startedWorkerCount++;
             }
         }
@@ -118,24 +121,27 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         StartInstancesRequest startRequest = new StartInstancesRequest().withInstanceIds(instanceIds);
         StartInstancesResult startResult = ec2.startInstances(startRequest);
         List<InstanceStateChange> stateChangeList = startResult.getStartingInstances();
-        //LOGGER.info("Starting instance '" + instanceId + "':");
-
         // Wait for the instance to be started
         for (String instanceId : instanceIds) {
-            instancesState.put(instanceId, waitForTransitionCompletion(stateChangeList, "running", instanceId));
+            try {
+                instancesState.put(instanceId, waitForTransitionCompletion(stateChangeList, runningState, instanceId));
+            } catch (InterruptedException ex) {
+                Logger.getLogger(StormMgmtServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return instancesState;
     }
 
+    @Override
     public void stopWorkers(int no) {
         int stoppedWorkerCount = 0;
         HashMap<String, String> stoppedInstances = stopInstances(getLowCostToStopRunningWorkers().subList(0, no), true);
         for (String state : stoppedInstances.values()) {
-            if (state.matches("stopped")) {
+            if (state.matches(stoppedState)) {
                 stoppedWorkerCount++;
             }
         }
-        LOGGER.info(stoppedWorkerCount + " workers out of " + no + " numbers stopped.");
+//        LOGGER.info(stoppedWorkerCount + " workers out of " + no + " numbers stopped.");
     }
 
     public List<String> getLowCostToStopRunningWorkers() {
@@ -157,7 +163,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
             List<Instance> instances = reservation.getInstances();
             for (Instance instance : instances) {
                 for (Tag tag : instance.getTags()) {
-                    if ((tag.getValue().startsWith("Worker")) && (getInstanceState(instance.getInstanceId()).equals("running"))) {
+                    if ((tag.getValue().startsWith(supervisorPrefix)) && (getInstanceState(instance.getInstanceId()).equals(runningState))) {
                         upTime = (endTime.getTime() - instance.getLaunchTime().getTime());
                         remainingTime = upTime % SixtyMinMill;
                         workerCostMap.put(instance.getInstanceId(), remainingTime);
@@ -179,7 +185,11 @@ public class StormMgmtServiceImpl implements StormMgmtService {
 
         // Wait for the instance to be stopped
         for (String instanceId : instanceIds) {
-            instancesState.put(instanceId, waitForTransitionCompletion(stateChangeList, "stopped", instanceId));
+            try {
+                instancesState.put(instanceId, waitForTransitionCompletion(stateChangeList, stoppedState, instanceId));
+            } catch (InterruptedException ex) {
+                Logger.getLogger(StormMgmtServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return instancesState;
     }
@@ -199,9 +209,9 @@ public class StormMgmtServiceImpl implements StormMgmtService {
                 currentState = describeInstanceResult.getReservations().get(0).getInstances().get(0).getState().getName();
 
                 if (previousState.equals(currentState)) {
-                    LOGGER.info("... '" + instanceId + "' is still in state " + currentState + " ...");
+//                    LOGGER.info("... '" + instanceId + "' is still in state " + currentState + " ...");
                 } else {
-                    LOGGER.info("... '" + instanceId + "' entered state " + currentState + " ...");
+//                    LOGGER.info("... '" + instanceId + "' entered state " + currentState + " ...");
                     //transitionReason = instance.getStateTransitionReason();
                 }
                 previousState = currentState;
@@ -210,7 +220,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
                     transitionCompleted = true;
                 }
             } catch (AmazonServiceException ase) {
-                LOGGER.log(Level.SEVERE, "Failed to describe instance '" + instanceId + "'!", ase);
+//                LOGGER.log(Level.SEVERE, "Failed to describe instance '" + instanceId + "'!", ase);
                 throw ase;
             }
 
@@ -220,24 +230,27 @@ public class StormMgmtServiceImpl implements StormMgmtService {
             }
         }
 
-        LOGGER.info("Transition of instance '" + instanceId + "' completed with state " + currentState + ").");
+//        LOGGER.info("Transition of instance '" + instanceId + "' completed with state " + currentState + ").");
 
         return currentState;
     }
 
-    public void simpleRebalanceTopology() {
-        Nimbus.Client client = getStormClient();
+    @Override
+    public void simpleRebalanceTopology(String topologyName) {
+//        Nimbus.Client client = getStormClient();
         List<TopologySummary> toplogiesList;
         try {
-            toplogiesList = client.getClusterInfo().get_topologies();
+            toplogiesList = nimbusClient.getClusterInfo().get_topologies();
             RebalanceOptions rebalanceOptions = new RebalanceOptions();
             rebalanceOptions.set_wait_secs(1);
-            client.rebalance(toplogiesList.get(0).get_name(), rebalanceOptions);
+//            nimbusClient.rebalance(toplogiesList.get(0).get_name(), rebalanceOptions);
+            nimbusClient.rebalance(topologyName, rebalanceOptions);
         } catch (Exception ex) {
-            Logger.getLogger(StormClusterManagement.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StormMgmtServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    @Override
     public void fairRebalanceTopology() {
         try {
             int totalSlots = 0;
@@ -245,9 +258,9 @@ public class StormMgmtServiceImpl implements StormMgmtService {
             int usedSlots = 0;
             int activeTopologies = 0;
             int fairSlotShare;
-            Nimbus.Client client = getStormClient();
-            List<TopologySummary> toplogiesList = client.getClusterInfo().get_topologies();
-            List<SupervisorSummary> supervisorsList = client.getClusterInfo().get_supervisors();
+//            Nimbus.Client client = getStormClient();
+            List<TopologySummary> toplogiesList = nimbusClient.getClusterInfo().get_topologies();
+            List<SupervisorSummary> supervisorsList = nimbusClient.getClusterInfo().get_supervisors();
             HashMap<String, Double> topologyWorkerMap = new HashMap<String, Double>();
             Map<String, Double> sortedTopologyWorkerMap;
             for (SupervisorSummary supervisor : supervisorsList) {
@@ -259,12 +272,11 @@ public class StormMgmtServiceImpl implements StormMgmtService {
             RebalanceOptions rebalanceOptions = new RebalanceOptions();
             rebalanceOptions.set_wait_secs(1);
             for (TopologySummary topology : toplogiesList) {
-                if (topology.get_status().matches("ACTIVE")) {
+                if (topology.get_status().matches(activeStatus)) {
                     topologyWorkerMap.put(topology.get_name(), (double) topology.get_num_workers());
                     activeTopologies++;
                 }
             }
-
             sortedTopologyWorkerMap = HashMapUtil.sortStrDoubleHashMap(topologyWorkerMap, true);
             fairSlotShare = freeSlots / activeTopologies;
 
@@ -276,19 +288,18 @@ public class StormMgmtServiceImpl implements StormMgmtService {
                     rebalanceOptions.set_num_workers((int) (topology_worker.getValue() + fairSlotShare));
                     // freeSlots -= fairSlotShare;
                 }
-                client.rebalance(topology_worker.getKey(), rebalanceOptions);
+                nimbusClient.rebalance(topology_worker.getKey(), rebalanceOptions);
             }
-
         } catch (Exception ex) {
-            Logger.getLogger(StormClusterManagement.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StormMgmtServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Nimbus.Client getStormClient() {
+    @Override
+    public void buildStormClient(String nimbusHost, String nimbusIp) {
         Map storm_conf = Utils.readStormConfig();
-        storm_conf.put(AmazonResourceConstants.StormCluster.STORM_NIMBUS_IP, config.getString(AmazonResourceConstants.StormCluster.STORM_NIMBUS_IP));
-        Nimbus.Client client = NimbusClient.getConfiguredClient(storm_conf).getClient();
-        return client;
+        storm_conf.put(nimbusHost, nimbusIp);
+        nimbusClient = NimbusClient.getConfiguredClient(storm_conf).getClient();
     }
 
 }

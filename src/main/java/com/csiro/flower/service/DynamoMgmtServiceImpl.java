@@ -11,11 +11,15 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableCollection;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
-import com.csiro.flower.util.CloudServiceRegionMgmt;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
+import com.amazonaws.services.dynamodbv2.model.TableDescription;
+import com.csiro.flower.util.CloudServiceRegionUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,15 +29,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class DynamoMgmtServiceImpl implements DynamoMgmtService {
 
-    @Autowired
-    CloudServiceRegionMgmt cloudServiceRegionMgmt;
-
     DynamoDB dynamoDB;
+    String serviceName = "dynamodb";
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {
-        String serviceName = "dynamodb";
-        String dynamoEndpoint = cloudServiceRegionMgmt.resolveEndpoint(provider, serviceName, region);
+
+        String dynamoEndpoint = CloudServiceRegionUtil.resolveEndpoint(provider, serviceName, region);
         AmazonDynamoDBClient client = (new AmazonDynamoDBClient(
                 new BasicAWSCredentials(accessKey, secretKey)));
         client.setEndpoint(dynamoEndpoint);
@@ -52,4 +54,24 @@ public class DynamoMgmtServiceImpl implements DynamoMgmtService {
         return tableNames;
     }
 
+    @Override
+    public ProvisionedThroughputDescription getProvisionedThroughput(String tableName) {
+        TableDescription tableDescription = dynamoDB.getTable(tableName).describe();
+        return tableDescription.getProvisionedThroughput();
+    }
+
+    @Override
+    public void updateProvisionedThroughput(String tableName, long readCapacityUnit, long writeCapacityUnit) {
+        Table table = dynamoDB.getTable(tableName);
+        ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput().
+                withReadCapacityUnits(readCapacityUnit).
+                withWriteCapacityUnits(writeCapacityUnit);
+        table.updateTable(provisionedThroughput);
+//        LOGGER.info("Updaing the Provisioned Throughputs of DynamoDB Tbl...");
+        try {
+            table.waitForActive();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(DynamoMgmtServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

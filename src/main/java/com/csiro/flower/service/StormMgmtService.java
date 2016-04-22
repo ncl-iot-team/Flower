@@ -21,7 +21,7 @@ public interface StormMgmtService {
     public List<String> getStoppedWorkerIds();
     public void startWorkers(int no);
     public void stopWorkers(int no);
-    public void simpleRebalanceTopology();
+    public void simpleRebalanceTopology(String topologyName);
     public void fairRebalanceTopology();
-    public Nimbus.Client getStormClient();
+    public void buildStormClient(String nimbusHost, String nimbusIp);
 }

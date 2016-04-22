@@ -5,24 +5,19 @@
  */
 package com.csiro.flower.util;
 
-import org.springframework.stereotype.Service;
-
 /**
  *
  * @author kho01f
  */
-@Service
-public class CloudServiceRegionMgmtImpl implements CloudServiceRegionMgmt {
+public class CloudServiceRegionUtil {
 
-    String amazonEndpointPattern = "%s.%s.amazonaws.com";
+    final static String amazonEndpointPattern = "%s.%s.amazonaws.com";
 
-    @Override
-    public String resolveEndpoint(String provider, String serviceName, String region) {
+    public static String resolveEndpoint(String provider, String serviceName, String region) {
         String endpoint = null;
         if (provider.equals("Amazon")) {
             endpoint = String.format(amazonEndpointPattern, serviceName, region);
         }
         return endpoint;
     }
-
 }
