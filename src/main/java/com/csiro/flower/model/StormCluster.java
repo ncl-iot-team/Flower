@@ -12,7 +12,7 @@ package com.csiro.flower.model;
 public class StormCluster {
 
     private String nimbusIp;
-    private String zookeeperEndpoint;
+//    private String zookeeperEndpoint;
     private int flowIdFk;
     private String supervisorPrefix;
 
@@ -33,13 +33,13 @@ public class StormCluster {
         this.nimbusIp = nimbusIp;
     }
 
-    public String getZookeeperEndpoint() {
-        return zookeeperEndpoint;
-    }
-
-    public void setZookeeperEndpoint(String zookeeperEndpoint) {
-        this.zookeeperEndpoint = zookeeperEndpoint;
-    }
+//    public String getZookeeperEndpoint() {
+//        return zookeeperEndpoint;
+//    }
+//
+//    public void setZookeeperEndpoint(String zookeeperEndpoint) {
+//        this.zookeeperEndpoint = zookeeperEndpoint;
+//    }
 
     public String getSupervisorPrefix() {
         return supervisorPrefix;

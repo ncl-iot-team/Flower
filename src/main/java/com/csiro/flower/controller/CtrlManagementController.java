@@ -51,6 +51,13 @@ public class CtrlManagementController {
                 super.setValue((o == null) ? 0 : o);
             }
         });
+        
+        binder.registerCustomEditor(double.class, new CustomNumberEditor(Double.class, true) {
+            @Override
+            public void setValue(Object o) {
+                super.setValue((o == null) ? 0.0 : o);
+            }
+        });
     }
 
     @ModelAttribute("flow")

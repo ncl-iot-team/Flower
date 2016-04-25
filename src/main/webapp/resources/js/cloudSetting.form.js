@@ -22,8 +22,8 @@ function createStormCtrlForm(divLoc) {
      <div class="form-style-2-heading">Storm cluster settings</div> \n\
         <label for="field0"><span>Nimbus IP <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="stormCluster.nimbusIp"/>\n\
-        </label><label for="field7"><span>Zookeeper Endpoint<span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="stormCluster.zookeeperEndpoint" value=""/> </label>\n\
+        </label><label for="field7"><span>Supervisor Prefix<span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.supervisorPrefix" value=""/> </label>\n\
         <div class="form-style-2-heading">Storm cntroller settings</div> \n\
         <label for="field1">\n\
         <span>Measurement Target <span class="required">*</span></span></label>\n\

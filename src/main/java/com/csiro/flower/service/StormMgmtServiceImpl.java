@@ -13,7 +13,9 @@ import backtype.storm.generated.TopologySummary;
 import backtype.storm.utils.NimbusClient;
 import backtype.storm.utils.Utils;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
@@ -24,6 +26,7 @@ import com.amazonaws.services.ec2.model.StartInstancesResult;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
+import com.csiro.flower.util.CloudServiceRegionUtil;
 import com.csiro.flower.util.HashMapUtil;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,7 +52,15 @@ public class StormMgmtServiceImpl implements StormMgmtService {
     String supervisorPrefix = "Worker";
     String nimbusHost = "nimbus.host";
     Nimbus.Client nimbusClient;
-    
+    String serviceName= "ec2";
+
+    @Override
+    public void initService(String provider, String accessKey, String secretKey, String region) {
+        ec2 = new AmazonEC2Client(new BasicAWSCredentials(accessKey,secretKey));
+        String ec2Endpoint = CloudServiceRegionUtil.resolveEndpoint(provider, serviceName, region);
+        ec2.setEndpoint(ec2Endpoint);
+    }
+
     @Override
     public String getInstanceState(String instanceId) {
         DescribeInstancesRequest describeInstanceRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
@@ -96,11 +107,6 @@ public class StormMgmtServiceImpl implements StormMgmtService {
             }
         }
         return instanceIds;
-    }
-
-    @Override
-    public void initService(String provider, String accessKey, String secretKey, String region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -231,7 +237,6 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         }
 
 //        LOGGER.info("Transition of instance '" + instanceId + "' completed with state " + currentState + ").");
-
         return currentState;
     }
 
@@ -296,7 +301,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
     }
 
     @Override
-    public void buildStormClient(String nimbusHost, String nimbusIp) {
+    public void buildStormClient(String nimbusIp) {
         Map storm_conf = Utils.readStormConfig();
         storm_conf.put(nimbusHost, nimbusIp);
         nimbusClient = NimbusClient.getConfiguredClient(storm_conf).getClient();

@@ -9,11 +9,11 @@ package com.csiro.flower.service;
  *
  * @author kho01f
  */
-public interface KinesisCtrlService {
+public interface StormCtrlService {
 
     public void initService(String provider, String accessKey, String secretKey, String region);
 
-    public void startKinesisCtrl(final String streamName, final String measurementTarget,
-            final double putRecordUtilizationRef, int schedulingPeriod, final int backoffNo);
+    public void startStormCtrl(final String nimbusIp, final String topologyName,
+            final String measurementTarget, final double refVal, int schedulingPeriod, final int backoffNo);
 
 }

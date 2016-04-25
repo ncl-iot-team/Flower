@@ -13,7 +13,7 @@ public class DynamoCtrl {
 
     private String measurementTarget;
     private String tableName;
-    private int refValue;
+    private double refValue;
     private int monitoringPeriod;
     private int backoffNo;
     private int flowIdFk;
@@ -34,11 +34,11 @@ public class DynamoCtrl {
         this.tableName = tableName;
     }
 
-    public int getRefValue() {
+    public double getRefValue() {
         return refValue;
     }
 
-    public void setRefValue(int refValue) {
+    public void setRefValue(double refValue) {
         this.refValue = refValue;
     }
 

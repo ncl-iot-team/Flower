@@ -13,7 +13,7 @@ public class KinesisCtrl {
 
     private String measurementTarget;
     private String streamName;
-    private int refValue;
+    private double refValue;
     private int monitoringPeriod;
     private int backoffNo;
     private int flowIdFk;
@@ -34,13 +34,6 @@ public class KinesisCtrl {
         this.streamName = streamName;
     }
 
-    public int getRefValue() {
-        return refValue;
-    }
-
-    public void setRefValue(int refValue) {
-        this.refValue = refValue;
-    }
 
     public int getMonitoringPeriod() {
         return monitoringPeriod;
@@ -64,5 +57,13 @@ public class KinesisCtrl {
 
     public void setFlowIdFk(int flowIdFk) {
         this.flowIdFk = flowIdFk;
+    }
+
+    public double getRefValue() {
+        return refValue;
+    }
+
+    public void setRefValue(double refValue) {
+        this.refValue = refValue;
     }
 }

@@ -23,5 +23,5 @@ public interface StormMgmtService {
     public void stopWorkers(int no);
     public void simpleRebalanceTopology(String topologyName);
     public void fairRebalanceTopology();
-    public void buildStormClient(String nimbusHost, String nimbusIp);
+    public void buildStormClient(String nimbusIp);
 }

@@ -96,7 +96,7 @@
                         "stormCtrl.refValue": "required",
                         "stormCtrl.targetTopology": "required",
                         "stormCluster.nimbusIp": "required",
-                        "stormCluster.zookeeperEndpoint": "required"
+                        "stormCluster.supervisorPrefix": "required"
                     }});
                 function addValidationRule() {
                     $('select[name*=measurementTarget],input[name*=refValue]').each(function() {

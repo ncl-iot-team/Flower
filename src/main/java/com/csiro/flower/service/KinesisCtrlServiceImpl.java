@@ -22,18 +22,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class KinesisCtrlServiceImpl implements KinesisCtrlService {
 
-    final int fiveMinMil = 1000 * 60 * 5;
-    final int oneMinMil = 1000 * 60 * 1;
     final int twoMinMil = 1000 * 60 * 2;
-    final int threeMinMil = 1000 * 60 * 3;
-
     final int twoMinSec = 120;
-    final int fiveMinSec = 300;
-    final int oneMinSec = 60;
-    final int threeMinSec = 180;
 
     ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
-    static ControllerMonitor ctrlMonitor;
     double epsilon = 0.0001;
     double upperK0 = 0.1;
     double upInitK0 = 0.08;
@@ -41,10 +33,6 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
     double lowerK0 = 0;
     double k_init = 0.03;
     double gamma = 0.0003;
-    long longSchedulingPeriod = 4;
-    long shortSchedulingPeriod = 2;
-    int initBackoff = 2;
-    int backoffNo = initBackoff;
 
     Queue kinesisCtrlGainQ;
 
@@ -54,40 +42,41 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
     @Autowired
     KinesisMgmtService kinesisMgmtService;
 
+    @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {
         cloudWatchService.initService(provider, accessKey, secretKey, region);
         kinesisMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    public void startKinesisCtrl(final String streamName) {
+    @Override
+    public void startKinesisCtrl(final String streamName, final String measurementTarget,
+            final double putRecordUtilizationRef, int schedulingPeriod, final int backoffNo) {
 
         kinesisCtrlGainQ = new LinkedList<>();
-
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
 //                double incomingRecords = getKinesisStats(streamName);
-                runKinesisController(streamName);
+                runKinesisController(streamName,measurementTarget, putRecordUtilizationRef, backoffNo);
 //                System.out.println("Kinesis Incoming Records : " + incomingRecords);
                 //System.out.println(Thread.currentThread().getName());
             }
         };
-        scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, shortSchedulingPeriod, TimeUnit.MINUTES);
+        scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
 
-    public void runKinesisController(String streamName) {
+    private void runKinesisController(String streamName, String measurementTarget, double putRecordUtilizationRef, int backoffNo) {
         double error;
-        //double threshold = 30;
         double k0;
         double uk0;
         double uk1;
-        double putRecordUtilizationRef = 60;
+//        double putRecordUtilizationRef = 60;
         double putRecordUtilizationPercent;
         int roundedUk1;
         int roundedUk0;
         boolean isGainUpdated = false;
 
-        double incomingRecords = getKinesisStats(streamName);
+        double incomingRecords = getKinesisIncomingRecStat(streamName, measurementTarget);
         uk0 = kinesisMgmtService.getOpenShards(streamName).size();
         roundedUk0 = (int) Math.round(uk0);
 
@@ -105,19 +94,17 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
                 k0 = lowInitK0;
             }
         }
-
         error = (putRecordUtilizationPercent - putRecordUtilizationRef);
         uk1 = uk0 + k0 * error;
         roundedUk1 = (int) Math.round(Math.abs(uk1));
 
-        ctrlMonitor.pushCtrlParams("Kinesis_Ctrl_Stats", uk1, roundedUk1, k0, error, gamma, uk0, incomingRecords);
-
+//        ctrlMonitor.pushCtrlParams("Kinesis_Ctrl_Stats", uk1, roundedUk1, k0, error, gamma, uk0, incomingRecords);
         // If clouadwatch datapoint is null for current period, do not update gains and shard size!
         if (incomingRecords != 0) {
             if (uk1 > uk0) {
                 roundedUk1 = roundedUk1 - roundedUk0;
                 if (roundedUk1 != 0) {
-                    kinesisManagmement.increaseShards(streamName, roundedUk1);
+                    kinesisMgmtService.increaseShards(streamName, roundedUk1);
                 }
             } else if ((uk1 < uk0) && (uk0 != 1) /*&& (Math.abs(error) >= threshold)*/) {
                 if (roundedUk1 <= 0) {
@@ -125,7 +112,7 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
                 } else {
                     roundedUk1 = roundedUk0 - roundedUk1;
                 }
-                kinesisManagmement.decreaseShards(streamName, roundedUk1);
+                kinesisMgmtService.decreaseShards(streamName, roundedUk1);
             }
 //             If Ctrl descision revoked, do not update the gain
 //            if ((uk1 < uk0) && ((uk0 == 1) /*|| (Math.abs(error) < threshold)*/)) {
@@ -142,10 +129,10 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
         }
     }
 
-    public double getKinesisStats(String streamName) {
+    public double getKinesisIncomingRecStat(String streamName, String measurementTarget) {
 
         GetMetricStatisticsResult statsResult = cloudWatchService.
-                getCriticalResourceStats("Kinesis", streamName, "IncomingRecords", threeMinMil);
+                getCriticalResourceStats("Kinesis", streamName, measurementTarget, twoMinMil);
         return getIncomingRecords(statsResult);
     }
 
@@ -155,7 +142,7 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
             for (Datapoint dataPoint : result.getDatapoints()) {
                 val += dataPoint.getSum();
             }
-            return (val / threeMinSec);
+            return (val / twoMinSec);
         } else {
             return 0;
         }
