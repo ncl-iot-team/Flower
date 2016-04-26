@@ -75,7 +75,7 @@ public class CtrlManagementController {
     public String submitFlowCtrlSetting(@ModelAttribute("flowSetting") FlowDetailSetting flowSetting, @ModelAttribute("flow") Flow flow) {
         int flowId = flow.getFlowId();
         flowCtrlsService.saveFlowControllerSettings(flow.getPlatforms().split(","), flowId, flowSetting);
-        return "redirect:/flowCtrlServicePage";// + flowId;
+        return "redirect:/ctrls/flowCtrlServicePage";
     }
 
     @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
@@ -100,8 +100,8 @@ public class CtrlManagementController {
         return kinesisMgmtService.getStreamList();
     }
 
-    @RequestMapping("/flowCtrlServicePage")
-    public String viewFlowLoadPage() {
+    @RequestMapping(value = "/flowCtrlServicePage", method = RequestMethod.GET)
+    public String viewFlowLoadPage(@ModelAttribute("flow") Flow flow) {
         return "flowCtrlServicePage";
     }
 }
