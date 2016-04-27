@@ -21,7 +21,21 @@
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid-theme.min.css" />
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid.min.js"></script>
+        <style>
+            table td:last-child {
+                width: 1px;  
+            }
 
+            table td:nth-child(5){
+                width: 5%;
+            }
+            table td:nth-child(4){
+                width: 15%;
+            }
+            table td:nth-child(3){
+                width: 20%;
+            }
+        </style>
         <script type="text/javascript">
             $(document).ready(function() {
 

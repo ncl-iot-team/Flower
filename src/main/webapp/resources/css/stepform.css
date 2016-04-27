@@ -15,10 +15,19 @@ and open the template in the editor.
 }
 .form-style-2-heading{
     font-weight: bold;
-    /*font-style: italic;*/
+    color:#5a5655;
     border-bottom: 1px solid #ddd;
     margin-bottom: 25px;
     font-size: 15px;
+    padding-bottom: 3px;
+}
+
+.form-style-3-heading{
+    font-weight: bold;
+    color:#666666;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 25px;
+    font-size: 13px;
     padding-bottom: 3px;
 }
 .form-style-2 label{
@@ -117,7 +126,7 @@ table {
     background:#eaebec;
     margin:0px;
     border:#ccc 1px solid;
-    width: 700px;
+    /*width: 800px;*/
 
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
@@ -175,7 +184,7 @@ table tr.even td {
     background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6));
     background: -moz-linear-gradient(top,  #f8f8f8,  #f6f6f6);
 }
-table td:last-child {
+/*table td:last-child {
     width: 1px;  
 }
 
@@ -187,11 +196,18 @@ table td:nth-child(4){
 }
 table td:nth-child(3){
     width: 20%;
-}
+}*/
 
 img.bin{
     position: relative;
     content:url("../img/bin.png");
+    width:17px; 
+    height:17px;
+}
+
+img.refresh{
+    position: relative;
+    content:url("../img/refresh.png");
     width:17px; 
     height:17px;
 }
