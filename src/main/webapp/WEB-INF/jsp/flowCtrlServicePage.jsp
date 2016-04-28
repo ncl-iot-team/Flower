@@ -8,10 +8,14 @@
 <html>
     <head>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-        <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
 
+        <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/epoch.css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="${pageContext.request.contextPath}/resources/js/epoch.min.js"></script>
+
         <style>
             .ui-accordion .ui-accordion-header {
                 /*text-align: center;*/
@@ -23,7 +27,7 @@
                 margin: 2px 0 0 0;
                 padding: .5em .5em .5em .7em;
                 min-height: 0; /* support: IE7 */
-/*                border: 1px #c1e2b3 solid;*/
+                /*                border: 1px #c1e2b3 solid;*/
 
             }
             .ui-accordion .ui-accordion-icons {
@@ -107,7 +111,7 @@
                 color: #fff;
                 background-color: #CD391F;
             }
-            
+
             .form-style-ctrl-control{
                 width: 200px;
                 padding: 20px 12px 10px 20px;
@@ -137,6 +141,7 @@
                 var flow = '${flow.platforms}';
                 var systems = flow.split(",");
                 for (var i = 0; i < systems.length; i++) {
+                    var system = systems[i].replace(' ','');
                     $("#accordion").children().last()
                             .after('<h3 class="accordion-header ui-accordion-header \n\
                                     ui-helper-reset ui-state-default ui-accordion-icons \n\
@@ -147,22 +152,21 @@
                                     '</h3><div class="ui-accordion-content ui-helper-reset \n\
                                     ui-widget-content ui-corner-bottom"><div class="form-style-ctrl-control">\n\
                                     <div class="form-style-3-heading">Controller Management</div>\n\
-                                    <div class="play">start</div><div class="kill">stop</div></div><div class="form-style-ctrl-stat">\n\
+                                    <div id="'+system+'PlayBtn" class="play">start</div><div id="'+system+'KillBtn" class="kill">stop</div></div><div class="form-style-ctrl-stat">\n\
                                     <div class="form-style-3-heading">Controller Stats</div>\n\
-                                     <table id="' + systems[i] + '"><thead>\n\
+                                     <table id="' + system + 'Tbl"><thead>\n\
                                     <tr><th>Controller Type</th><th>Status</th> \n\
                                      <th>Resource</th><th>Ref. Value</th> <th>Scheduling</th> <th>Backoff No</th> <th>Last update</th> <th></th></tr></thead> \n\
                                         <tbody><tr> <td></td><td>\n\
                                         </td><td>45</td> \n\
-                                        <td>\n\
-                                        </td><td></td>\n\
+                                        <td></td><td></td>\n\
                                         <td></td><td></td><td><img class="refresh"/></td></tr>\n\
                                       </tbody></table>\n\
                                       </div><div class="form-style-ctrl-control">\n\
                                     <div class="form-style-3-heading">Resource Share</div>\n\
                                    </div><div class="form-style-ctrl-stat">\n\
                                     <div class="form-style-3-heading">System Performance Monitoring</div>\n\
-                                     </div></div></div>');
+                                     <div id="'+system+'LineChart" class="epoch category20" style="width: 700px; height: 200px"></div></div></div></div>');
                 }
 
                 $('.play').click(function() {
@@ -185,10 +189,41 @@
                     }
                 });
 
+                function loaddata(){
+                    var times = parseInt((new Date).getTime() /1000);
+                    var rnd = parseInt(Math.random()*1000);
+                     lineChartData = [
+                        // First series
+                        {
+                            label: "Series 1",
+                            values: [{time: times, y: 10+rnd}]
+                        },
+                        // The second series
+                        {
+                            label: "Series 2",
+                            values: [{time: times, y: 78+rnd}]
+                        }
+                    ];
+                    return lineChartData;
+                }
+                
+                var mygraph = $('#ApacheStormLineChart').epoch({
+                    type: 'time.line',
+                    data: loaddata(),
+                    axes: ['bottom', 'left']
+                });
+                (function worker() {
+                    // Schedule the next request when the current one's complete
+                    var times = parseInt((new Date).getTime() /1000);
+                    var rnd = parseInt(Math.random()*1000);
+                    mygraph.push([{ time: times, y: 100+rnd },{ time: times, y: 350+rnd }]);
+                    setTimeout(worker, 1000);
+                })();
+
                 var headers = $('#accordion .accordion-header');
                 var contentAreas = $('#accordion .ui-accordion-content ').hide();
                 var expandLink = $('.accordion-expand-all');
-// add the accordion functionality
+                // add the accordion functionality
                 headers.click(function() {
                     var panel = $(this).next();
                     var isOpen = panel.is(':visible');
@@ -199,13 +234,13 @@
                     // stop the link from causing a pagescroll
                     return false;
                 });
-// hook up the expand/collapse all
+                // hook up the expand/collapse all
                 expandLink.click(function() {
                     var isAllOpen = $(this).data('isAllOpen');
                     contentAreas[isAllOpen ? 'hide' : 'show']()
                             .trigger(isAllOpen ? 'hide' : 'show');
                 });
-// when panels open or close, check to see if they're all open
+                // when panels open or close, check to see if they're all open
                 contentAreas.on({
                     // whenever we open a panel, check to see if they're all open
                     // if all open, swap the button to collapser
@@ -236,7 +271,7 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555">Elasticity Management of ${flow.flowName} Flow</strong></h3>
             <hr>
-            <p id="ssman">Say something!
+            <p id="ssman">Placeholder
             </p>
             <br>
         </div>

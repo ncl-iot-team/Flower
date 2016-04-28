@@ -102,6 +102,6 @@ public class CtrlManagementController {
 
     @RequestMapping(value = "/flowCtrlServicePage", method = RequestMethod.GET)
     public String viewFlowLoadPage(@ModelAttribute("flow") Flow flow) {
-        return "test";
+        return "flowCtrlServicePage";
     }
 }
