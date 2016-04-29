@@ -141,7 +141,7 @@
                 var flow = '${flow.platforms}';
                 var systems = flow.split(",");
                 for (var i = 0; i < systems.length; i++) {
-                    var system = systems[i].replace(' ','');
+                    var system = systems[i].replace(' ', '');
                     $("#accordion").children().last()
                             .after('<h3 class="accordion-header ui-accordion-header \n\
                                     ui-helper-reset ui-state-default ui-accordion-icons \n\
@@ -152,21 +152,22 @@
                                     '</h3><div class="ui-accordion-content ui-helper-reset \n\
                                     ui-widget-content ui-corner-bottom"><div class="form-style-ctrl-control">\n\
                                     <div class="form-style-3-heading">Controller Management</div>\n\
-                                    <div id="'+system+'PlayBtn" class="play">start</div><div id="'+system+'KillBtn" class="kill">stop</div></div><div class="form-style-ctrl-stat">\n\
+                                    <div id="' + system + 'Ctrl" class="play">start</div><div id="' + system + 'KillBtn" class="kill">stop</div></div><div class="form-style-ctrl-stat">\n\
                                     <div class="form-style-3-heading">Controller Stats</div>\n\
                                      <table id="' + system + 'Tbl"><thead>\n\
-                                    <tr><th>Controller Type</th><th>Status</th> \n\
-                                     <th>Resource</th><th>Ref. Value</th> <th>Scheduling</th> <th>Backoff No</th> <th>Last update</th> <th></th></tr></thead> \n\
+                                    <tr><th>Controller Status</th> \n\
+                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> <th>Backoff No</th> <th>Last update</th> <th></th></tr></thead> \n\
                                         <tbody><tr> <td></td><td>\n\
                                         </td><td>45</td> \n\
                                         <td></td><td></td>\n\
-                                        <td></td><td></td><td><img class="refresh"/></td></tr>\n\
+                                        <td></td><td><img class="refresh"/></td></tr>\n\
                                       </tbody></table>\n\
                                       </div><div class="form-style-ctrl-control">\n\
                                     <div class="form-style-3-heading">Resource Share</div>\n\
-                                   </div><div class="form-style-ctrl-stat">\n\
+                                   <div id="' + system + 'Pie" class="epoch category20c" style="width: 180px; height: 180px"></div></div><div class="form-style-ctrl-stat">\n\
                                     <div class="form-style-3-heading">System Performance Monitoring</div>\n\
-                                     <div id="'+system+'LineChart" class="epoch category20" style="width: 700px; height: 200px"></div></div></div></div>');
+                                     <div id="' + system + 'LineChart" class="epoch category30" style="width: 700px; height: 200px"></div>\n\
+                                        </div></div></div>');
                 }
 
                 $('.play').click(function() {
@@ -174,10 +175,18 @@
                     $this.toggleClass('active');
                     if ($this.hasClass('active')) {
                         $this.text('pause');
+                        var $id = $this.attr('id');
+                        $.ajax({
+                            type: 'POST',
+                            url: runControllerService,
+                            data: {ctrlName: $id}
+                        });
                     } else {
                         $this.text('start');
                     }
                 });
+                
+                
                 $('.kill').click(function() {
                     var $this = $(this);
                     $this.toggleClass('active');
@@ -189,36 +198,34 @@
                     }
                 });
 
-                function loaddata(){
-                    var times = parseInt((new Date).getTime() /1000);
-                    var rnd = parseInt(Math.random()*1000);
-                     lineChartData = [
-                        // First series
-                        {
-                            label: "Series 1",
-                            values: [{time: times, y: 10+rnd}]
-                        },
-                        // The second series
-                        {
-                            label: "Series 2",
-                            values: [{time: times, y: 78+rnd}]
-                        }
-                    ];
-                    return lineChartData;
+                function getTime() {
+                    return parseInt((new Date).getTime() / 1000);
                 }
-                
                 var mygraph = $('#ApacheStormLineChart').epoch({
                     type: 'time.line',
-                    data: loaddata(),
+                    data: [{label: "S1", values: [{time: getTime(), y: 10}]},
+                        {label: "S2", values: [{time: getTime(), y: 10}]}],
                     axes: ['bottom', 'left']
                 });
                 (function worker() {
-                    // Schedule the next request when the current one's complete
-                    var times = parseInt((new Date).getTime() /1000);
-                    var rnd = parseInt(Math.random()*1000);
-                    mygraph.push([{ time: times, y: 100+rnd },{ time: times, y: 350+rnd }]);
-                    setTimeout(worker, 1000);
+                    var times = getTime();
+                    var rnd = parseInt(Math.random() * 1000);
+                    mygraph.push([{time: times, y: 100 + rnd}, {time: times, y: 350 + rnd}]);
+                    setTimeout(worker, 60000);
                 })();
+
+                var pieData = [
+                    {label: 'Slice 1', value: 10},
+                    {label: 'Slice 2', value: 20}
+                ];
+
+                $('#ApacheStormPie').epoch({
+                    type: 'pie',
+                    data: pieData
+                });
+
+
+
 
                 var headers = $('#accordion .accordion-header');
                 var contentAreas = $('#accordion .ui-accordion-content ').hide();
