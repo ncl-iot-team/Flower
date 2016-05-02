@@ -5,15 +5,15 @@
  */
 package com.csiro.flower.service;
 
+import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.KinesisCtrl;
+
 /**
  *
  * @author kho01f
  */
-public interface KinesisCtrlService {
+public interface KinesisCtrlService{
 
-    public void initService(String provider, String accessKey, String secretKey, String region);
-
-    public void startKinesisCtrl(final String streamName, final String measurementTarget,
-            final double putRecordUtilizationRef, int schedulingPeriod, final int backoffNo);
+     public void startKinesisController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl);
 
 }

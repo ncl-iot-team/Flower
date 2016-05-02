@@ -5,15 +5,17 @@
  */
 package com.csiro.flower.service;
 
+import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.StormCluster;
+import com.csiro.flower.model.StormCtrl;
+
 /**
  *
  * @author kho01f
  */
 public interface StormCtrlService {
 
-    public void initService(String provider, String accessKey, String secretKey, String region);
-
-    public void startStormCtrl(final String nimbusIp, final String topologyName,
-            final String measurementTarget, final double refVal, int schedulingPeriod, final int backoffNo);
-
+    public void startStormController(CloudSetting cloudSetting,
+            StormCluster stormCluster, StormCtrl stormCtrl);
+    
 }

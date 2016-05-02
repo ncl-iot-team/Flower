@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author kho01f
  */
 @Service
-public class FlowCtrlsServiceImpl implements FlowCtrlsService {
+public class FlowCtrlsManagerServiceImpl implements FlowCtrlsManagerService {
 
     @Autowired
     CloudSettingDao cloudSettingDao;
@@ -40,13 +40,8 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
     StormCtrlDao stormCtrlDao;
 
     @Override
-    public void runFlowController(int flowId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     @Transactional
-    public void saveFlowControllerSettings(String[] platforms, int flowId, FlowDetailSetting flowSetting) {
+    public void saveFlowCtrlsSettings(String[] platforms, int flowId, FlowDetailSetting flowSetting) {
 
         flowSetting.getCloudSetting().setFlowIdFk(flowId);
         cloudSettingDao.save(flowSetting.getCloudSetting());
@@ -69,7 +64,7 @@ public class FlowCtrlsServiceImpl implements FlowCtrlsService {
                 }
             }
             if (platform.equals("Amazon Kinesis")) {
-                
+
                 //further improvement: Batch insertion
                 for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
                     kinesisCtrl.setFlowIdFk(flowId);

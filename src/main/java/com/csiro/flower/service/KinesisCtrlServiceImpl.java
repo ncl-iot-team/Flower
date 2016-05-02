@@ -7,7 +7,10 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.KinesisCtrl;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,7 +23,7 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
-public class KinesisCtrlServiceImpl implements KinesisCtrlService {
+public class KinesisCtrlServiceImpl extends CtrlService implements KinesisCtrlService {
 
     final int twoMinMil = 1000 * 60 * 2;
     final int twoMinSec = 120;
@@ -43,13 +46,27 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
     KinesisMgmtService kinesisMgmtService;
 
     @Override
-    public void initService(String provider, String accessKey, String secretKey, String region) {
+    public void startKinesisController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
+
+        initService(
+                cloudSetting.getCloudProvider(),
+                cloudSetting.getAccessKey(),
+                cloudSetting.getSecretKey(),
+                cloudSetting.getRegion());
+        startKinesisCtrl(
+                kinesisCtrl.getStreamName(),
+                kinesisCtrl.getMeasurementTarget(),
+                kinesisCtrl.getRefValue(),
+                kinesisCtrl.getMonitoringPeriod(),
+                kinesisCtrl.getBackoffNo());
+    }
+
+    private void initService(String provider, String accessKey, String secretKey, String region) {
         cloudWatchService.initService(provider, accessKey, secretKey, region);
         kinesisMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    @Override
-    public void startKinesisCtrl(final String streamName, final String measurementTarget,
+    private void startKinesisCtrl(final String streamName, final String measurementTarget,
             final double putRecordUtilizationRef, int schedulingPeriod, final int backoffNo) {
 
         kinesisCtrlGainQ = new LinkedList<>();
@@ -57,7 +74,7 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
             @Override
             public void run() {
 //                double incomingRecords = getKinesisStats(streamName);
-                runKinesisController(streamName,measurementTarget, putRecordUtilizationRef, backoffNo);
+                runController(streamName, measurementTarget, putRecordUtilizationRef, backoffNo);
 //                System.out.println("Kinesis Incoming Records : " + incomingRecords);
                 //System.out.println(Thread.currentThread().getName());
             }
@@ -65,7 +82,7 @@ public class KinesisCtrlServiceImpl implements KinesisCtrlService {
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
 
-    private void runKinesisController(String streamName, String measurementTarget, double putRecordUtilizationRef, int backoffNo) {
+    private void runController(String streamName, String measurementTarget, double putRecordUtilizationRef, int backoffNo) {
         double error;
         double k0;
         double uk0;

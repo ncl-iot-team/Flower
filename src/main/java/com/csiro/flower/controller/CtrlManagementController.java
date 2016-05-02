@@ -16,12 +16,9 @@ import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import com.csiro.flower.model.StormCluster;
 import com.csiro.flower.model.StormCtrl;
-import com.csiro.flower.service.DynamoCtrlService;
 import com.csiro.flower.service.DynamoMgmtService;
-import com.csiro.flower.service.FlowCtrlsService;
-import com.csiro.flower.service.KinesisCtrlService;
+import com.csiro.flower.service.FlowCtrlsManagerService;
 import com.csiro.flower.service.KinesisMgmtService;
-import com.csiro.flower.service.StormCtrlService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -36,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -47,22 +45,13 @@ import org.springframework.web.servlet.ModelAndView;
 public class CtrlManagementController {
 
     @Autowired
-    FlowCtrlsService flowCtrlsService;
+    FlowCtrlsManagerService flowCtrlsManagerService;
 
     @Autowired
     KinesisMgmtService kinesisMgmtService;
 
     @Autowired
     DynamoMgmtService dynamoMgmtService;
-
-    @Autowired
-    StormCtrlService stormCtrlService;
-
-    @Autowired
-    KinesisCtrlService kinesisCtrlService;
-
-    @Autowired
-    DynamoCtrlService dynamoCtrlService;
 
     @Autowired
     CloudSettingDao cloudSettingDao;
@@ -108,10 +97,16 @@ public class CtrlManagementController {
     }
 
     @RequestMapping(value = "/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
-    public String submitFlowCtrlSetting(@ModelAttribute("flowSetting") FlowDetailSetting flowSetting, @ModelAttribute("flow") Flow flow) {
+    public ModelAndView submitFlowCtrlSetting(
+            @ModelAttribute("flowSetting") FlowDetailSetting flowSetting,
+            @ModelAttribute("flow") Flow flow,
+            RedirectAttributes redirectAttributes) {
         int flowId = flow.getFlowId();
-        flowCtrlsService.saveFlowControllerSettings(flow.getPlatforms().split(","), flowId, flowSetting);
-        return "redirect:/ctrls/flowCtrlServicePage";
+        flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
+        ModelAndView model = new ModelAndView();
+        redirectAttributes.addFlashAttribute(flowSetting);
+        model.setViewName("redirect:/ctrls/launchFlowCtrlServicePage");
+        return model;
     }
 
     @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
@@ -136,8 +131,16 @@ public class CtrlManagementController {
         return kinesisMgmtService.getStreamList();
     }
 
-    @RequestMapping(value = "/flowCtrlServicePage", method = RequestMethod.GET)
-    public String viewFlowLoadPage(@ModelAttribute("flow") Flow flow) {
+    @RequestMapping(value = "/launchFlowCtrlServicePage", method = RequestMethod.GET)
+    public String launchCtrlServicePage(@ModelAttribute("flow") Flow flow,
+            @ModelAttribute("flowSetting") FlowDetailSetting flowSetting) {
+
+        if (flowSetting.getStormCluster() != null) {
+            controllerServiceRunner.startStormController(
+                    flowSetting.getCloudSetting(),
+                    flowSetting.getStormCluster(),
+                    flowSetting.getStormCtrl());
+        }
         return "flowCtrlServicePage";
     }
 
@@ -150,37 +153,14 @@ public class CtrlManagementController {
         FlowDetailSetting flowDetailSetting = new FlowDetailSetting();
         switch (ctrlName) {
             case "ApacheStormCtrl":
-                stormCtrlService.initService(
-                        cloudSetting.getCloudProvider(),
-                        cloudSetting.getAccessKey(),
-                        cloudSetting.getSecretKey(),
-                        cloudSetting.getRegion());
                 StormCluster stormCluster = stormClusterDao.get(id);
                 StormCtrl stormCtrl = stormCtrlDao.get(id);
-                stormCtrlService.startStormCtrl(
-                        stormCluster.getNimbusIp(),
-                        stormCtrl.getTargetTopology(),
-                        stormCtrl.getMeasurementTarget(),
-                        stormCtrl.getRefValue(),
-                        stormCtrl.getMonitoringPeriod(),
-                        stormCtrl.getBackoffNo());
+                controllerServiceRunner.startStormController(cloudSetting, stormCluster, stormCtrl);
                 flowDetailSetting.setStormCtrl(stormCtrl);
                 break;
             case "AmazonKinesisCtrl":
-                kinesisCtrlService.initService(
-                        cloudSetting.getCloudProvider(),
-                        cloudSetting.getAccessKey(),
-                        cloudSetting.getSecretKey(),
-                        cloudSetting.getRegion());
                 List<KinesisCtrl> kinesisCtrls = kinesisCtrlDao.get(id);
-                for (KinesisCtrl kinesisCtrl : kinesisCtrls) {
-                    kinesisCtrlService.startKinesisCtrl(
-                            kinesisCtrl.getStreamName(),
-                            kinesisCtrl.getMeasurementTarget(),
-                            kinesisCtrl.getRefValue(),
-                            kinesisCtrl.getMonitoringPeriod(),
-                            kinesisCtrl.getBackoffNo());
-                }
+                controllerServiceRunner.startKinesisController(cloudSetting, kinesisCtrls);
                 flowDetailSetting.setKinesisCtrls(kinesisCtrls);
                 break;
         }

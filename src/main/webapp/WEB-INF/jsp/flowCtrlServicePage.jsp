@@ -112,14 +112,14 @@
                 background-color: #CD391F;
             }
 
-            .form-style-ctrl-control{
-                width: 200px;
+            .form-style-ctrl-stat{
+                width: 980px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
-                float: left;
+                /*float: left;*/
             }
-            .form-style-ctrl-stat{
+            .form-style-ctrl-diag{
                 width: 780px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
@@ -150,21 +150,22 @@
                                     src="${pageContext.request.contextPath}/resources/img/'
                                     + systems[i] + '.png" /> ' + systems[i] +
                                     '</h3><div class="ui-accordion-content ui-helper-reset \n\
-                                    ui-widget-content ui-corner-bottom"><div class="form-style-ctrl-control">\n\
-                                    <div class="form-style-3-heading">Controller Management</div>\n\
-                                    <div id="' + system + 'Ctrl" class="play">start</div><div id="' + system + 'KillBtn" class="kill">stop</div></div><div class="form-style-ctrl-stat">\n\
+                                    ui-widget-content ui-corner-bottom"><div class="form-style-ctrl-stat">\n\
                                     <div class="form-style-3-heading">Controller Stats</div>\n\
                                      <table id="' + system + 'Tbl"><thead>\n\
-                                    <tr><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> <th>Backoff No</th> <th>Last update</th> <th></th></tr></thead> \n\
-                                        <tbody><tr> <td></td><td>\n\
+                                    <tr><th>Resource Name</th><th>Controller Status</th> \n\
+                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> <th>Backoff No</th> <th>Last update</th>\n\
+                                    <th></th> <th></th></tr></thead> \n\
+                                        <tbody><tr><td></td> <td></td><td>\n\
                                         </td><td>45</td> \n\
                                         <td></td><td></td>\n\
-                                        <td></td><td><img class="refresh"/></td></tr>\n\
+                                        <td></td><td><div id="' + system + 'Ctrl" class="play" style="text-shadow:none">start</div></td>\n\
+                                        <td><input type="radio" name="'+system+'Radio" value=""></td></tr>\n\
                                       </tbody></table>\n\
-                                      </div><div class="form-style-ctrl-control">\n\
+                                      </div><div class="form-style-resource-share">\n\
                                     <div class="form-style-3-heading">Resource Share</div>\n\
-                                   <div id="' + system + 'Pie" class="epoch category20c" style="width: 180px; height: 180px"></div></div><div class="form-style-ctrl-stat">\n\
+                                   <div id="' + system + 'Pie" class="epoch category20c" style="width: 180px; height: 180px"></div></div>\n\
+                                    <div class="form-style-ctrl-diag">\n\
                                     <div class="form-style-3-heading">System Performance Monitoring</div>\n\
                                      <div id="' + system + 'LineChart" class="epoch category30" style="width: 700px; height: 200px"></div>\n\
                                         </div></div></div>');
@@ -276,7 +277,7 @@
         <tiles:insertDefinition name="defaultbar" />
 
         <div class="col-xs-12">
-            <h3><strong style="color: #555">Elasticity Management of ${flow.flowName} Flow</strong></h3>
+            <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
             <hr>
             <p id="ssman">Placeholder
             </p>

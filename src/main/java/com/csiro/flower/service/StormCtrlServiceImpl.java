@@ -7,6 +7,9 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.StormCluster;
+import com.csiro.flower.model.StormCtrl;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +27,7 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
-public class StormCtrlServiceImpl implements StormCtrlService {
+public class StormCtrlServiceImpl extends CtrlService implements StormCtrlService {
 
     final int twoMinMil = 1000 * 60 * 2;
     final int twoMinSec = 120;
@@ -47,15 +50,31 @@ public class StormCtrlServiceImpl implements StormCtrlService {
 
     @Autowired
     StormMgmtService stormMgmtService;
-
+    
     @Override
-    public void initService(String provider, String accessKey, String secretKey, String region) {
+    public void startStormController(CloudSetting cloudSetting,
+            StormCluster stormCluster, StormCtrl stormCtrl) {
+
+        initService(
+                cloudSetting.getCloudProvider(),
+                cloudSetting.getAccessKey(),
+                cloudSetting.getSecretKey(),
+                cloudSetting.getRegion());
+        startStormCtrl(
+                stormCluster.getNimbusIp(),
+                stormCtrl.getTargetTopology(),
+                stormCtrl.getMeasurementTarget(),
+                stormCtrl.getRefValue(),
+                stormCtrl.getMonitoringPeriod(),
+                stormCtrl.getBackoffNo());
+    }
+
+    private void initService(String provider, String accessKey, String secretKey, String region) {
         cloudWatchService.initService(provider, accessKey, secretKey, region);
         stormMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    @Override
-    public void startStormCtrl(final String nimbusIp, final String topologyName,
+    private void startStormCtrl(final String nimbusIp, final String topologyName,
             final String measurementTarget, final double refVal, int schedulingPeriod, final int backoffNo) {
         stormCtrlGainQ = new LinkedList<>();
 
@@ -63,15 +82,15 @@ public class StormCtrlServiceImpl implements StormCtrlService {
             @Override
             public void run() {
 
-                runStormClusterController(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
+                runCtrl(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
 //                System.out.println("Storm CPU: " + cpu);
-                //System.out.println(Thread.currentThread().getName());
+//                System.out.println(Thread. .currentThread().getName());
             }
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
 
-    public void runStormClusterController(String nimbusIp, String topologyName,
+    private void runCtrl(String nimbusIp, String topologyName,
             String measurementTarget, double cpuRef, int backoffNo) {
         try {
             int clusterSizeLimit;
@@ -113,6 +132,7 @@ public class StormCtrlServiceImpl implements StormCtrlService {
 
                 stormMgmtService.startWorkers(roundedUk1);
                 Thread.sleep(TRANSITION_WAIT_TIME);
+                stormMgmtService.buildStormClient(nimbusIp);
                 stormMgmtService.simpleRebalanceTopology(topologyName);
             } else if ((roundedUk1 < uk0) && (uk0 != 1) /* && (Math.abs(error) >= threshold)*/) {
                 if (roundedUk1 <= 0) {
@@ -162,4 +182,5 @@ public class StormCtrlServiceImpl implements StormCtrlService {
         }
         return cpu / result.getDatapoints().size();
     }
+
 }

@@ -5,15 +5,15 @@
  */
 package com.csiro.flower.service;
 
+import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.DynamoCtrl;
+
 /**
  *
  * @author kho01f
  */
 public interface DynamoCtrlService {
 
-    public void initService(String provider, String accessKey, String secretKey, String region);
-
-    public void startDynamoCtrl(final String tblName, final String measurementTarget,
-            final double refValue, int schedulingPeriod, final int backoffNo);
-
+    public void startDynamoConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl);
+    
 }

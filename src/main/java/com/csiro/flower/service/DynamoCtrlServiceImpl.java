@@ -7,6 +7,8 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.DynamoCtrl;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executors;
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
-public class DynamoCtrlServiceImpl implements DynamoCtrlService {
+public class DynamoCtrlServiceImpl extends CtrlService implements DynamoCtrlService {
 
     @Autowired
     CloudWatchService cloudWatchService;
@@ -44,13 +46,27 @@ public class DynamoCtrlServiceImpl implements DynamoCtrlService {
     ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
 
     @Override
-    public void initService(String provider, String accessKey, String secretKey, String region) {
+    public void startDynamoConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
+
+        initService(
+                cloudSetting.getCloudProvider(),
+                cloudSetting.getAccessKey(),
+                cloudSetting.getSecretKey(),
+                cloudSetting.getRegion());
+        startDynamoCtrl(
+                dynamoCtrl.getTableName(),
+                dynamoCtrl.getMeasurementTarget(),
+                dynamoCtrl.getRefValue(),
+                dynamoCtrl.getMonitoringPeriod(),
+                dynamoCtrl.getBackoffNo());
+    }
+
+    private void initService(String provider, String accessKey, String secretKey, String region) {
         cloudWatchService.initService(provider, accessKey, secretKey, region);
         dynamoMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    @Override
-    public void startDynamoCtrl(final String tblName, final String measurementTarget, 
+    private void startDynamoCtrl(final String tblName, final String measurementTarget,
             final double refValue, int schedulingPeriod, final int backoffNo) {
 
         dynamoCtrlGainQ = new LinkedList<>();
@@ -58,7 +74,7 @@ public class DynamoCtrlServiceImpl implements DynamoCtrlService {
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
-                runDynamoController(tblName, measurementTarget, refValue, backoffNo);
+                runController(tblName, measurementTarget, refValue, backoffNo);
 //                System.out.println("Dynamo Write Rate: " + writeRate);
                 // System.out.println(Thread.currentThread().getName());
             }
@@ -66,7 +82,7 @@ public class DynamoCtrlServiceImpl implements DynamoCtrlService {
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
 
-    private void runDynamoController(String tblName, String measurementTarget,
+    private void runController(String tblName, String measurementTarget,
             double writeUtilizationRef, int initBackoff) {
         double error;
 //        double threshold = 30;
@@ -84,7 +100,7 @@ public class DynamoCtrlServiceImpl implements DynamoCtrlService {
          Units of Capacity required for writes = Number of item writes per second x item size in 1KB blocks
          Units of Capacity required for reads* = Number of item reads per second x item size in 4KB blocks 
          */
-        double writeRate = getDynamoStats(tblName,measurementTarget);
+        double writeRate = getDynamoStats(tblName, measurementTarget);
         uk0 = dynamoMgmtService.getProvisionedThroughput(tblName).getWriteCapacityUnits();
         writeUtilizationPercent = (writeRate / uk0) * 100;
 
