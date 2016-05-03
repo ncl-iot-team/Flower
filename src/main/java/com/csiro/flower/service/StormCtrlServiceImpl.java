@@ -81,10 +81,9 @@ public class StormCtrlServiceImpl extends CtrlService implements StormCtrlServic
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
-
                 runCtrl(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
-//                System.out.println("Storm CPU: " + cpu);
-//                System.out.println(Thread. .currentThread().getName());
+//                System.out.println("Storm CPU: ");
+                String str = Thread.currentThread().getName();
             }
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);

@@ -75,7 +75,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         DescribeInstancesRequest request = new DescribeInstancesRequest();
         DescribeInstancesResult result = ec2.describeInstances(request);
         List<Reservation> reservations = result.getReservations();
-        List<String> instanceIds = new ArrayList<String>();
+        List<String> instanceIds = new ArrayList<>();
         for (Reservation reservation : reservations) {
             List<Instance> instances = reservation.getInstances();
             for (Instance instance : instances) {
@@ -94,7 +94,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         DescribeInstancesRequest request = new DescribeInstancesRequest();
         DescribeInstancesResult result = ec2.describeInstances(request);
         List<Reservation> reservations = result.getReservations();
-        List<String> instanceIds = new ArrayList<String>();
+        List<String> instanceIds = new ArrayList<>();
 
         for (Reservation reservation : reservations) {
             List<Instance> instances = reservation.getInstances();

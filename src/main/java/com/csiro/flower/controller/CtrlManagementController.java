@@ -11,29 +11,34 @@ import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import com.csiro.flower.model.StormCluster;
 import com.csiro.flower.model.StormCtrl;
+import com.csiro.flower.service.DynamoCtrlService;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
+import com.csiro.flower.service.KinesisCtrlService;
 import com.csiro.flower.service.KinesisMgmtService;
+import com.csiro.flower.service.StormCtrlService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  *
@@ -68,6 +73,15 @@ public class CtrlManagementController {
     @Autowired
     DynamoCtrlDao dynamoCtrlDao;
 
+    @Autowired
+    StormCtrlService stormCtrlService;
+
+    @Autowired
+    KinesisCtrlService kinesisCtrlService;
+
+    @Autowired
+    DynamoCtrlService dynamoCtrlService;
+
     @InitBinder
     public void nullValueHandler(WebDataBinder binder) {
         binder.registerCustomEditor(int.class, new CustomNumberEditor(Integer.class, true) {
@@ -97,16 +111,14 @@ public class CtrlManagementController {
     }
 
     @RequestMapping(value = "/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
-    public ModelAndView submitFlowCtrlSetting(
+    public RedirectView submitFlowCtrlSetting(
             @ModelAttribute("flowSetting") FlowDetailSetting flowSetting,
             @ModelAttribute("flow") Flow flow,
             RedirectAttributes redirectAttributes) {
         int flowId = flow.getFlowId();
         flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
-        ModelAndView model = new ModelAndView();
-        redirectAttributes.addFlashAttribute(flowSetting);
-        model.setViewName("redirect:/ctrls/launchFlowCtrlServicePage");
-        return model;
+        redirectAttributes.addFlashAttribute("flowSetting", flowSetting);
+        return new RedirectView("/Flower/ctrls/launchFlowCtrlServicePage");
     }
 
     @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
@@ -132,39 +144,52 @@ public class CtrlManagementController {
     }
 
     @RequestMapping(value = "/launchFlowCtrlServicePage", method = RequestMethod.GET)
-    public String launchCtrlServicePage(@ModelAttribute("flow") Flow flow,
-            @ModelAttribute("flowSetting") FlowDetailSetting flowSetting) {
-
+    public ModelAndView launchCtrlServicePage(Model model) {
+        FlowDetailSetting flowSetting = (FlowDetailSetting) model.asMap().get("flowSetting");
         if (flowSetting.getStormCluster() != null) {
-            controllerServiceRunner.startStormController(
+            stormCtrlService.startStormController(
                     flowSetting.getCloudSetting(),
                     flowSetting.getStormCluster(),
                     flowSetting.getStormCtrl());
         }
-        return "flowCtrlServicePage";
-    }
-
-    @RequestMapping(value = "/runControllerService", method = RequestMethod.POST)
-    public @ResponseBody
-    FlowDetailSetting startCtrlService(@ModelAttribute("flow") Flow flow,
-            @RequestParam("ctrlName") String ctrlName) {
-        int id = flow.getFlowId();
-        CloudSetting cloudSetting = cloudSettingDao.get(id);
-        FlowDetailSetting flowDetailSetting = new FlowDetailSetting();
-        switch (ctrlName) {
-            case "ApacheStormCtrl":
-                StormCluster stormCluster = stormClusterDao.get(id);
-                StormCtrl stormCtrl = stormCtrlDao.get(id);
-                controllerServiceRunner.startStormController(cloudSetting, stormCluster, stormCtrl);
-                flowDetailSetting.setStormCtrl(stormCtrl);
-                break;
-            case "AmazonKinesisCtrl":
-                List<KinesisCtrl> kinesisCtrls = kinesisCtrlDao.get(id);
-                controllerServiceRunner.startKinesisController(cloudSetting, kinesisCtrls);
-                flowDetailSetting.setKinesisCtrls(kinesisCtrls);
-                break;
+        if (flowSetting.getDynamoCtrls() != null) {
+            for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
+                dynamoCtrlService.startDynamoConroller(flowSetting.getCloudSetting(),
+                        dynamoCtrl);
+            }
         }
-        return flowDetailSetting;
-
+        if (flowSetting.getKinesisCtrls() != null) {
+            for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
+                kinesisCtrlService.startKinesisController(flowSetting.getCloudSetting(),
+                        kinesisCtrl);
+            }
+        }
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("flowSetting", flowSetting);
+        modelAndView.setViewName("flowCtrlServicePage");
+        return modelAndView;
     }
+
+//    @RequestMapping(value = "/runControllerService", method = RequestMethod.POST)
+//    public @ResponseBody
+//    FlowDetailSetting startCtrlService(@ModelAttribute("flow") Flow flow,
+//            @RequestParam("ctrlName") String ctrlName) {
+//        int id = flow.getFlowId();
+//        CloudSetting cloudSetting = cloudSettingDao.get(id);
+//        FlowDetailSetting flowDetailSetting = new FlowDetailSetting();
+//        switch (ctrlName) {
+//            case "ApacheStormCtrl":
+//                StormCluster stormCluster = stormClusterDao.get(id);
+//                StormCtrl stormCtrl = stormCtrlDao.get(id);
+//                controllerServiceRunner.startStormController(cloudSetting, stormCluster, stormCtrl);
+//                flowDetailSetting.setStormCtrl(stormCtrl);
+//                break;
+//            case "AmazonKinesisCtrl":
+//                List<KinesisCtrl> kinesisCtrls = kinesisCtrlDao.get(id);
+//                controllerServiceRunner.startKinesisController(cloudSetting, kinesisCtrls);
+//                flowDetailSetting.setKinesisCtrls(kinesisCtrls);
+//                break;
+//        }
+//        return flowDetailSetting;
+//    }
 }

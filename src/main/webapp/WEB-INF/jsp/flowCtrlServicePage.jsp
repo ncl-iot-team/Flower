@@ -139,6 +139,7 @@
             $(function() {
 
                 var flow = '${flow.platforms}';
+
                 var systems = flow.split(",");
                 for (var i = 0; i < systems.length; i++) {
                     var system = systems[i].replace(' ', '');
@@ -152,16 +153,8 @@
                                     '</h3><div class="ui-accordion-content ui-helper-reset \n\
                                     ui-widget-content ui-corner-bottom"><div class="form-style-ctrl-stat">\n\
                                     <div class="form-style-3-heading">Controller Stats</div>\n\
-                                     <table id="' + system + 'Tbl"><thead>\n\
-                                    <tr><th>Resource Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> <th>Backoff No</th> <th>Last update</th>\n\
-                                    <th></th> <th></th></tr></thead> \n\
-                                        <tbody><tr><td></td> <td></td><td>\n\
-                                        </td><td>45</td> \n\
-                                        <td></td><td></td>\n\
-                                        <td></td><td><div id="' + system + 'Ctrl" class="play" style="text-shadow:none">start</div></td>\n\
-                                        <td><input type="radio" name="'+system+'Radio" value=""></td></tr>\n\
-                                      </tbody></table>\n\
+                                     <table id="' + system + 'Tbl"> \n\
+                                        <tbody> </tbody></table>\n\
                                       </div><div class="form-style-resource-share">\n\
                                     <div class="form-style-3-heading">Resource Share</div>\n\
                                    <div id="' + system + 'Pie" class="epoch category20c" style="width: 180px; height: 180px"></div></div>\n\
@@ -169,6 +162,53 @@
                                     <div class="form-style-3-heading">System Performance Monitoring</div>\n\
                                      <div id="' + system + 'LineChart" class="epoch category30" style="width: 700px; height: 200px"></div>\n\
                                         </div></div></div>');
+                    switch (system) {
+                        case "ApacheStorm":
+                            $('#ApacheStormTbl')
+                                    .append('<thead>\n\
+                                    <tr><th>Topology Name</th><th>Controller Status</th> \n\
+                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
+                                     <th>Backoff No</th> <th>Last update</th>\n\
+                                    <th></th><th></th></tr></thead>');
+                            $('#ApacheStormTbl tr:last')
+                                    .after('<tr><td>' + '${flowSetting.stormCtrl.targetTopology}' + '</td>\n\
+                                        <td>Active</td>\n\
+                                        <td>' + '${flowSetting.stormCtrl.measurementTarget}' + '</td>\n\
+                                        <td>' + '${flowSetting.stormCtrl.refValue}' + '</td> \n\
+                                        <td>' + '${flowSetting.stormCtrl.monitoringPeriod}' + '</td>\n\
+                                        <td>' + '${flowSetting.stormCtrl.backoffNo}' + '</td>\n\
+                                        <td>7.03</td>\n\
+                                        <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
+                                        <td><input type="radio" name="' + system + 'Radio" value="" checked="checked" ></td></tr>'
+                                            );
+                            break;
+                        case "DynamoDB":
+                            $('#DynamoDBTbl')
+                                    .append('<thead>\n\
+                                    <tr><th>Table Name</th><th>Controller Status</th> \n\
+                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
+                                     <th>Backoff No</th> <th>Last update</th>\n\
+                                    <th></th><th></th></tr></thead>');
+//                            $.each(flowSetting.dynamoCtrls, function(index) {
+                            var i = ${flowSetting.dynamoCtrls.size()};
+                            alert(i);
+                            for (var j = 0; j < i; j++) {
+                                $('#DynamoDBTbl tr:last')
+                                        .after('<tr><td>'${flowSetting.dynamoCtrls[j].tableName}'</td>\n\
+                                        <td>Active</td>\n\
+                                        <td>' + '${flowSetting.dynamoCtrls[j].measurementTarget}' + '</td>\n\
+                                        <td>' + '${flowSetting.dynamoCtrls[j].refValue}' + '</td> \n\
+                                        <td>' + '${flowSetting.dynamoCtrls[j].monitoringPeriod}' + '</td>\n\
+                                        <td>' + '${flowSetting.dynamoCtrls[j].backoffNo}' + '</td>\n\
+                                        <td>7.03</td>\n\
+                                        <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
+                                        <td><input type="radio" name="' + system + 'Radio" value="' + '${flowSetting.dynamoCtrls[j].tableName}' + '" checked="checked" ></td></tr>'
+                                                );
+                            }
+//                            });
+                            break;
+
+                    }
                 }
 
                 $('.play').click(function() {
@@ -186,8 +226,8 @@
                         $this.text('start');
                     }
                 });
-                
-                
+
+
                 $('.kill').click(function() {
                     var $this = $(this);
                     $this.toggleClass('active');
@@ -224,7 +264,6 @@
                     type: 'pie',
                     data: pieData
                 });
-
 
 
 
@@ -279,7 +318,7 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
             <hr>
-            <p id="ssman">Placeholder
+            <p id="ssman">${flowSetting.stormCtrl.measurementTarget}
             </p>
             <br>
         </div>
