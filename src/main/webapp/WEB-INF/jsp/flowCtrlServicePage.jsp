@@ -3,6 +3,7 @@
     Created on : 05/04/2016, 5:41:54 PM
     Author     : kho01f
 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <html>
@@ -139,7 +140,7 @@
             $(function() {
 
                 var flow = '${flow.platforms}';
-
+                var flowId = '${flow.flowId}';
                 var systems = flow.split(",");
                 for (var i = 0; i < systems.length; i++) {
                     var system = systems[i].replace(' ', '');
@@ -167,7 +168,7 @@
                             $('#ApacheStormTbl')
                                     .append('<thead>\n\
                                     <tr><th>Topology Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
+                                     <th>Measurement Target</th><th>Ref. Value</th><th>Scheduling</th> \n\
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
                             $('#ApacheStormTbl tr:last')
@@ -179,8 +180,7 @@
                                         <td>' + '${flowSetting.stormCtrl.backoffNo}' + '</td>\n\
                                         <td>7.03</td>\n\
                                         <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
-                                        <td><input type="radio" name="' + system + 'Radio" value="" checked="checked" ></td></tr>'
-                                            );
+                                        <td><input type="radio" name="' + system + 'Radio" value="" checked="checked" ></td></tr>');
                             break;
                         case "DynamoDB":
                             $('#DynamoDBTbl')
@@ -189,25 +189,45 @@
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
-//                            $.each(flowSetting.dynamoCtrls, function(index) {
-                            var i = ${flowSetting.dynamoCtrls.size()};
-                            alert(i);
-                            for (var j = 0; j < i; j++) {
-                                $('#DynamoDBTbl tr:last')
-                                        .after('<tr><td>'${flowSetting.dynamoCtrls[j].tableName}'</td>\n\
+                            //Technique 1: Consuming json using ajax and parsing using each function
+                            $.get("dynamoCtrl/" + flowId, function(data) {
+                                $.each(data, function(i, dynamoCtrl) {
+                                    $('#DynamoDBTbl tr:last')
+                                            .after('<tr><td>' + dynamoCtrl.tableName + '</td>\n\
                                         <td>Active</td>\n\
-                                        <td>' + '${flowSetting.dynamoCtrls[j].measurementTarget}' + '</td>\n\
-                                        <td>' + '${flowSetting.dynamoCtrls[j].refValue}' + '</td> \n\
-                                        <td>' + '${flowSetting.dynamoCtrls[j].monitoringPeriod}' + '</td>\n\
-                                        <td>' + '${flowSetting.dynamoCtrls[j].backoffNo}' + '</td>\n\
+                                        <td>' + dynamoCtrl.measurementTarget + '</td>\n\
+                                        <td>' + dynamoCtrl.refValue + '</td> \n\
+                                        <td>' + dynamoCtrl.monitoringPeriod + '</td>\n\
+                                        <td>' + dynamoCtrl.backoffNo + '</td>\n\
                                         <td>7.03</td>\n\
                                         <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
-                                        <td><input type="radio" name="' + system + 'Radio" value="' + '${flowSetting.dynamoCtrls[j].tableName}' + '" checked="checked" ></td></tr>'
-                                                );
-                            }
-//                            });
+                                        <td><input type="radio" name="' + system + 'Radio" value="' + dynamoCtrl.tableName + '" \n\
+                                            checked="checked" ></td></tr>');
+                                });
+                            });
                             break;
-
+                        case "AmazonKinesis":
+                            $('#AmazonKinesisTbl')
+                                    .append('<thead>\n\
+                                    <tr><th>Stream Name</th><th>Controller Status</th> \n\
+                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
+                                     <th>Backoff No</th> <th>Last update</th>\n\
+                                    <th></th><th></th></tr></thead>');
+                            //Technique 2: Iterate through model object using jsp tags
+                            <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
+                                $('#AmazonKinesisTbl tr:last')
+                                    .after('<tr><td>' + '${kCtrl.streamName}' + '</td>\n\
+                                        <td>Active</td>\n\
+                                        <td>' + '${kCtrl.measurementTarget}' + '</td>\n\
+                                        <td>' + '${kCtrl.refValue}' + '</td> \n\
+                                        <td>' + '${kCtrl.monitoringPeriod}' + '</td>\n\
+                                        <td>' + '${kCtrl.backoffNo}' + '</td>\n\
+                                        <td>7.03</td>\n\
+                                        <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
+                                        <td><input type="radio" name="' + system + 'Radio" value="' + '${kCtrl.streamName}' + '" \n\
+                                            checked="checked" ></td></tr>');
+                           </c:forEach>
+                            break;
                     }
                 }
 
@@ -226,18 +246,18 @@
                         $this.text('start');
                     }
                 });
+                
+//                $('.kill').click(function() {
+//                    var $this = $(this);
+//                    $this.toggleClass('active');
+//                    if ($this.hasClass('active')) {
+//                        $this.text('stop');
+//                        $('.play').off('click');
+//                    } else {
+//                        $this.toggleClass('active');
+//                    }
+//                });
 
-
-                $('.kill').click(function() {
-                    var $this = $(this);
-                    $this.toggleClass('active');
-                    if ($this.hasClass('active')) {
-                        $this.text('stop');
-                        $('.play').off('click');
-                    } else {
-                        $this.toggleClass('active');
-                    }
-                });
 
                 function getTime() {
                     return parseInt((new Date).getTime() / 1000);
@@ -265,7 +285,9 @@
                     data: pieData
                 });
 
-
+                
+                
+                
 
                 var headers = $('#accordion .accordion-header');
                 var contentAreas = $('#accordion .ui-accordion-content ').hide();

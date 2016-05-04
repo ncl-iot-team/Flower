@@ -152,7 +152,7 @@
                                         $('#kinesisTbl tr:last').after('<tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
                                                                 name="kinesisCtrls[' + index + '].streamName" readonly=true value="' + str + '"></td><td>\n\
                                                                 <select name="kinesisCtrls[' + index + '].measurementTarget" class="select-field">\n\
-                                                                <option value=""></option><option value="IncRecord">Incoming Records</option>\n\
+                                                                <option value=""></option><option value="IncomingRecords">Incoming Records</option>\n\
                                                                 </td><td> <input type="text" class="input-field" name="kinesisCtrls[' + index + '].refValue" value=""/></td> \n\
                                                                 <td><input type="text" class="input-field" name="kinesisCtrls[' + index + '].monitoringPeriod" value=""/>\n\
                                                                 </td><td><input type="text" class="input-field" name="kinesisCtrls[' + index + '].backoffNo" value=""/></td>\n\
@@ -176,7 +176,7 @@
                         url: "loadDynamoTables",
                         data: JSON.stringify(populateCloudSettingObj()),
                         success: function(data) {
-//                            debugger
+//                            debugger;
                             if (!data.length) {
                                 ajaxReqMsg('#loadTbls', '.failed-request', noTblMsg);
                             } else {
@@ -185,7 +185,7 @@
                                         $('#dynamoTbl tr:last').after('<tr><td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
                                                         name="dynamoCtrls[' + index + '].tableName" readonly=true value="' + tbl + '"></td><td>\n\
                                                         <select name="dynamoCtrls[' + index + '].measurementTarget" class="select-field">\n\
-                                                        <option value=""></option><option value="Write">Write Capacity</option></td>\n\
+                                                        <option value=""></option><option value="ConsumedWriteCapacityUnits">Write Capacity</option></td>\n\
                                                         <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].refValue"/></td>\n\
                                                         <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].monitoringPeriod"/></td>\n\
                                                         <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].backoffNo"/></td>\n\

@@ -29,7 +29,7 @@ function createStormCtrlForm(divLoc) {
         <span>Measurement Target <span class="required">*</span></span></label>\n\
         <label for="field2"><select id="stormCat" name="stormCtrl.measurementTarget" class="select-field">\n\
         <option value=""></option> \n\
-        <option value="CPU">CPU</option>\n\
+        <option value="CPUUtilization">CPU</option>\n\
         <option value="Memory">Memory</option>\n\</select>\n\
         </label><label for="field3">\n\
         <span>Target Topology <span class="required">*</span></span>\n\
