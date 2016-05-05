@@ -83,7 +83,7 @@ public class StormCtrlServiceImpl extends CtrlService implements StormCtrlServic
             public void run() {
                 runCtrl(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
 //                System.out.println("Storm CPU: ");
-                String str = Thread.currentThread().getName();
+//                String str = Thread.currentThread().getName();
             }
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
@@ -94,7 +94,6 @@ public class StormCtrlServiceImpl extends CtrlService implements StormCtrlServic
         try {
             int clusterSizeLimit;
             double error;
-//            double CPUref = 40;
             int uk0;
             double uk1;
             double k0;
@@ -157,21 +156,21 @@ public class StormCtrlServiceImpl extends CtrlService implements StormCtrlServic
 
     public double getClusterStats(List<String> runningIds, String measurementTarget) {
 
-        HashMap<String, Double> CpuStats = new HashMap<>();
+        HashMap<String, Double> cpuStats = new HashMap<>();
         double avgCpu = 0.0;
         GetMetricStatisticsResult statsResult;
         for (String instance : runningIds) {
             statsResult = cloudWatchService.
                     getCriticalResourceStats("EC2", instance, measurementTarget, twoMinMil);
-            CpuStats.put(instance, getStormAvgCPU(statsResult));
+            cpuStats.put(instance, getStormAvgCPU(statsResult));
         }
-        for (double cpu : CpuStats.values()) {
+        for (double cpu : cpuStats.values()) {
             if (Double.isNaN(cpu)) {
                 cpu = 0;
             }
             avgCpu += cpu;
         }
-        return avgCpu / CpuStats.size();
+        return avgCpu / cpuStats.size();
     }
 
     public double getStormAvgCPU(GetMetricStatisticsResult result) {

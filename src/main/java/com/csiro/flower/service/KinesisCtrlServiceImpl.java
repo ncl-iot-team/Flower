@@ -10,7 +10,6 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -87,7 +86,6 @@ public class KinesisCtrlServiceImpl extends CtrlService implements KinesisCtrlSe
         double k0;
         double uk0;
         double uk1;
-//        double putRecordUtilizationRef = 60;
         double putRecordUtilizationPercent;
         int roundedUk1;
         int roundedUk0;
