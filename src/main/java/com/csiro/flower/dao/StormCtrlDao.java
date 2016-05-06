@@ -21,4 +21,5 @@ public interface StormCtrlDao {
 
     public void update(StormCtrl stormCtrl);
 
+    public int getPkId(int flowId, String topology);
 }

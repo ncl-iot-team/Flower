@@ -49,7 +49,7 @@ public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
     @Override
     public List<KinesisCtrl> get(int flowId) {
         String sqlSelect = "SELECT * FROM kinesis_ctrl_tbl WHERE flow_id_fk=" + flowId;
-        List<KinesisCtrl> kinesisCtrls = jdbcTemplate.query(sqlSelect, 
+        List<KinesisCtrl> kinesisCtrls = jdbcTemplate.query(sqlSelect,
                 new BeanPropertyRowMapper(KinesisCtrl.class));
         return kinesisCtrls;
     }
@@ -57,6 +57,15 @@ public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
     @Override
     public void update(KinesisCtrl kinesisCtrl) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getPkId(int flowId, String stream) {
+        String sqlSelect = "SELECT id FROM kinesis_ctrl_tbl WHERE "
+                + "flow_id_fk = ? AND stream_name = ?";
+        int id = (int) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{flowId, stream}, int.class);
+        return id;
     }
 
 }

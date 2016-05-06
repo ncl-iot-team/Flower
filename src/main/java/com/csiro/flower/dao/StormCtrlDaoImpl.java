@@ -71,4 +71,13 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public int getPkId(int flowId, String topology) {
+        String sqlSelect = "SELECT id FROM storm_ctrl_tbl WHERE "
+                + "flow_id_fk = ? AND topology_name = ?";
+        int id = (int) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{flowId, topology}, int.class);
+        return id;
+    }
+
 }

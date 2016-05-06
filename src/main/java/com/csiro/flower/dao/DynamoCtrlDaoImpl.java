@@ -6,7 +6,6 @@
 package com.csiro.flower.dao;
 
 import com.csiro.flower.model.DynamoCtrl;
-import com.csiro.flower.model.KinesisCtrl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

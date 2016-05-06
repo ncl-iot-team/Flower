@@ -22,4 +22,5 @@ public interface KinesisCtrlDao {
 
     public void update(KinesisCtrl kinesisCtrl);
 
+    public int getPkId(int flowId, String stream);
 }
