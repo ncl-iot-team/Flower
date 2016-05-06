@@ -37,8 +37,8 @@ public class FlowLoaderController {
     public ModelAndView submitFlowSetting(@ModelAttribute("flow") Flow flow,
             RedirectAttributes redirectAttributes) {
 
-        Date date = new Date();
-        long milis = date.getTime();
+//        Date date = new Date();
+        long milis = new Date().getTime();
         flow.setCreationDate(new Timestamp(milis));
         int flowId = flowDao.save(flow);
         flow.setFlowId(flowId);

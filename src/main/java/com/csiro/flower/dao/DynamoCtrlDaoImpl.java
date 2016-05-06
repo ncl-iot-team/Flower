@@ -31,7 +31,8 @@ public class DynamoCtrlDaoImpl implements DynamoCtrlDao {
     public void save(DynamoCtrl dynamoCtrl) {
         String sqlInsert = "INSERT INTO dynamodb_ctrl_tbl (flow_id_fk, table_name, "
                 + "measurement_target, ref_value, monitoring_period, backoff_no) VALUES (?,?,?,?,?,?)";
-        Object[] params = new Object[]{dynamoCtrl.getFlowIdFk(),
+        Object[] params = new Object[]{
+            dynamoCtrl.getFlowIdFk(),
             dynamoCtrl.getTableName(),
             dynamoCtrl.getMeasurementTarget(),
             dynamoCtrl.getRefValue(),
@@ -57,6 +58,15 @@ public class DynamoCtrlDaoImpl implements DynamoCtrlDao {
     @Override
     public void update(DynamoCtrl dynamoCtrl) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getPkId(int flowId, String tbl) {
+        String sqlSelect = "SELECT id FROM dynamodb_ctrl_tbl WHERE "
+                + "flow_id_fk = ? AND table_name = ?";
+        int id = (int) jdbcTemplate.queryForObject(sqlSelect, 
+                new Object[]{flowId,tbl}, int.class);
+        return id;
     }
 
 }

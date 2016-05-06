@@ -14,6 +14,7 @@ import com.csiro.flower.model.DynamoCtrl;
  */
 public interface DynamoCtrlService {
 
-    public void startDynamoConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl);
+    public void startDynamoConroller(CloudSetting cloudSetting, 
+            DynamoCtrl dynamoCtrl);
     
 }

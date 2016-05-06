@@ -21,5 +21,7 @@ public interface DynamoCtrlDao {
     public List<DynamoCtrl> get(int flowId);
    
     public void update(DynamoCtrl dynamoCtrl);
+    
+    public int getPkId(int flowId, String tbl);
 
 }

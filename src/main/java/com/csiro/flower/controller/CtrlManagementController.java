@@ -16,11 +16,14 @@ import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import com.csiro.flower.service.DynamoCtrlService;
+import com.csiro.flower.service.DynamoCtrlServiceImpl;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
 import com.csiro.flower.service.KinesisCtrlService;
 import com.csiro.flower.service.KinesisMgmtService;
 import com.csiro.flower.service.StormCtrlService;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -79,7 +82,9 @@ public class CtrlManagementController {
     KinesisCtrlService kinesisCtrlService;
 
     @Autowired
-    DynamoCtrlService dynamoCtrlService;
+    DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
+
+    String activeStatus = "Active";
 
     @InitBinder
     public void nullValueHandler(WebDataBinder binder) {
@@ -128,7 +133,6 @@ public class CtrlManagementController {
 //        flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
 //        return "redirect:/ctrls/launchFlowCtrlServicePage";
 //    }
-
     @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
     public @ResponseBody
     List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
@@ -151,12 +155,12 @@ public class CtrlManagementController {
         return kinesisMgmtService.getStreamList();
     }
 
-    @RequestMapping(value="/dynamoCtrl/{flowId}", method = RequestMethod.GET)
-    public @ResponseBody 
-    List<DynamoCtrl> getDynamoCtrl(@PathVariable int flowId){
+    @RequestMapping(value = "/dynamoCtrl/{flowId}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<DynamoCtrl> getDynamoCtrl(@PathVariable int flowId) {
         return dynamoCtrlDao.get(flowId);
     }
-    
+
     @RequestMapping(value = "/launchFlowCtrlServicePage", method = RequestMethod.GET)
     public String launchCtrlServicePage(Model model) {
         FlowDetailSetting flowSetting = (FlowDetailSetting) model.asMap().get("flowSetting");
@@ -165,11 +169,19 @@ public class CtrlManagementController {
                     flowSetting.getCloudSetting(),
                     flowSetting.getStormCluster(),
                     flowSetting.getStormCtrl());
+            // The below condition will be replaced with a 
+            // return success status from start ctrl command
+
         }
         if (flowSetting.getDynamoCtrls() != null) {
             for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
-                dynamoCtrlService.startDynamoConroller(flowSetting.getCloudSetting(),
+
+                long threadId = dynamoCtrlServiceImpl.startDynamoConroller(
+                        flowSetting.getCloudSetting(),
                         dynamoCtrl);
+
+                dynamoCtrlServiceImpl.updateCtrlStatus(activeStatus, threadId,
+                        new Timestamp(new Date().getTime()));
             }
         }
         if (flowSetting.getKinesisCtrls() != null) {

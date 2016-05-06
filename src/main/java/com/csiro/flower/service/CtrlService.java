@@ -3,20 +3,58 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.csiro.flower.service;
+
+import com.csiro.flower.dao.CtrlStatsDao;
+import java.sql.Timestamp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author kho01f
  */
 public abstract class CtrlService {
+
+    @Autowired
+    CtrlStatsDao ctrlStatsDao;
     
-    public void resumeController(long threadId){
-        
+    private int flowId;
+    private String resourceName;
+
+    public int getFlowId() {
+        return flowId;
     }
-    public void pauseController(long threadId){
-        
+
+    public void setFlowId(int flowId) {
+        this.flowId = flowId;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+    private long ctrlThreadId;
+
+    public void resumeCtrlService(long threadId) {
+
+    }
+
+    public void pauseCtrlService(long threadId) {
+
     }
     
+    public long getCtrlThreadId() {
+        return ctrlThreadId;
+    }
+
+    public void setCtrlThreadId(long ctrlThreadId) {
+        this.ctrlThreadId = ctrlThreadId;
+    }
+
+    public abstract void updateCtrlStatus(String ctrlStatus, long threadId,
+            Timestamp date);
 }

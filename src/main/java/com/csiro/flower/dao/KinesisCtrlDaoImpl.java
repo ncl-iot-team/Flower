@@ -49,7 +49,8 @@ public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
     @Override
     public List<KinesisCtrl> get(int flowId) {
         String sqlSelect = "SELECT * FROM kinesis_ctrl_tbl WHERE flow_id_fk=" + flowId;
-        List<KinesisCtrl> kinesisCtrls = jdbcTemplate.query(sqlSelect, new BeanPropertyRowMapper(KinesisCtrl.class));
+        List<KinesisCtrl> kinesisCtrls = jdbcTemplate.query(sqlSelect, 
+                new BeanPropertyRowMapper(KinesisCtrl.class));
         return kinesisCtrls;
     }
 

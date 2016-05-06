@@ -25,5 +25,5 @@ public interface CtrlStatsDao {
             double uk0, double uk1, int roundedUk1);
 
     public List<CtrlMonitoringResultSet> getCtrlMonitoringStats(
-            Timestamp startDate, int ctrlFkId, String ctrlName);
+            int ctrlFkId, String ctrlName, Timestamp startDate);
 }
