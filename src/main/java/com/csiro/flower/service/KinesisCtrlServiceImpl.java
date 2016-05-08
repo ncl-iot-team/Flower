@@ -7,6 +7,7 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import java.sql.Timestamp;
@@ -39,12 +40,16 @@ public class KinesisCtrlServiceImpl extends CtrlService {
     double gamma = 0.0003;
 
     Queue kinesisCtrlGainQ;
+    private String ctrlName = "Kinesis";
 
     @Autowired
     CloudWatchService cloudWatchService;
 
     @Autowired
     KinesisMgmtService kinesisMgmtService;
+
+    @Autowired
+    KinesisCtrlDao kinesisCtrlDao;
 
     public long startKinesisController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
 
@@ -78,8 +83,8 @@ public class KinesisCtrlServiceImpl extends CtrlService {
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
-                setCtrlThreadId(Thread.currentThread().getId());
                 runController(streamName, measurementTarget, putRecordUtilizationRef, backoffNo);
+                setCtrlThreadId(Thread.currentThread().getId());
             }
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
@@ -152,7 +157,7 @@ public class KinesisCtrlServiceImpl extends CtrlService {
     public double getKinesisIncomingRecStat(String streamName, String measurementTarget) {
 
         GetMetricStatisticsResult statsResult = cloudWatchService.
-                getCriticalResourceStats("Kinesis", streamName, measurementTarget, twoMinMil);
+                getCriticalResourceStats(ctrlName, streamName, measurementTarget, twoMinMil);
         return getIncomingRecords(statsResult);
     }
 
@@ -170,13 +175,16 @@ public class KinesisCtrlServiceImpl extends CtrlService {
 
     @Override
     public void updateCtrlStatus(String ctrlStatus, long threadId, Timestamp date) {
-
+        int ctrlId = kinesisCtrlDao.getPkId(getFlowId(), getResourceName());
+        ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, ctrlStatus, threadId, date);
     }
 
     private void saveMonitoringStats(double error, Timestamp timestamp, double k0,
             double incomingRecords, double uk0, double uk1, int roundedUk1) {
-        
-        
+
+        int ctrlId = kinesisCtrlDao.getPkId(getFlowId(), getResourceName());
+        ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error, timestamp,
+                k0, incomingRecords, uk0, uk1, roundedUk1);
     }
 
 }

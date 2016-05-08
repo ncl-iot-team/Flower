@@ -26,19 +26,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DynamoCtrlServiceImpl extends CtrlService {
-    
+
     @Autowired
     DynamoCtrlDao dynamoCtrlDao;
-    
+
     @Autowired
     CloudWatchService cloudWatchService;
-    
+
     @Autowired
     DynamoMgmtService dynamoMgmtService;
-    
+
     final int twoMinMil = 1000 * 60 * 2;
     final int twoMinSec = 120;
-    
+
     double epsilon = 0.0001;
     double upperK0 = 0.1;
     double upInitK0 = 0.08;
@@ -46,14 +46,14 @@ public class DynamoCtrlServiceImpl extends CtrlService {
     double lowerK0 = 0;
     double k_init = 0.03;
     double gamma = 0.0003;
-    
+
     Queue dynamoCtrlGainQ;
     String ctrlName = "DynamoDB";
-    
+
     ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
-    
+
     public long startDynamoConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
-        
+
         initService(
                 cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
@@ -65,33 +65,45 @@ public class DynamoCtrlServiceImpl extends CtrlService {
                 dynamoCtrl.getRefValue(),
                 dynamoCtrl.getMonitoringPeriod(),
                 dynamoCtrl.getBackoffNo());
-        
+
         setFlowId(dynamoCtrl.getFlowIdFk());
         setResourceName(dynamoCtrl.getTableName());
-        
+
         return getCtrlThreadId();
     }
-    
+
     private void initService(String provider, String accessKey, String secretKey, String region) {
         cloudWatchService.initService(provider, accessKey, secretKey, region);
         dynamoMgmtService.initService(provider, accessKey, secretKey, region);
     }
-    
+
     private void startDynamoCtrl(final String tblName, final String measurementTarget,
             final double refValue, int schedulingPeriod, final int backoffNo) {
-        
+
         dynamoCtrlGainQ = new LinkedList<>();
-        
+
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
+                if (!isCtrlStopped()) {
+                    runController(tblName, measurementTarget, refValue, backoffNo);
+                } else {
+                    Thread.currentThread().interrupt();
+                }
                 setCtrlThreadId(Thread.currentThread().getId());
-                runController(tblName, measurementTarget, refValue, backoffNo);
             }
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
-    
+
+    private boolean isCtrlStopped() {
+        boolean ctrlStopped = false;
+        if (getCtrlStatus().equals("Stopped")) {
+            ctrlStopped = true;
+        }
+        return ctrlStopped;
+    }
+
     private void runController(String tblName, String measurementTarget,
             double writeUtilizationRef, int initBackoff) {
         double error;
@@ -111,7 +123,7 @@ public class DynamoCtrlServiceImpl extends CtrlService {
         double writeRate = getDynamoStats(tblName, measurementTarget);
         uk0 = dynamoMgmtService.getProvisionedThroughput(tblName).getWriteCapacityUnits();
         writeUtilizationPercent = (writeRate / uk0) * 100;
-        
+
         if (dynamoCtrlGainQ.isEmpty()) {
             k0 = k_init;
         } else {
@@ -123,11 +135,11 @@ public class DynamoCtrlServiceImpl extends CtrlService {
                 k0 = lowInitK0;
             }
         }
-        
+
         error = (writeUtilizationPercent - writeUtilizationRef);
         uk1 = uk0 + k0 * error;
         roundedUk1 = (int) Math.round(Math.abs(uk1));
-        
+
         saveMonitoringStats(error, new Timestamp(new Date().getTime()), k0,
                 writeRate, uk0, uk1, roundedUk1);
 
@@ -147,7 +159,7 @@ public class DynamoCtrlServiceImpl extends CtrlService {
                             roundedUk1);
                 }
             }
-            
+
             if ((uk1 < uk0) /*&& (Math.abs(error) >= threshold)*/ && (backoffNo != 0)) {
                 backoffNo = backoffNo - 1;
             }
@@ -157,21 +169,21 @@ public class DynamoCtrlServiceImpl extends CtrlService {
             if (/*((uk1 < uk0) && (Math.abs(error) < threshold)) || */(uk1 > uk0)) {
                 backoffNo = initBackoff;
             }
-            
+
         }
         // If Ctrl descision revoked, do not update the gain
         if (decisionRevoked) {
             dynamoCtrlGainQ.add(Math.abs(k0));
         }
     }
-    
+
     public double getDynamoStats(String tblName, String measurementTarget) {
-        
+
         GetMetricStatisticsResult statsResult = cloudWatchService.
                 getCriticalResourceStats(ctrlName, tblName, measurementTarget, twoMinMil);
         return getAvgConsumedWriteCapacity(statsResult);
     }
-    
+
     public double getAvgConsumedWriteCapacity(GetMetricStatisticsResult result) {
         double val = 0;
         if (!result.getDatapoints().isEmpty()) {
@@ -183,19 +195,26 @@ public class DynamoCtrlServiceImpl extends CtrlService {
             return 0;
         }
     }
-    
+
     @Override
     public void updateCtrlStatus(String ctrlStatus, long threadId, Timestamp date) {
         int ctrlId = dynamoCtrlDao.getPkId(getFlowId(), getResourceName());
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, ctrlStatus, threadId, date);
     }
-    
+
+    @Override
+    public String getCtrlStatus() {
+        int ctrlId = dynamoCtrlDao.getPkId(getFlowId(), getResourceName());
+        String status = ctrlStatsDao.getCtrlStatus(ctrlId, ctrlName);
+        return status;
+    }
+
     private void saveMonitoringStats(double error, Timestamp timestamp,
             double k0, double writeRate, double uk0, double uk1, int roundedUk1) {
-        
+
         int ctrlId = dynamoCtrlDao.getPkId(getFlowId(), getResourceName());
         ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error, timestamp,
                 k0, writeRate, uk0, uk1, roundedUk1);
     }
-    
+
 }

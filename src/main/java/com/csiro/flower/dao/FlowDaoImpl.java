@@ -26,12 +26,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class FlowDaoImpl implements FlowDao {
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public void setDatasource(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+//    @Autowired
+//    public void setDatasource(JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
 
     @Override
     public List<Flow> getAll() throws Exception {

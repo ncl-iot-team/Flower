@@ -19,12 +19,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DynamoCtrlDaoImpl implements DynamoCtrlDao {
 
-    private JdbcTemplate jdbcTemplate;
-
     @Autowired
-    public void setDatasource(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void save(DynamoCtrl dynamoCtrl) {
@@ -63,8 +59,8 @@ public class DynamoCtrlDaoImpl implements DynamoCtrlDao {
     public int getPkId(int flowId, String tbl) {
         String sqlSelect = "SELECT id FROM dynamodb_ctrl_tbl WHERE "
                 + "flow_id_fk = ? AND table_name = ?";
-        int id = (int) jdbcTemplate.queryForObject(sqlSelect, 
-                new Object[]{flowId,tbl}, int.class);
+        int id = (int) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{flowId, tbl}, Integer.class);
         return id;
     }
 

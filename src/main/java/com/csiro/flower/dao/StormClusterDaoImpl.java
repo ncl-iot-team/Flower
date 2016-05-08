@@ -20,12 +20,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class StormClusterDaoImpl implements StormClusterDao {
 
-    private JdbcTemplate jdbcTemplate;
-
     @Autowired
-    public void setDatasource(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void save(StormCluster stormCluster) {

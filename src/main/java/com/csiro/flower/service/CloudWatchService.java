@@ -13,8 +13,10 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
  */
 public interface CloudWatchService {
 
-    public void initService(String provider, String accessKey, String secretKey, String region);
+    public void initService(String provider, String accessKey, 
+            String secretKey, String region);
 
-    public GetMetricStatisticsResult getCriticalResourceStats(String resource, String resourceId, String metric, long startTime);
+    public GetMetricStatisticsResult getCriticalResourceStats(String resource, 
+            String resourceId, String metric, long startTime);
 
 }

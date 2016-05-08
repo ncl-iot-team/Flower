@@ -19,13 +19,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class CloudSettingDaoImpl implements CloudSettingDao {
-
+    
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public void setDatasource(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+//    public void setDatasource(JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
 
     @Override
     public void save(CloudSetting cloudSetting) {

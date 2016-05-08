@@ -15,13 +15,12 @@ import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
-import com.csiro.flower.service.DynamoCtrlService;
 import com.csiro.flower.service.DynamoCtrlServiceImpl;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
-import com.csiro.flower.service.KinesisCtrlService;
+import com.csiro.flower.service.KinesisCtrlServiceImpl;
 import com.csiro.flower.service.KinesisMgmtService;
-import com.csiro.flower.service.StormCtrlService;
+import com.csiro.flower.service.StormCtrlServiceImpl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -76,15 +75,16 @@ public class CtrlManagementController {
     DynamoCtrlDao dynamoCtrlDao;
 
     @Autowired
-    StormCtrlService stormCtrlService;
+    StormCtrlServiceImpl stormCtrlServiceImpl;
 
     @Autowired
-    KinesisCtrlService kinesisCtrlService;
+    KinesisCtrlServiceImpl kinesisCtrlServiceImpl;
 
     @Autowired
     DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
 
-    String activeStatus = "Active";
+    String activeStatus = "Running";
+    String InactiveStatus = "Stopped";
 
     @InitBinder
     public void nullValueHandler(WebDataBinder binder) {
@@ -119,6 +119,7 @@ public class CtrlManagementController {
             @ModelAttribute("flowSetting") FlowDetailSetting flowSetting,
             @ModelAttribute("flow") Flow flow,
             RedirectAttributes redirectAttributes) {
+        
         int flowId = flow.getFlowId();
         flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
         redirectAttributes.addFlashAttribute("flowSetting", flowSetting);
@@ -133,6 +134,7 @@ public class CtrlManagementController {
 //        flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
 //        return "redirect:/ctrls/launchFlowCtrlServicePage";
 //    }
+    
     @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
     public @ResponseBody
     List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
@@ -163,20 +165,21 @@ public class CtrlManagementController {
 
     @RequestMapping(value = "/launchFlowCtrlServicePage", method = RequestMethod.GET)
     public String launchCtrlServicePage(Model model) {
+        long threadId = 0;
         FlowDetailSetting flowSetting = (FlowDetailSetting) model.asMap().get("flowSetting");
         if (flowSetting.getStormCluster() != null) {
-            stormCtrlService.startStormController(
+            threadId = stormCtrlServiceImpl.startStormController(
                     flowSetting.getCloudSetting(),
                     flowSetting.getStormCluster(),
                     flowSetting.getStormCtrl());
-            // The below condition will be replaced with a 
-            // return success status from start ctrl command
-
+            
+            stormCtrlServiceImpl.updateCtrlStatus(activeStatus, threadId, 
+                    new Timestamp(new Date().getTime()));
         }
         if (flowSetting.getDynamoCtrls() != null) {
             for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
 
-                long threadId = dynamoCtrlServiceImpl.startDynamoConroller(
+                threadId = dynamoCtrlServiceImpl.startDynamoConroller(
                         flowSetting.getCloudSetting(),
                         dynamoCtrl);
 
@@ -186,8 +189,12 @@ public class CtrlManagementController {
         }
         if (flowSetting.getKinesisCtrls() != null) {
             for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
-                kinesisCtrlService.startKinesisController(flowSetting.getCloudSetting(),
+                threadId = kinesisCtrlServiceImpl.startKinesisController(
+                        flowSetting.getCloudSetting(),
                         kinesisCtrl);
+                
+                kinesisCtrlServiceImpl.updateCtrlStatus(activeStatus, threadId,
+                         new Timestamp(new Date().getTime()));
             }
         }
         return "flowCtrlServicePage";

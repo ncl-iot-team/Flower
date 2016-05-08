@@ -20,13 +20,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class StormCtrlDaoImpl implements StormCtrlDao {
-
+    
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public void setDatasource(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+//    public void setDatasource(JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
 
     @Override
     public void save(StormCtrl stormCtrl) {
@@ -76,7 +76,7 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
         String sqlSelect = "SELECT id FROM storm_ctrl_tbl WHERE "
                 + "flow_id_fk = ? AND topology_name = ?";
         int id = (int) jdbcTemplate.queryForObject(sqlSelect,
-                new Object[]{flowId, topology}, int.class);
+                new Object[]{flowId, topology}, Integer.class);
         return id;
     }
 

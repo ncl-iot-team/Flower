@@ -19,12 +19,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
 
-    private JdbcTemplate jdbcTemplate;
-
     @Autowired
-    public void setDatasource(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void save(KinesisCtrl kinesisCtrl) {
@@ -64,7 +60,7 @@ public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
         String sqlSelect = "SELECT id FROM kinesis_ctrl_tbl WHERE "
                 + "flow_id_fk = ? AND stream_name = ?";
         int id = (int) jdbcTemplate.queryForObject(sqlSelect,
-                new Object[]{flowId, stream}, int.class);
+                new Object[]{flowId, stream}, Integer.class);
         return id;
     }
 

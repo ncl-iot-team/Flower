@@ -18,7 +18,7 @@ public abstract class CtrlService {
 
     @Autowired
     CtrlStatsDao ctrlStatsDao;
-    
+
     private int flowId;
     private String resourceName;
 
@@ -39,14 +39,8 @@ public abstract class CtrlService {
     }
     private long ctrlThreadId;
 
-    public void resumeCtrlService(long threadId) {
+   public abstract String getCtrlStatus();
 
-    }
-
-    public void pauseCtrlService(long threadId) {
-
-    }
-    
     public long getCtrlThreadId() {
         return ctrlThreadId;
     }

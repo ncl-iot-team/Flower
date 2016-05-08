@@ -39,18 +39,24 @@ public class CloudWatchServiceImpl implements CloudWatchService {
     public GetMetricStatisticsResult getCriticalResourceStats(String resource, String resourceId, String metric, long startTime) {
 
         GetMetricStatisticsResult result = null;
-        if (resource.equals("Kinesis")) {
-            result = getResult(NameSpaces.KINESIS_NAMESPACE, Dimensions.STREAM_NAME_KEY, resourceId, metric, startTime);
-        } else if (resource.equals("EC2")) {
-            result = getResult(NameSpaces.EC2_NAMESPACE, Dimensions.INSTANCE_ID, resourceId, metric, startTime);
-        } else if (resource.equals("DynamoDB")) {
-            result = getResult(NameSpaces.DYNAMODB_NAMESPACE, Dimensions.TABLE_NAME, resourceId, metric, startTime);
-        } else if (resource.equals("ElastiCache")) {
-            result = getResult(NameSpaces.ELASTICACHE_NAMESPACE, Dimensions.CACHE_CLUSTER_ID, resourceId, metric, startTime);
+        switch (resource) {
+            case "Kinesis":
+                result = getResult(NameSpaces.KINESIS_NAMESPACE, Dimensions.STREAM_NAME_KEY, resourceId, metric, startTime);
+                break;
+//            case "EC2":
+            case "Storm":
+                result = getResult(NameSpaces.EC2_NAMESPACE, Dimensions.INSTANCE_ID, resourceId, metric, startTime);
+                break;
+            case "DynamoDB":
+                result = getResult(NameSpaces.DYNAMODB_NAMESPACE, Dimensions.TABLE_NAME, resourceId, metric, startTime);
+                break;
+            case "ElastiCache":
+                result = getResult(NameSpaces.ELASTICACHE_NAMESPACE, Dimensions.CACHE_CLUSTER_ID, resourceId, metric, startTime);
+                break;
         }
         return result;
     }
-    
+
     private GetMetricStatisticsResult getResult(String NameSpace, String DimensionName, String DimensionValue, String MetricName, long startTime) {
         Date endTime = new Date();
         GetMetricStatisticsRequest req = new GetMetricStatisticsRequest()
