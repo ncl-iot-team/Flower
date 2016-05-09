@@ -24,14 +24,23 @@ public class CtrlStatsDaoImpl implements CtrlStatsDao {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public void saveCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus,
-            long threadId, Timestamp date) {
+    public void saveCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus, Timestamp date) {
         String sqlInsert = "INSERT INTO ctrl_status_track (ctrl_fk_id, ctrl_name,"
-                + "ctrl_status, thread_id, date_created) VALUES (?,?,?,?,?)";
+                + "ctrl_status, start_date) VALUES (?,?,?,?)";
         Object[] params = new Object[]{
-            ctrlFkId, ctrlName, ctrlStatus, threadId, date
+            ctrlFkId, ctrlName, ctrlStatus, date
         };
         jdbcTemplate.update(sqlInsert, params);
+    }
+
+    @Override
+    public void updateCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus, Timestamp date) {
+        String sqlUpdate = "UPDATE ctrl_status_track SET ctrl_status = ?, stop_date=? "
+                + "WHERE ctrl_fk_id=? AND ctrl_name=?";
+        Object[] params = new Object[]{
+            ctrlStatus, date, ctrlFkId, ctrlName
+        };
+        jdbcTemplate.update(sqlUpdate, params);
     }
 
     @Override

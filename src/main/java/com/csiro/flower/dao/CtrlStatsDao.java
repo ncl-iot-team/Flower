@@ -15,8 +15,9 @@ import java.util.List;
  */
 public interface CtrlStatsDao {
 
-    public void saveCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus,
-            long threadId, Timestamp date);
+    public void saveCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus, Timestamp date);
+    
+    public void updateCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus, Timestamp date);
 
     public String getCtrlStatus(int ctrlFkId, String ctrlName);
 

@@ -140,7 +140,7 @@
             $(function() {
 
                 var flow = '${flow.platforms}';
-                var flowId = '${flow.flowId}';
+                var $flowId = '${flow.flowId}';
                 var systems = flow.split(",");
                 for (var i = 0; i < systems.length; i++) {
                     var system = systems[i].replace(' ', '');
@@ -190,17 +190,17 @@
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
                             //Technique 1: Consuming json using ajax and parsing using each function
-                            $.get("dynamoCtrl/" + flowId, function(data) {
+                            $.get("dynamoCtrl/" + $flowId, function(data) {
                                 $.each(data, function(i, dynamoCtrl) {
                                     $('#DynamoDBTbl tr:last')
                                             .after('<tr><td>' + dynamoCtrl.tableName + '</td>\n\
-                                        <td>Active</td>\n\
+                                        <td>Running</td>\n\
                                         <td>' + dynamoCtrl.measurementTarget + '</td>\n\
                                         <td>' + dynamoCtrl.refValue + '</td> \n\
                                         <td>' + dynamoCtrl.monitoringPeriod + '</td>\n\
                                         <td>' + dynamoCtrl.backoffNo + '</td>\n\
                                         <td>7.03</td>\n\
-                                        <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
+                                        <td><div id="' + dynamoCtrl.tableName + '" class="play active" style="text-shadow:none">stop</div></td>\n\
                                         <td><input type="radio" name="' + system + 'Radio" value="' + dynamoCtrl.tableName + '" \n\
                                             checked="checked" ></td></tr>');
                                 });
@@ -214,39 +214,47 @@
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
                             //Technique 2: Iterate through model object using jsp tags
-                            <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
-                                $('#AmazonKinesisTbl tr:last')
+            <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
+                            $('#AmazonKinesisTbl tr:last')
                                     .after('<tr><td>' + '${kCtrl.streamName}' + '</td>\n\
-                                        <td>Active</td>\n\
+                                        <td>Running</td>\n\
                                         <td>' + '${kCtrl.measurementTarget}' + '</td>\n\
                                         <td>' + '${kCtrl.refValue}' + '</td> \n\
                                         <td>' + '${kCtrl.monitoringPeriod}' + '</td>\n\
                                         <td>' + '${kCtrl.backoffNo}' + '</td>\n\
                                         <td>7.03</td>\n\
-                                        <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
+                                        <td><div id="' + '${kCtrl.streamName}' + '" class="play active" style="text-shadow:none">stop</div></td>\n\
                                         <td><input type="radio" name="' + system + 'Radio" value="' + '${kCtrl.streamName}' + '" \n\
                                             checked="checked" ></td></tr>');
-                           </c:forEach>
+            </c:forEach>
                             break;
                     }
                 }
 
-                $('.play').click(function() {
+
+
+                $(document).on('click', '.play', function() {
                     var $this = $(this);
+                    var $id = $this.attr('id');
+                    var $ctrlName = $this.parents('table').attr('id').replace('Tbl', '');
                     $this.toggleClass('active');
-                    if ($this.hasClass('active')) {
-                        $this.text('pause');
-                        var $id = $this.attr('id');
+                    if (!$this.hasClass('active')) {
+                        $this.text('start');
                         $.ajax({
                             type: 'POST',
-                            url: runControllerService,
-                            data: {ctrlName: $id}
+                            url: stopCtrl,
+                            data: {ctrlName: $ctrlName, resource: $id, flowId: $flowId}
                         });
                     } else {
-                        $this.text('start');
+                        $this.text('stop');
+//                        $.ajax({
+//                            type: 'POST',
+//                            url: restartControllerService,
+//                            data: {ctrlName: $id}
+//                        });
                     }
                 });
-                
+
 //                $('.kill').click(function() {
 //                    var $this = $(this);
 //                    $this.toggleClass('active');
@@ -285,9 +293,9 @@
                     data: pieData
                 });
 
-                
-                
-                
+
+
+
 
                 var headers = $('#accordion .accordion-header');
                 var contentAreas = $('#accordion .ui-accordion-content ').hide();

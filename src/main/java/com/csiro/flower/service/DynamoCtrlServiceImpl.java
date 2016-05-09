@@ -7,13 +7,11 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
-import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.DynamoCtrl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,12 +24,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DynamoCtrlServiceImpl extends CtrlService {
-
-    @Autowired
-    DynamoCtrlDao dynamoCtrlDao;
-
-    @Autowired
-    CloudWatchService cloudWatchService;
 
     @Autowired
     DynamoMgmtService dynamoMgmtService;
@@ -47,12 +39,11 @@ public class DynamoCtrlServiceImpl extends CtrlService {
     double k_init = 0.03;
     double gamma = 0.0003;
 
-    Queue dynamoCtrlGainQ;
-    String ctrlName = "DynamoDB";
-
     ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
 
-    public long startDynamoConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
+    public void startConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
+
+        initValues(dynamoCtrl);
 
         initService(
                 cloudSetting.getCloudProvider(),
@@ -66,10 +57,14 @@ public class DynamoCtrlServiceImpl extends CtrlService {
                 dynamoCtrl.getMonitoringPeriod(),
                 dynamoCtrl.getBackoffNo());
 
-        setFlowId(dynamoCtrl.getFlowIdFk());
-        setResourceName(dynamoCtrl.getTableName());
+        saveCtrlStatus(getCtrlId(), getCtrlName(), RUNNING_STATUS, new Timestamp(new Date().getTime()));
+    }
 
-        return getCtrlThreadId();
+    private void initValues(DynamoCtrl dynamoCtrl) {
+        setCtrlName("DynamoDB");
+        setFlowId(dynamoCtrl.getFlowIdFk());
+        setResource(dynamoCtrl.getTableName());
+        setCtrlId(retrieveCtrlId(getCtrlName(), getFlowId(), getResource()));
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -80,28 +75,19 @@ public class DynamoCtrlServiceImpl extends CtrlService {
     private void startDynamoCtrl(final String tblName, final String measurementTarget,
             final double refValue, int schedulingPeriod, final int backoffNo) {
 
-        dynamoCtrlGainQ = new LinkedList<>();
+        ctrlGainQ = new LinkedList<>();
 
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
-                if (!isCtrlStopped()) {
+                if (!isCtrlStopped(getCtrlId(), getCtrlName())) {
                     runController(tblName, measurementTarget, refValue, backoffNo);
                 } else {
-                    Thread.currentThread().interrupt();
+                    scheduledThreadPool.shutdown();
                 }
-                setCtrlThreadId(Thread.currentThread().getId());
             }
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
-    }
-
-    private boolean isCtrlStopped() {
-        boolean ctrlStopped = false;
-        if (getCtrlStatus().equals("Stopped")) {
-            ctrlStopped = true;
-        }
-        return ctrlStopped;
     }
 
     private void runController(String tblName, String measurementTarget,
@@ -124,10 +110,10 @@ public class DynamoCtrlServiceImpl extends CtrlService {
         uk0 = dynamoMgmtService.getProvisionedThroughput(tblName).getWriteCapacityUnits();
         writeUtilizationPercent = (writeRate / uk0) * 100;
 
-        if (dynamoCtrlGainQ.isEmpty()) {
+        if (ctrlGainQ.isEmpty()) {
             k0 = k_init;
         } else {
-            k0 = (double) dynamoCtrlGainQ.poll();
+            k0 = (double) ctrlGainQ.poll();
             if (k0 >= upperK0) {
                 k0 = upInitK0;
             }
@@ -140,8 +126,8 @@ public class DynamoCtrlServiceImpl extends CtrlService {
         uk1 = uk0 + k0 * error;
         roundedUk1 = (int) Math.round(Math.abs(uk1));
 
-        saveMonitoringStats(error, new Timestamp(new Date().getTime()), k0,
-                writeRate, uk0, uk1, roundedUk1);
+        saveMonitoringStats(getCtrlId(), getCtrlName(), error,
+                new Timestamp(new Date().getTime()), k0, writeRate, uk0, uk1, roundedUk1);
 
         // If clouadwatch datapoint is null for current period, do not update gains and ProvisionedThroughput!
         if (writeRate != 0) {
@@ -149,7 +135,7 @@ public class DynamoCtrlServiceImpl extends CtrlService {
                 if ((uk1 <= 0) || (roundedUk1 == 0)) {
                     roundedUk1 = 1;
                 }
-                dynamoCtrlGainQ.add(k0 + gamma * error);
+                ctrlGainQ.add(k0 + gamma * error);
 //                dynamoCtrlGainQ.add(Math.abs(k0 + (lambda * ((writeRate / writeUtilizationRef) * 100))));
                 decisionRevoked = false;
                 //if something really change, go ahead
@@ -173,14 +159,14 @@ public class DynamoCtrlServiceImpl extends CtrlService {
         }
         // If Ctrl descision revoked, do not update the gain
         if (decisionRevoked) {
-            dynamoCtrlGainQ.add(Math.abs(k0));
+            ctrlGainQ.add(Math.abs(k0));
         }
     }
 
     public double getDynamoStats(String tblName, String measurementTarget) {
 
         GetMetricStatisticsResult statsResult = cloudWatchService.
-                getCriticalResourceStats(ctrlName, tblName, measurementTarget, twoMinMil);
+                getCriticalResourceStats(getCtrlName(), tblName, measurementTarget, twoMinMil);
         return getAvgConsumedWriteCapacity(statsResult);
     }
 
@@ -194,27 +180,6 @@ public class DynamoCtrlServiceImpl extends CtrlService {
         } else {
             return 0;
         }
-    }
-
-    @Override
-    public void updateCtrlStatus(String ctrlStatus, long threadId, Timestamp date) {
-        int ctrlId = dynamoCtrlDao.getPkId(getFlowId(), getResourceName());
-        ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, ctrlStatus, threadId, date);
-    }
-
-    @Override
-    public String getCtrlStatus() {
-        int ctrlId = dynamoCtrlDao.getPkId(getFlowId(), getResourceName());
-        String status = ctrlStatsDao.getCtrlStatus(ctrlId, ctrlName);
-        return status;
-    }
-
-    private void saveMonitoringStats(double error, Timestamp timestamp,
-            double k0, double writeRate, double uk0, double uk1, int roundedUk1) {
-
-        int ctrlId = dynamoCtrlDao.getPkId(getFlowId(), getResourceName());
-        ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error, timestamp,
-                k0, writeRate, uk0, uk1, roundedUk1);
     }
 
 }

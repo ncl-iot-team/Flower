@@ -217,7 +217,6 @@
                     $(e.target).parents('tr').remove();
                 });
 
-//                $('#ssman').text($('#dynamoTbl tr').length>1);
             });
 
 
