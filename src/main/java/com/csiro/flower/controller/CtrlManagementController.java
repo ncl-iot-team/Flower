@@ -6,6 +6,7 @@
 package com.csiro.flower.controller;
 
 import com.csiro.flower.dao.CloudSettingDao;
+import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.dao.StormClusterDao;
@@ -84,6 +85,9 @@ public class CtrlManagementController {
     @Autowired
     DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
 
+    @Autowired
+    CtrlStatsDao ctrlStatsDao;
+
     String STOPPED_STATUS = "Stopped";
 
     @InitBinder
@@ -94,7 +98,6 @@ public class CtrlManagementController {
                 super.setValue((o == null) ? 0 : o);
             }
         });
-
         binder.registerCustomEditor(double.class, new CustomNumberEditor(Double.class, true) {
             @Override
             public void setValue(Object o) {
@@ -134,7 +137,7 @@ public class CtrlManagementController {
 //        flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
 //        return "redirect:/ctrls/launchFlowCtrlServicePage";
 //    }
-    @RequestMapping(value = "/loadDynamoTables", method = RequestMethod.POST)
+    @RequestMapping(value = "/loadDynamoTables")
     public @ResponseBody
     List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
         dynamoMgmtService.initService(
@@ -145,7 +148,7 @@ public class CtrlManagementController {
         return dynamoMgmtService.getTableList();
     }
 
-    @RequestMapping(value = "/loadKinesisStreams", method = RequestMethod.POST)
+    @RequestMapping(value = "/loadKinesisStreams")
     public @ResponseBody
     List<String> getStreamList(@RequestBody CloudSetting cloudSetting) {
         kinesisMgmtService.initService(
@@ -156,30 +159,37 @@ public class CtrlManagementController {
         return kinesisMgmtService.getStreamList();
     }
 
-    @RequestMapping(value = "/dynamoCtrl/{flowId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/dynamoCtrl/{flowId}")
     public @ResponseBody
     List<DynamoCtrl> getDynamoCtrl(@PathVariable int flowId) {
         return dynamoCtrlDao.get(flowId);
     }
 
-    @RequestMapping(value = "/stopCtrl", method = RequestMethod.GET)
+    @RequestMapping(value = "/kinesisCtrl/{flowId}")
+    public @ResponseBody
+    List<KinesisCtrl> getKinesisCtrl(@PathVariable int flowId) {
+        return kinesisCtrlDao.get(flowId);
+    }
+
+    @RequestMapping(value = "/stopCtrl")
     public @ResponseBody
     void stopCtrlService(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource) {
-
+        int id = 0;
         switch (ctrlName) {
             case "AmazonKinesis":
-                kinesisCtrlServiceImpl.updateCtrlStatus(ctrlName, flowId, resource, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+                id = kinesisCtrlDao.getPkId(flowId, resource);
                 break;
             case "ApacheStorm":
-                stormCtrlServiceImpl.updateCtrlStatus(ctrlName, flowId, resource, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+                id = stormCtrlDao.getPkId(flowId, resource);
                 break;
             case "DynamoDB":
-                dynamoCtrlServiceImpl.updateCtrlStatus(ctrlName, flowId, resource, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+                id = dynamoCtrlDao.getPkId(flowId, resource);
                 break;
         }
+        ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
     }
 
     @RequestMapping(value = "/launchFlowCtrlServicePage", method = RequestMethod.GET)
@@ -191,13 +201,13 @@ public class CtrlManagementController {
                     flowSetting.getStormCluster(),
                     flowSetting.getStormCtrl());
         }
-        
+
         if (flowSetting.getDynamoCtrls() != null) {
             for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
                 dynamoCtrlServiceImpl.startConroller(flowSetting.getCloudSetting(), dynamoCtrl);
             }
         }
-        
+
         if (flowSetting.getKinesisCtrls() != null) {
             for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
                 kinesisCtrlServiceImpl.startController(flowSetting.getCloudSetting(), kinesisCtrl);

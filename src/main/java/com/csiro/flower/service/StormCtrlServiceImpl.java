@@ -7,6 +7,7 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.StormCluster;
 import com.csiro.flower.model.StormCtrl;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +48,14 @@ public class StormCtrlServiceImpl extends CtrlService {
     @Autowired
     StormMgmtService stormMgmtService;
 
+    @Autowired
+    StormCtrlDao stormCtrlDao;
+
     ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+
+    Queue stormCtrlGainQ;
+    private final String ctrlName = "Storm";
+    private int ctrlId;
 
     public void startController(CloudSetting cloudSetting,
             StormCluster stormCluster, StormCtrl stormCtrl) {
@@ -65,14 +74,12 @@ public class StormCtrlServiceImpl extends CtrlService {
                 stormCtrl.getMonitoringPeriod(),
                 stormCtrl.getBackoffNo());
 
-        saveCtrlStatus(getCtrlId(), getCtrlName(), RUNNING_STATUS, new Timestamp(new Date().getTime()));
+        ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
     private void initValues(StormCtrl stormCtrl) {
-        setCtrlName("Storm");
-        setFlowId(stormCtrl.getFlowIdFk());
-        setResource(stormCtrl.getTargetTopology());
-        setCtrlId(retrieveCtrlId(getCtrlName(), getFlowId(), getResource()));
+        ctrlId = stormCtrlDao.getPkId(stormCtrl.getFlowIdFk(), stormCtrl.getTargetTopology());
+
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -82,12 +89,12 @@ public class StormCtrlServiceImpl extends CtrlService {
 
     private void startStormCtrl(final String nimbusIp, final String topologyName,
             final String measurementTarget, final double refVal, int schedulingPeriod, final int backoffNo) {
-        ctrlGainQ = new LinkedList<>();
+        stormCtrlGainQ = new LinkedList<>();
 
         final Runnable runMonitorAndControl = new Runnable() {
             @Override
             public void run() {
-                if (!isCtrlStopped(getCtrlId(), getCtrlName())) {
+                if (!isCtrlStopped(ctrlId, ctrlName)) {
                     runCtrl(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
                 } else {
                     scheduledThreadPool.shutdown();
@@ -96,6 +103,10 @@ public class StormCtrlServiceImpl extends CtrlService {
 
         };
         scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
+    }
+
+    private boolean isCtrlStopped(int id, String ctrl) {
+        return ctrlStatsDao.getCtrlStatus(id, ctrl).equals(STOPPED_STATUS);
     }
 
     private void runCtrl(String nimbusIp, String topologyName,
@@ -108,10 +119,10 @@ public class StormCtrlServiceImpl extends CtrlService {
             double k0;
             int roundedUk1;
 
-            if (ctrlGainQ.isEmpty()) {
+            if (stormCtrlGainQ.isEmpty()) {
                 k0 = k_init;
             } else {
-                k0 = (double) ctrlGainQ.poll();
+                k0 = (double) stormCtrlGainQ.poll();
                 if (k0 >= upperK0) {
                     k0 = upInitK0;
                 }
@@ -130,7 +141,7 @@ public class StormCtrlServiceImpl extends CtrlService {
             uk1 = uk0 + k0 * error;
             roundedUk1 = (int) Math.round(uk1);
 
-            saveMonitoringStats(getCtrlId(), getCtrlName(), error,
+            ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
                     new Timestamp(new Date().getTime()), k0, cpu, uk0, uk1, roundedUk1);
 
             if (roundedUk1 > uk0) {
@@ -156,7 +167,7 @@ public class StormCtrlServiceImpl extends CtrlService {
 //            if ((uk1 < uk0) && ((uk0 == 1) /*|| (Math.abs(error) < threshold)*/)) {
 //                stormCtrlGainQ.add(Math.abs(k0));
 //            } else {
-            ctrlGainQ.add(k0 + gamma * error);
+            stormCtrlGainQ.add(k0 + gamma * error);
 //            }
 //            stormCtrlGainQ.add(Math.abs(k0 + (lambda * ((cpu / CPUref) * 100))));
 
@@ -172,7 +183,7 @@ public class StormCtrlServiceImpl extends CtrlService {
         GetMetricStatisticsResult statsResult;
         for (String instance : runningIds) {
             statsResult = cloudWatchService.
-                    getCriticalResourceStats(getCtrlName(), instance, measurementTarget, twoMinMil);
+                    getCriticalResourceStats(ctrlName, instance, measurementTarget, twoMinMil);
             cpuStats.put(instance, getStormAvgCPU(statsResult));
         }
         for (double cpu : cpuStats.values()) {

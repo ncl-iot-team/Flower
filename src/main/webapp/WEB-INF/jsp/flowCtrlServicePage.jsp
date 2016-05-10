@@ -213,20 +213,21 @@
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
-                            //Technique 2: Iterate through model object using jsp tags
-            <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
-                            $('#AmazonKinesisTbl tr:last')
-                                    .after('<tr><td>' + '${kCtrl.streamName}' + '</td>\n\
-                                        <td>Running</td>\n\
-                                        <td>' + '${kCtrl.measurementTarget}' + '</td>\n\
-                                        <td>' + '${kCtrl.refValue}' + '</td> \n\
-                                        <td>' + '${kCtrl.monitoringPeriod}' + '</td>\n\
-                                        <td>' + '${kCtrl.backoffNo}' + '</td>\n\
-                                        <td>7.03</td>\n\
-                                        <td><div id="' + '${kCtrl.streamName}' + '" class="play active" style="text-shadow:none">stop</div></td>\n\
-                                        <td><input type="radio" name="' + system + 'Radio" value="' + '${kCtrl.streamName}' + '" \n\
-                                            checked="checked" ></td></tr>');
-            </c:forEach>
+                            $.get("kinesisCtrl/" + $flowId, function(data) {
+                                $.each(data, function(i, kinesisCtrl) {
+                                    $('#AmazonKinesisTbl tr:last')
+                                            .after('<tr><td>' + kinesisCtrl.streamName + '</td>\n\
+                                                    <td>Running</td>\n\
+                                                    <td>' + kinesisCtrl.measurementTarget + '</td>\n\
+                                                    <td>' + kinesisCtrl.refValue + '</td> \n\
+                                                    <td>' + kinesisCtrl.monitoringPeriod + '</td>\n\
+                                                    <td>' + kinesisCtrl.backoffNo + '</td>\n\
+                                                    <td>7.03</td>\n\
+                                                    <td><div id="' + kinesisCtrl.streamName + '" class="play active" style="text-shadow:none">stop</div></td>\n\
+                                                    <td><input type="radio" name="' + system + 'Radio" value="' + kinesisCtrl.streamName + '" \n\
+                                                    checked="checked" ></td></tr>');
+                                });
+                            });
                             break;
                     }
                 }
@@ -241,8 +242,10 @@
                     if (!$this.hasClass('active')) {
                         $this.text('start');
                         $.ajax({
-                            type: 'POST',
-                            url: stopCtrl,
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            type: 'GET',
+                            url: '../ctrls/stopCtrl',
                             data: {ctrlName: $ctrlName, resource: $id, flowId: $flowId}
                         });
                     } else {
@@ -276,12 +279,12 @@
                         {label: "S2", values: [{time: getTime(), y: 10}]}],
                     axes: ['bottom', 'left']
                 });
-                (function worker() {
-                    var times = getTime();
-                    var rnd = parseInt(Math.random() * 1000);
-                    mygraph.push([{time: times, y: 100 + rnd}, {time: times, y: 350 + rnd}]);
-                    setTimeout(worker, 60000);
-                })();
+//                (function worker() {
+//                    var times = getTime();
+//                    var rnd = parseInt(Math.random() * 1000);
+//                    mygraph.push([{time: times, y: 100 + rnd}, {time: times, y: 350 + rnd}]);
+//                    setTimeout(worker, 60000);
+//                })();
 
                 var pieData = [
                     {label: 'Slice 1', value: 10},
@@ -341,7 +344,22 @@
             });
         </script>
     </head>
-
+    <%--
+    Technique 2: Iterate through model object using jsp tags
+    <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
+    $('#AmazonKinesisTbl tr:last')
+    .after('<tr><td>' + '${kCtrl.streamName}' + '</td>\n\
+    <td>Running</td>\n\
+    <td>' + '${kCtrl.measurementTarget}' + '</td>\n\
+    <td>' + '${kCtrl.refValue}' + '</td> \n\
+    <td>' + '${kCtrl.monitoringPeriod}' + '</td>\n\
+    <td>' + '${kCtrl.backoffNo}' + '</td>\n\
+    <td>7.03</td>\n\
+    <td><div id="' + '${kCtrl.streamName}' + '" class="play active" style="text-shadow:none">stop</div></td>\n\
+    <td><input type="radio" name="' + system + 'Radio" value="' + '${kCtrl.streamName}' + '" \n\
+    checked="checked" ></td></tr>');
+    </c:forEach>
+    --%>
     <body>
         <tiles:insertDefinition name="defaultbar" />
 
@@ -355,12 +373,7 @@
 
 
         <div  class="jumbotron_body">
-            <!--            <div style="float:left" >
-                            <ul id="sortable">
-                                <li class="ui-state-default-start" style="color:#fbfbfb; padding: 3px 6.5px 5px 8px">Analytics Flow</li>
-            
-                            </ul>
-                        </div>-->
+
             <div class="container">
 
                 <div class="row" >
