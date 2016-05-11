@@ -36,7 +36,8 @@ public class CtrlStatsDaoImpl implements CtrlStatsDao {
     @Override
     public void updateCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus, Timestamp date) {
         String sqlUpdate = "UPDATE ctrl_status_track SET ctrl_status = ?, stop_date=? "
-                + "WHERE ctrl_fk_id=? AND ctrl_name=?";
+                + "WHERE start_date = (SELECT MAX(start_date) FROM "
+                + "ctrl_status_track WHERE ctrl_fk_id=? AND ctrl_name=?)";
         Object[] params = new Object[]{
             ctrlStatus, date, ctrlFkId, ctrlName
         };
@@ -46,12 +47,31 @@ public class CtrlStatsDaoImpl implements CtrlStatsDao {
     @Override
     public String getCtrlStatus(int ctrlFkId, String ctrlName) {
         String sqlSelect = "SELECT ctrl_status FROM ctrl_status_track "
-                + "WHERE ctrl_fk_id = ? AND ctrl_name= ? ";
+                + "WHERE start_date = (SELECT MAX(start_date) FROM "
+                + "ctrl_status_track WHERE ctrl_fk_id=? AND ctrl_name=?) ";
         String ctrlStatus = (String) jdbcTemplate.queryForObject(
                 sqlSelect, new Object[]{ctrlFkId, ctrlName}, String.class);
         return ctrlStatus;
     }
 
+//    @Override
+//    public void updateCtrlStatus(int ctrlFkId, String ctrlName, String ctrlStatus, Timestamp date) {
+//        String sqlUpdate = "UPDATE ctrl_status_track SET ctrl_status = ?, stop_date=? "
+//                + "WHERE ctrl_fk_id=? AND ctrl_name=?";
+//        Object[] params = new Object[]{
+//            ctrlStatus, date, ctrlFkId, ctrlName
+//        };
+//        jdbcTemplate.update(sqlUpdate, params);
+//    }
+//
+//    @Override
+//    public String getCtrlStatus(int ctrlFkId, String ctrlName) {
+//        String sqlSelect = "SELECT ctrl_status FROM ctrl_status_track "
+//                + "WHERE ctrl_fk_id = ? AND ctrl_name= ? ";
+//        String ctrlStatus = (String) jdbcTemplate.queryForObject(
+//                sqlSelect, new Object[]{ctrlFkId, ctrlName}, String.class);
+//        return ctrlStatus;
+//    }
     @Override
     public void saveCtrlMonitoringStats(int ctrlFkId, String ctrlName,
             double error, Timestamp date, double k0,

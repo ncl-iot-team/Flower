@@ -142,8 +142,9 @@
                 var flow = '${flow.platforms}';
                 var $flowId = '${flow.flowId}';
                 var systems = flow.split(",");
+                var system;
                 for (var i = 0; i < systems.length; i++) {
-                    var system = systems[i].replace(' ', '');
+                    system = systems[i].replace(' ', '');
                     $("#accordion").children().last()
                             .after('<h3 class="accordion-header ui-accordion-header \n\
                                     ui-helper-reset ui-state-default ui-accordion-icons \n\
@@ -165,35 +166,40 @@
                                         </div></div></div>');
                     switch (system) {
                         case "ApacheStorm":
-                            $('#ApacheStormTbl')
-                                    .append('<thead>\n\
+                            {
+                                $('#ApacheStormTbl')
+                                        .append('<thead>\n\
                                     <tr><th>Topology Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th><th>Scheduling</th> \n\
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
-                            $('#ApacheStormTbl tr:last')
-                                    .after('<tr><td>' + '${flowSetting.stormCtrl.targetTopology}' + '</td>\n\
+                                $.get("stormCtrl/" + $flowId, function(stormCtrl) {
+                                        $('#ApacheStormTbl tr:last')
+                                                .after('<tr><td>' + stormCtrl.targetTopology + '</td>\n\
                                         <td>Active</td>\n\
-                                        <td>' + '${flowSetting.stormCtrl.measurementTarget}' + '</td>\n\
-                                        <td>' + '${flowSetting.stormCtrl.refValue}' + '</td> \n\
-                                        <td>' + '${flowSetting.stormCtrl.monitoringPeriod}' + '</td>\n\
-                                        <td>' + '${flowSetting.stormCtrl.backoffNo}' + '</td>\n\
+                                        <td>' + stormCtrl.measurementTarget + '</td>\n\
+                                        <td>' + stormCtrl.refValue + '</td> \n\
+                                        <td>' + stormCtrl.monitoringPeriod + '</td>\n\
+                                        <td>' + stormCtrl.backoffNo + '</td>\n\
                                         <td>7.03</td>\n\
-                                        <td><div id="' + system + 'Ctrl" class="play active" style="text-shadow:none">pause</div></td>\n\
-                                        <td><input type="radio" name="' + system + 'Radio" value="" checked="checked" ></td></tr>');
-                            break;
+                                        <td><div id="' + stormCtrl.targetTopology + '" class="play active" style="text-shadow:none">pause</div></td>\n\
+                                        <td><input type="radio" name="ApacheStormRadio" value="' + stormCtrl.targetTopology + '" checked="checked" ></td></tr>');
+                                });
+                                break;
+                            }
                         case "DynamoDB":
-                            $('#DynamoDBTbl')
-                                    .append('<thead>\n\
+                            {
+                                $('#DynamoDBTbl')
+                                        .append('<thead>\n\
                                     <tr><th>Table Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
-                            //Technique 1: Consuming json using ajax and parsing using each function
-                            $.get("dynamoCtrl/" + $flowId, function(data) {
-                                $.each(data, function(i, dynamoCtrl) {
-                                    $('#DynamoDBTbl tr:last')
-                                            .after('<tr><td>' + dynamoCtrl.tableName + '</td>\n\
+                                //Technique 1: Consuming json using ajax and parsing using each function
+                                $.get("dynamoCtrl/" + $flowId, function(data) {
+                                    $.each(data, function(i, dynamoCtrl) {
+                                        $('#DynamoDBTbl tr:last')
+                                                .after('<tr><td>' + dynamoCtrl.tableName + '</td>\n\
                                         <td>Running</td>\n\
                                         <td>' + dynamoCtrl.measurementTarget + '</td>\n\
                                         <td>' + dynamoCtrl.refValue + '</td> \n\
@@ -201,22 +207,24 @@
                                         <td>' + dynamoCtrl.backoffNo + '</td>\n\
                                         <td>7.03</td>\n\
                                         <td><div id="' + dynamoCtrl.tableName + '" class="play active" style="text-shadow:none">stop</div></td>\n\
-                                        <td><input type="radio" name="' + system + 'Radio" value="' + dynamoCtrl.tableName + '" \n\
+                                        <td><input type="radio" name="DynamoDBRadio" value="' + dynamoCtrl.tableName + '" \n\
                                             checked="checked" ></td></tr>');
+                                    });
                                 });
-                            });
-                            break;
+                                break;
+                            }
                         case "AmazonKinesis":
-                            $('#AmazonKinesisTbl')
-                                    .append('<thead>\n\
+                            {
+                                $('#AmazonKinesisTbl')
+                                        .append('<thead>\n\
                                     <tr><th>Stream Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
-                            $.get("kinesisCtrl/" + $flowId, function(data) {
-                                $.each(data, function(i, kinesisCtrl) {
-                                    $('#AmazonKinesisTbl tr:last')
-                                            .after('<tr><td>' + kinesisCtrl.streamName + '</td>\n\
+                                $.get("kinesisCtrl/" + $flowId, function(data) {
+                                    $.each(data, function(i, kinesisCtrl) {
+                                        $('#AmazonKinesisTbl tr:last')
+                                                .after('<tr><td>' + kinesisCtrl.streamName + '</td>\n\
                                                     <td>Running</td>\n\
                                                     <td>' + kinesisCtrl.measurementTarget + '</td>\n\
                                                     <td>' + kinesisCtrl.refValue + '</td> \n\
@@ -224,11 +232,12 @@
                                                     <td>' + kinesisCtrl.backoffNo + '</td>\n\
                                                     <td>7.03</td>\n\
                                                     <td><div id="' + kinesisCtrl.streamName + '" class="play active" style="text-shadow:none">stop</div></td>\n\
-                                                    <td><input type="radio" name="' + system + 'Radio" value="' + kinesisCtrl.streamName + '" \n\
+                                                    <td><input type="radio" name="AmazonKinesisRadio" value="' + kinesisCtrl.streamName + '" \n\
                                                     checked="checked" ></td></tr>');
+                                    });
                                 });
-                            });
-                            break;
+                                break;
+                            }
                     }
                 }
 
@@ -345,6 +354,18 @@
         </script>
     </head>
     <%--
+    Technique 1:
+    $('#ApacheStormTbl tr:last')
+        .after('<tr><td>' + '${flowSetting.stormCtrl.targetTopology}' + '</td>\n\
+        <td>Active</td>\n\
+        <td>' + '${flowSetting.stormCtrl.measurementTarget}' + '</td>\n\
+        <td>' + '${flowSetting.stormCtrl.refValue}' + '</td> \n\
+        <td>' + '${flowSetting.stormCtrl.monitoringPeriod}' + '</td>\n\
+        <td>' + '${flowSetting.stormCtrl.backoffNo}' + '</td>\n\
+        <td>7.03</td>\n\
+        <td><div id="' + '${flowSetting.stormCtrl.targetTopology}' + '" class="play active" style="text-shadow:none">pause</div></td>\n\
+        <td><input type="radio" name="ApacheStormRadio" value="" checked="checked" ></td></tr>');
+    
     Technique 2: Iterate through model object using jsp tags
     <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
     $('#AmazonKinesisTbl tr:last')

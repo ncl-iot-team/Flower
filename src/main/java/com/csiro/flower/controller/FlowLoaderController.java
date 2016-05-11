@@ -11,6 +11,7 @@ import com.csiro.flower.model.Flow;
 import java.util.Date;
 import java.sql.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +23,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  *
  * @author kho01f
  */
+
 @Controller
 public class FlowLoaderController {
 
     @Autowired
-    FlowDao flowDao;
+    private FlowDao flowDao;
 
     @RequestMapping("/flowCreationForm")
     public String viewFlowLoadPage() {
@@ -38,7 +40,7 @@ public class FlowLoaderController {
             RedirectAttributes redirectAttributes) {
 
         flow.setCreationDate(new Timestamp(new Date().getTime()));
-        int flowId = flowDao.save(flow);
+        int flowId = this.flowDao.save(flow);
         flow.setFlowId(flowId);
 
         ModelAndView model = new ModelAndView();

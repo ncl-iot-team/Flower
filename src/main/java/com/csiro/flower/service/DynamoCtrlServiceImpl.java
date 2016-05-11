@@ -7,6 +7,7 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.DynamoCtrl;
@@ -28,10 +29,16 @@ import org.springframework.stereotype.Service;
 public class DynamoCtrlServiceImpl extends CtrlService {
 
     @Autowired
-    DynamoMgmtService dynamoMgmtService;
+    private DynamoMgmtService dynamoMgmtService;
 
     @Autowired
-    DynamoCtrlDao dynamoCtrlDao;
+    private DynamoCtrlDao dynamoCtrlDao;
+
+    @Autowired
+    private CloudWatchService cloudWatchService;
+
+    @Autowired
+    private CtrlStatsDao ctrlStatsDao;
 
     final int twoMinMil = 1000 * 60 * 2;
     final int twoMinSec = 120;
@@ -45,7 +52,7 @@ public class DynamoCtrlServiceImpl extends CtrlService {
     double gamma = 0.0003;
     String ctrlName = "DynamoDB";
 
-    ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+//    private final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
     Queue dynamoCtrlGainQ;
 
     private int ctrlId;

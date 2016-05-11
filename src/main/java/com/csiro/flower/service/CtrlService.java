@@ -5,8 +5,8 @@
  */
 package com.csiro.flower.service;
 
-import com.csiro.flower.dao.CtrlStatsDao;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  *
@@ -14,14 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class CtrlService {
 
-    @Autowired
-    CloudWatchService cloudWatchService;
-
-    @Autowired
-    CtrlStatsDao ctrlStatsDao;
-
-    
-    String RUNNING_STATUS = "Running";
-    String STOPPED_STATUS = "Stopped";
+    static String RUNNING_STATUS = "Running";
+    static String STOPPED_STATUS = "Stopped";
+    ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(3);
 
 }

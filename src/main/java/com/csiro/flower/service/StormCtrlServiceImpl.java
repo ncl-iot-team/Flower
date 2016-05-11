@@ -7,6 +7,7 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.StormCluster;
@@ -46,15 +47,21 @@ public class StormCtrlServiceImpl extends CtrlService {
     double gamma = 0.0003;
 
     @Autowired
-    StormMgmtService stormMgmtService;
+    private StormMgmtService stormMgmtService;
 
     @Autowired
-    StormCtrlDao stormCtrlDao;
+    private StormCtrlDao stormCtrlDao;
 
-    ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    @Autowired
+    private CloudWatchService cloudWatchService;
+
+    @Autowired
+    private CtrlStatsDao ctrlStatsDao;
+
+//    private final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
 
     Queue stormCtrlGainQ;
-    private final String ctrlName = "Storm";
+    private final String ctrlName = "ApacheStorm";
     private int ctrlId;
 
     public void startController(CloudSetting cloudSetting,
@@ -180,6 +187,7 @@ public class StormCtrlServiceImpl extends CtrlService {
 
         HashMap<String, Double> cpuStats = new HashMap<>();
         double avgCpu = 0.0;
+        double finalAvg;
         GetMetricStatisticsResult statsResult;
         for (String instance : runningIds) {
             statsResult = cloudWatchService.
@@ -192,7 +200,9 @@ public class StormCtrlServiceImpl extends CtrlService {
             }
             avgCpu += cpu;
         }
-        return avgCpu / cpuStats.size();
+        finalAvg = avgCpu / cpuStats.size();
+                
+        return Double.isNaN(finalAvg) ? 0.0 : finalAvg;
     }
 
     public double getStormAvgCPU(GetMetricStatisticsResult result) {

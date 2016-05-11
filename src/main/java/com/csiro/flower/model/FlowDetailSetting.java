@@ -45,22 +45,6 @@ public class FlowDetailSetting {
         this.stormCtrl = stormCtrl;
     }
 
-//    public DynamoCtrl getDynamoCtrl() {
-//        return dynamoCtrl;
-//    }
-//
-//    public void setDynamoCtrl(DynamoCtrl dynamoCtrl) {
-//        this.dynamoCtrl = dynamoCtrl;
-//    }
-//
-//    public KinesisCtrl getKinesisCtrl() {
-//        return kinesisCtrl;
-//    }
-//
-//    public void setKinesisCtrl(KinesisCtrl kinesisCtrl) {
-//        this.kinesisCtrl = kinesisCtrl;
-//    }
-
     public List<DynamoCtrl> getDynamoCtrls() {
         return dynamoCtrls;
     }

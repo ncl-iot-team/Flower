@@ -7,6 +7,7 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
+import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.KinesisCtrl;
@@ -16,6 +17,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,15 +41,21 @@ public class KinesisCtrlServiceImpl extends CtrlService {
     double gamma = 0.0003;
 
     @Autowired
-    KinesisMgmtService kinesisMgmtService;
+    private KinesisMgmtService kinesisMgmtService;
 
     @Autowired
-    KinesisCtrlDao kinesisCtrlDao;
+    private KinesisCtrlDao kinesisCtrlDao;
 
-    ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    @Autowired
+    private CloudWatchService cloudWatchService;
 
+    @Autowired
+    private CtrlStatsDao ctrlStatsDao;
+
+//    ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> futureTask;
     Queue kinesisCtrlGainQ;
-    private final String ctrlName = "Kinesis";
+    private final String ctrlName = "AmazonKinesis";
     private int ctrlId;
 
     public void startController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
@@ -87,12 +95,13 @@ public class KinesisCtrlServiceImpl extends CtrlService {
                 if (!isCtrlStopped(ctrlId, ctrlName)) {
                     runController(streamName, measurementTarget, putRecordUtilizationRef, backoffNo);
                 } else {
-                    scheduledThreadPool.shutdown();
+//                    scheduledThreadPool.shutdown();
+                    futureTask.cancel(false);
                 }
             }
 
         };
-        scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
+        futureTask = scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
 
     private boolean isCtrlStopped(int id, String ctrl) {

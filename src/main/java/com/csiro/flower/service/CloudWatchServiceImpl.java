@@ -40,11 +40,11 @@ public class CloudWatchServiceImpl implements CloudWatchService {
 
         GetMetricStatisticsResult result = null;
         switch (resource) {
-            case "Kinesis":
+            case "AmazonKinesis":
                 result = getResult(NameSpaces.KINESIS_NAMESPACE, Dimensions.STREAM_NAME_KEY, resourceId, metric, startTime);
                 break;
 //            case "EC2":
-            case "Storm":
+            case "ApacheStorm":
                 result = getResult(NameSpaces.EC2_NAMESPACE, Dimensions.INSTANCE_ID, resourceId, metric, startTime);
                 break;
             case "DynamoDB":
