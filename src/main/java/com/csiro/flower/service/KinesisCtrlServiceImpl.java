@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,18 +28,8 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
-public class KinesisCtrlServiceImpl extends CtrlService {
-
-    final int twoMinMil = 1000 * 60 * 2;
-    final int twoMinSec = 120;
-
-    double epsilon = 0.0001;
-    double upperK0 = 0.1;
-    double upInitK0 = 0.08;
-    double lowInitK0 = 0.02;
-    double lowerK0 = 0;
-    double k_init = 0.03;
-    double gamma = 0.0003;
+@Scope("prototype")
+public class KinesisCtrlServiceImpl extends CtrlService{
 
     @Autowired
     private KinesisMgmtService kinesisMgmtService;
@@ -49,15 +40,17 @@ public class KinesisCtrlServiceImpl extends CtrlService {
     @Autowired
     private CloudWatchService cloudWatchService;
 
-    @Autowired
-    private CtrlStatsDao ctrlStatsDao;
 
-//    ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    private  ScheduledExecutorService scheduledThreadPool;
     private ScheduledFuture<?> futureTask;
     Queue kinesisCtrlGainQ;
     private final String ctrlName = "AmazonKinesis";
     private int ctrlId;
 
+    public void setScheduler(ScheduledExecutorService scheduledThreadPool){
+        this.scheduledThreadPool = scheduledThreadPool;
+    }
+    
     public void startController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
 
         initValues(kinesisCtrl);
@@ -191,4 +184,5 @@ public class KinesisCtrlServiceImpl extends CtrlService {
             return 0;
         }
     }
+
 }

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,10 +30,11 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
+@Scope("prototype")
 public class KinesisMgmtServiceImpl implements KinesisMgmtService {
 
-    String activeStatus = "ACTIVE";
-    AmazonKinesis kinesis;
+    private final String activeStatus = "ACTIVE";
+    private AmazonKinesis kinesis;
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String regionName) {

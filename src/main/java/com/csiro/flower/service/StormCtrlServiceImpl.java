@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,20 +33,10 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
+@Scope(value = "prototype")
 public class StormCtrlServiceImpl extends CtrlService {
 
-    final int twoMinMil = 1000 * 60 * 2;
-    final int twoMinSec = 120;
-
     long TRANSITION_WAIT_TIME = 45000;
-
-    double epsilon = 0.0001;
-    double upperK0 = 0.1;
-    double upInitK0 = 0.08;
-    double lowInitK0 = 0.02;
-    double lowerK0 = 0;
-    double k_init = 0.03;
-    double gamma = 0.0003;
 
     @Autowired
     private StormMgmtService stormMgmtService;
@@ -55,15 +47,18 @@ public class StormCtrlServiceImpl extends CtrlService {
     @Autowired
     private CloudWatchService cloudWatchService;
 
-    @Autowired
-    private CtrlStatsDao ctrlStatsDao;
-
-//    private final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService scheduledThreadPool;
+    private ScheduledFuture<?> futureTask;
 
     Queue stormCtrlGainQ;
     private final String ctrlName = "ApacheStorm";
     private int ctrlId;
 
+    public void setScheduler(ScheduledExecutorService scheduledThreadPool) {
+        this.scheduledThreadPool = scheduledThreadPool;
+    }
+
+    
     public void startController(CloudSetting cloudSetting,
             StormCluster stormCluster, StormCtrl stormCtrl) {
 
@@ -104,12 +99,11 @@ public class StormCtrlServiceImpl extends CtrlService {
                 if (!isCtrlStopped(ctrlId, ctrlName)) {
                     runCtrl(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
                 } else {
-                    scheduledThreadPool.shutdown();
+                    futureTask.cancel(false);
                 }
             }
-
         };
-        scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
+        futureTask = scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
     }
 
     private boolean isCtrlStopped(int id, String ctrl) {

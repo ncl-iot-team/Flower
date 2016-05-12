@@ -14,17 +14,19 @@ import com.csiro.flower.util.CloudServiceRegionUtil;
 import org.springframework.stereotype.Service;
 import com.csiro.flower.constant.CloudWatchConstant.*;
 import java.util.Date;
+import org.springframework.context.annotation.Scope;
 
 /**
  *
  * @author kho01f
  */
 @Service
+@Scope("prototype")
 public class CloudWatchServiceImpl implements CloudWatchService {
 
-    final int oneMin = 60;
-    String serviceName = "monitoring";
-    AmazonCloudWatchClient client;
+    private final int oneMin = 60;
+    private final static String serviceName = "monitoring";
+    private AmazonCloudWatchClient client;
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {

@@ -17,6 +17,7 @@ import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import com.csiro.flower.model.StormCtrl;
+import com.csiro.flower.service.CtrlsRunnerService;
 import com.csiro.flower.service.DynamoCtrlServiceImpl;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
@@ -69,15 +70,18 @@ public class CtrlManagementController {
 
     @Autowired
     private DynamoCtrlDao dynamoCtrlDao;
-
+    
     @Autowired
-    private StormCtrlServiceImpl stormCtrlServiceImpl;
+    private CtrlsRunnerService ctrlsRunnerService;
 
-    @Autowired
-    private KinesisCtrlServiceImpl kinesisCtrlServiceImpl;
-
-    @Autowired
-    private DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
+//    @Autowired
+//    private StormCtrlServiceImpl stormCtrlServiceImpl;
+//
+//    @Autowired
+//    private KinesisCtrlServiceImpl kinesisCtrlServiceImpl;
+//
+//    @Autowired
+//    private DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
 
     @Autowired
     private CtrlStatsDao ctrlStatsDao;
@@ -124,22 +128,7 @@ public class CtrlManagementController {
     }
 
     private void startFlowCtrlService(FlowDetailSetting flowSetting) {
-        if (flowSetting.getStormCtrl() != null) {
-            stormCtrlServiceImpl.startController(
-                    flowSetting.getCloudSetting(),
-                    flowSetting.getStormCluster(),
-                    flowSetting.getStormCtrl());
-        }
-        if (flowSetting.getDynamoCtrls() != null) {
-            for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
-                dynamoCtrlServiceImpl.startConroller(flowSetting.getCloudSetting(), dynamoCtrl);
-            }
-        }
-        if (flowSetting.getKinesisCtrls() != null) {
-            for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
-                kinesisCtrlServiceImpl.startController(flowSetting.getCloudSetting(), kinesisCtrl);
-            }
-        }
+       ctrlsRunnerService.startCtrls(flowSetting);
     }
 
     @RequestMapping(value = "/flowCtrlServicePage", method = RequestMethod.GET)

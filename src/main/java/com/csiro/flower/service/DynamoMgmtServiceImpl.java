@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,10 +28,11 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
+@Scope("prototype")
 public class DynamoMgmtServiceImpl implements DynamoMgmtService {
 
-    DynamoDB dynamoDB;
-    String serviceName = "dynamodb";
+    private DynamoDB dynamoDB;
+    private final String serviceName = "dynamodb";
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {
@@ -46,7 +48,7 @@ public class DynamoMgmtServiceImpl implements DynamoMgmtService {
     public List<String> getTableList() {
         TableCollection<ListTablesResult> tables = dynamoDB.listTables();
         Iterator<Table> iterator = tables.iterator();
-        List<String> tableNames = new ArrayList<String>();
+        List<String> tableNames = new ArrayList<>();
         while (iterator.hasNext()) {
             Table table = iterator.next();
             tableNames.add(table.getTableName());

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,17 +43,18 @@ import org.springframework.stereotype.Service;
  * @author kho01f
  */
 @Service
+@Scope("prototype")
 public class StormMgmtServiceImpl implements StormMgmtService {
 
-    AmazonEC2 ec2;
+    private AmazonEC2 ec2;
     private static final int WAIT_FOR_TRANSITION_INTERVAL = 5000;
-    String stoppedState = "stopped";
-    String runningState = "running";
-    String activeStatus = "ACTIVE";
-    String supervisorPrefix = "Worker";
-    String nimbusHost = "nimbus.host";
-    Nimbus.Client nimbusClient;
-    String serviceName= "ec2";
+    private final String stoppedState = "stopped";
+    private final String runningState = "running";
+    private final String activeStatus = "ACTIVE";
+    private final String supervisorPrefix = "Worker";
+    private final String nimbusHost = "nimbus.host";
+    private Nimbus.Client nimbusClient;
+    private final String serviceName= "ec2";
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {
