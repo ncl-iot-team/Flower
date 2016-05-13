@@ -8,13 +8,14 @@ package com.csiro.flower.service;
 import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,50 +26,55 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class CtrlsRunnerService {
 
-    private final int taskNo = 6;
-
-//    public int getTaskNo() {
-//        return taskNo;
-//    }
-//
-//    public void setTaskNo(int taskNo) {
-//        this.taskNo = taskNo;
-//    }
-//    
-    @Autowired
-    private StormCtrlServiceImpl stormCtrlServiceImpl;
+    private final int taskNo = 10;
 
     @Autowired
-    private KinesisCtrlServiceImpl kinesisCtrlServiceImpl;
+    CtrlFactoryService ctrlFactoryService;
 
-    @Autowired
-    private DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
-    
     public void startCtrls(FlowDetailSetting flowSetting) {
 
         ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(taskNo);
-        ApplicationContext context = new FileSystemXmlApplicationContext("file:C:/Users/kho01f/Documents/Flower/src/main/webapp/WEB-INF/config.xml");
+        ScheduledFuture<?> futureTask;
 
         if (flowSetting.getStormCtrl() != null) {
-//            StormCtrlServiceImpl stormCtrlServiceImpl = (StormCtrlServiceImpl) context.getBean(StormCtrlServiceImpl.class);
-            stormCtrlServiceImpl.setScheduler(scheduledThreadPool);
-            stormCtrlServiceImpl.startController(flowSetting.getCloudSetting(), flowSetting.getStormCluster(), flowSetting.getStormCtrl());
+            StormCtrlServiceImpl stormCtrlServiceImpl = ctrlFactoryService.getStormCtrlServiceImpl();
+            stormCtrlServiceImpl.setupController(flowSetting.getCloudSetting(), flowSetting.getStormCluster(), flowSetting.getStormCtrl());
+            futureTask = scheduledThreadPool.scheduleAtFixedRate(stormCtrlServiceImpl, 0, flowSetting.getStormCtrl().getMonitoringPeriod(), TimeUnit.MINUTES);
+            stormCtrlServiceImpl.setFutureTask(futureTask);
         }
         if (flowSetting.getDynamoCtrls() != null) {
             for (DynamoCtrl dynamoCtrl : flowSetting.getDynamoCtrls()) {
-//                DynamoCtrlServiceImpl dynamoCtrlServiceImpl = (DynamoCtrlServiceImpl) context.getBean(DynamoCtrlServiceImpl.class);
-//                DynamoCtrlServiceImpl dynamoCtrlServiceImpl = new DynamoCtrlServiceImpl();
-                dynamoCtrlServiceImpl.setScheduler(scheduledThreadPool);
-                dynamoCtrlServiceImpl.startConroller(flowSetting.getCloudSetting(), dynamoCtrl);
+                DynamoCtrlServiceImpl dynamoCtrlServiceImpl = ctrlFactoryService.getDynamoCtrlServiceImpl();
+                dynamoCtrlServiceImpl.setupConroller(flowSetting.getCloudSetting(), dynamoCtrl);
+                futureTask = scheduledThreadPool.scheduleAtFixedRate(dynamoCtrlServiceImpl, 0, dynamoCtrl.getMonitoringPeriod(), TimeUnit.MINUTES);
+                dynamoCtrlServiceImpl.setFutureTask(futureTask);
             }
         }
         if (flowSetting.getKinesisCtrls() != null) {
             for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
-//                KinesisCtrlServiceImpl kinesisCtrlServiceImpl = (KinesisCtrlServiceImpl) context.getBean(KinesisCtrlServiceImpl.class);
-                kinesisCtrlServiceImpl.setScheduler(scheduledThreadPool);
-                kinesisCtrlServiceImpl.startController(flowSetting.getCloudSetting(), kinesisCtrl);
+
+                KinesisCtrlServiceImpl kinesisCtrlServiceImpl = ctrlFactoryService.getKinesisCtrlServiceImpl();
+                kinesisCtrlServiceImpl.setupController(flowSetting.getCloudSetting(), kinesisCtrl);
+                futureTask = scheduledThreadPool.scheduleAtFixedRate(kinesisCtrlServiceImpl, 0, kinesisCtrl.getMonitoringPeriod(), TimeUnit.MINUTES);
+                kinesisCtrlServiceImpl.setFutureTask(futureTask);
             }
         }
+    }
+
+    public void stopCtrl(String ctrlName, int flowId, String resource) {
+        int id = 0;
+        switch (ctrlName) {
+            case "AmazonKinesis":
+                id = kinesisCtrlDao.getPkId(flowId, resource);
+                break;
+            case "ApacheStorm":
+                id = stormCtrlDao.getPkId(flowId, resource);
+                break;
+            case "DynamoDB":
+                id = dynamoCtrlDao.getPkId(flowId, resource);
+                break;
+        }
+        ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
     }
 
 }

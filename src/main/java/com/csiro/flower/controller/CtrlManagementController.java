@@ -5,11 +5,9 @@
  */
 package com.csiro.flower.controller;
 
-import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
-import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.DynamoCtrl;
@@ -18,18 +16,14 @@ import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import com.csiro.flower.model.StormCtrl;
 import com.csiro.flower.service.CtrlsRunnerService;
-import com.csiro.flower.service.DynamoCtrlServiceImpl;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
-import com.csiro.flower.service.KinesisCtrlServiceImpl;
 import com.csiro.flower.service.KinesisMgmtService;
-import com.csiro.flower.service.StormCtrlServiceImpl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -48,7 +42,6 @@ import org.springframework.web.servlet.ModelAndView;
  * @author kho01f
  */
 @Controller
-//@Scope("request")
 @RequestMapping("ctrls")
 @SessionAttributes("flow")
 public class CtrlManagementController {
@@ -70,18 +63,9 @@ public class CtrlManagementController {
 
     @Autowired
     private DynamoCtrlDao dynamoCtrlDao;
-    
+
     @Autowired
     private CtrlsRunnerService ctrlsRunnerService;
-
-//    @Autowired
-//    private StormCtrlServiceImpl stormCtrlServiceImpl;
-//
-//    @Autowired
-//    private KinesisCtrlServiceImpl kinesisCtrlServiceImpl;
-//
-//    @Autowired
-//    private DynamoCtrlServiceImpl dynamoCtrlServiceImpl;
 
     @Autowired
     private CtrlStatsDao ctrlStatsDao;
@@ -128,7 +112,7 @@ public class CtrlManagementController {
     }
 
     private void startFlowCtrlService(FlowDetailSetting flowSetting) {
-       ctrlsRunnerService.startCtrls(flowSetting);
+        ctrlsRunnerService.startCtrls(flowSetting);
     }
 
     @RequestMapping(value = "/flowCtrlServicePage", method = RequestMethod.GET)
@@ -144,7 +128,6 @@ public class CtrlManagementController {
 //        flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
 //        return "redirect:/ctrls/launchFlowCtrlServicePage";
 //    }
-    
     @RequestMapping(value = "/loadDynamoTables")
     public @ResponseBody
     List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
@@ -178,11 +161,33 @@ public class CtrlManagementController {
     List<KinesisCtrl> getKinesisCtrl(@PathVariable int flowId) {
         return kinesisCtrlDao.get(flowId);
     }
-    
+
     @RequestMapping(value = "/stormCtrl/{flowId}")
     public @ResponseBody
-    StormCtrl getStormCtrl(@PathVariable int flowId){
+    StormCtrl getStormCtrl(@PathVariable int flowId) {
         return stormCtrlDao.get(flowId);
+    }
+
+    @RequestMapping(value = "/restartCtrl")
+    public @ResponseBody
+    void stopCtrlService(
+            @RequestParam("ctrlName") String ctrlName,
+            @RequestParam("flowId") int flowId,
+            @RequestParam("resource") String resource) {
+        
+//        int id = 0;
+//        switch (ctrlName) {
+//            case "AmazonKinesis":
+//                id = kinesisCtrlDao.getPkId(flowId, resource);
+//                break;
+//            case "ApacheStorm":
+//                id = stormCtrlDao.getPkId(flowId, resource);
+//                break;
+//            case "DynamoDB":
+//                id = dynamoCtrlDao.getPkId(flowId, resource);
+//                break;
+//        }
+//        ctrlsRunnerService
     }
 
     @RequestMapping(value = "/stopCtrl")
@@ -191,19 +196,7 @@ public class CtrlManagementController {
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource) {
-        int id = 0;
-        switch (ctrlName) {
-            case "AmazonKinesis":
-                id = kinesisCtrlDao.getPkId(flowId, resource);
-                break;
-            case "ApacheStorm":
-                id = stormCtrlDao.getPkId(flowId, resource);
-                break;
-            case "DynamoDB":
-                id = dynamoCtrlDao.getPkId(flowId, resource);
-                break;
-        }
-        ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+
     }
 
 //Using flashattributes for sending objects after redirect
@@ -219,7 +212,6 @@ public class CtrlManagementController {
 //        redirectAttributes.addFlashAttribute("flowSetting", flowSetting);
 //        return new RedirectView("/Flower/ctrls/flowCtrlServicePage");
 //    }
-    
 //    @RequestMapping(value = "/launchFlowCtrlServicePage", method = RequestMethod.GET)
 //    public String launchCtrlServicePage(Model model) {
 //        FlowDetailSetting flowSetting = (FlowDetailSetting) model.asMap().get("flowSetting");
@@ -243,5 +235,4 @@ public class CtrlManagementController {
 //        }
 //        return "flowCtrlServicePage";
 //    }
-
 }

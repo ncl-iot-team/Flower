@@ -5,7 +5,7 @@
 --%>
 
 
-    <body>
+<body>
     <section>
         <!--div class="row">
           <div class="col-lg-12 page-header text-center">
@@ -21,7 +21,10 @@
                     <p><br>
                     </p>
                 </div>
-                <div class="col-lg-4 col-sm-12 text-center"><img class="img-circle" alt="140x140" style="width: 140px; height: 140px;" src="${pageContext.request.contextPath}/resources/img/Graph (2).png" data-holder-rendered="true">
+                <div class="col-lg-4 col-sm-12 text-center">
+                    <a href="/Flower/ElasticityService">
+                        <img class="img-circle" alt="140x140" style="width: 140px; height: 140px;" src="${pageContext.request.contextPath}/resources/img/Graph (2).png" data-holder-rendered="true">
+                    </a>
                     <h3>Elasticity Management</h3>
                     <p>Automated Control of Resources</p>
                     <p>Optimized Resource Share Analysis</p>
@@ -29,7 +32,7 @@
                 </div>
                 <div class="col-lg-4 col-sm-12 text-center"><img class="img-circle" alt="140x140" style="width: 140px; height: 140px;" src="${pageContext.request.contextPath}/resources/img/Analytics.png" data-holder-rendered="true">
                     <h3>Performance Inspection </h3>
-                    <p>Holistic Performance Measure Defenition</p>
+                    <p>Holistic Performance Measure Definition</p>
                     <p>Drill-down analysis </p>
                     <p>&nbsp;</p>
                 </div>

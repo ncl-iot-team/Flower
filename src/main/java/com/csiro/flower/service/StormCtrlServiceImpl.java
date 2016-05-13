@@ -32,9 +32,9 @@ import org.springframework.stereotype.Service;
  *
  * @author kho01f
  */
-@Service
-@Scope(value = "prototype")
-public class StormCtrlServiceImpl extends CtrlService {
+//@Service
+//@Scope(value = "prototype")
+public class StormCtrlServiceImpl extends CtrlService implements Runnable {
 
     long TRANSITION_WAIT_TIME = 45000;
 
@@ -47,41 +47,48 @@ public class StormCtrlServiceImpl extends CtrlService {
     @Autowired
     private CloudWatchService cloudWatchService;
 
-    private ScheduledExecutorService scheduledThreadPool;
     private ScheduledFuture<?> futureTask;
 
     Queue stormCtrlGainQ;
+
     private final String ctrlName = "ApacheStorm";
     private int ctrlId;
+    private String nimbusIp;
+    private String topologyName;
+    private String measurementTarget;
+    private double cpuRef;
+    private int backoffNo;
+    private int flowId;
 
-    public void setScheduler(ScheduledExecutorService scheduledThreadPool) {
-        this.scheduledThreadPool = scheduledThreadPool;
+    public ScheduledFuture<?> getFutureTask() {
+        return futureTask;
     }
 
-    
-    public void startController(CloudSetting cloudSetting,
-            StormCluster stormCluster, StormCtrl stormCtrl) {
+    public void setFutureTask(ScheduledFuture<?> futureTask) {
+        this.futureTask = futureTask;
+    }
 
-        initValues(stormCtrl);
-        initService(
-                cloudSetting.getCloudProvider(),
+    public void setupController(CloudSetting cloudSetting, StormCluster stormCluster, StormCtrl stormCtrl) {
+
+        initValues(stormCluster, stormCtrl);
+        
+        initService(cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
-        startStormCtrl(
-                stormCluster.getNimbusIp(),
-                stormCtrl.getTargetTopology(),
-                stormCtrl.getMeasurementTarget(),
-                stormCtrl.getRefValue(),
-                stormCtrl.getMonitoringPeriod(),
-                stormCtrl.getBackoffNo());
-
+        
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
-    private void initValues(StormCtrl stormCtrl) {
-        ctrlId = stormCtrlDao.getPkId(stormCtrl.getFlowIdFk(), stormCtrl.getTargetTopology());
-
+    private void initValues(StormCluster stormCluster, StormCtrl stormCtrl) {
+        stormCtrlGainQ = new LinkedList<>();
+        nimbusIp = stormCluster.getNimbusIp();
+        flowId = stormCtrl.getFlowIdFk();
+        topologyName = stormCtrl.getTargetTopology();
+        measurementTarget = stormCtrl.getMeasurementTarget();
+        cpuRef = stormCtrl.getRefValue();
+        backoffNo = stormCtrl.getBackoffNo();
+        ctrlId = stormCtrlDao.getPkId(flowId, topologyName);
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -89,29 +96,20 @@ public class StormCtrlServiceImpl extends CtrlService {
         stormMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    private void startStormCtrl(final String nimbusIp, final String topologyName,
-            final String measurementTarget, final double refVal, int schedulingPeriod, final int backoffNo) {
-        stormCtrlGainQ = new LinkedList<>();
-
-        final Runnable runMonitorAndControl = new Runnable() {
-            @Override
-            public void run() {
-                if (!isCtrlStopped(ctrlId, ctrlName)) {
-                    runCtrl(nimbusIp, topologyName, measurementTarget, refVal, backoffNo);
-                } else {
-                    futureTask.cancel(false);
-                }
-            }
-        };
-        futureTask = scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
+    @Override
+    public void run() {
+        if (!isCtrlStopped(ctrlId, ctrlName)) {
+            runController();
+        } else {
+            futureTask.cancel(false);
+        }
     }
 
     private boolean isCtrlStopped(int id, String ctrl) {
         return ctrlStatsDao.getCtrlStatus(id, ctrl).equals(STOPPED_STATUS);
     }
 
-    private void runCtrl(String nimbusIp, String topologyName,
-            String measurementTarget, double cpuRef, int backoffNo) {
+    private void runController() {
         try {
             int clusterSizeLimit;
             double error;
@@ -195,7 +193,7 @@ public class StormCtrlServiceImpl extends CtrlService {
             avgCpu += cpu;
         }
         finalAvg = avgCpu / cpuStats.size();
-                
+
         return Double.isNaN(finalAvg) ? 0.0 : finalAvg;
     }
 

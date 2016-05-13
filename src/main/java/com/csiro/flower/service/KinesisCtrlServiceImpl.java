@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +26,9 @@ import org.springframework.stereotype.Service;
  *
  * @author kho01f
  */
-@Service
-@Scope("prototype")
-public class KinesisCtrlServiceImpl extends CtrlService{
+//@Service
+//@Scope("prototype")
+public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
 
     @Autowired
     private KinesisMgmtService kinesisMgmtService;
@@ -40,36 +39,43 @@ public class KinesisCtrlServiceImpl extends CtrlService{
     @Autowired
     private CloudWatchService cloudWatchService;
 
-
-    private  ScheduledExecutorService scheduledThreadPool;
     private ScheduledFuture<?> futureTask;
+
+    public ScheduledFuture<?> getFutureTask() {
+        return futureTask;
+    }
+
+    public void setFutureTask(ScheduledFuture<?> futureTask) {
+        this.futureTask = futureTask;
+    }
+
     Queue kinesisCtrlGainQ;
     private final String ctrlName = "AmazonKinesis";
     private int ctrlId;
+    private String streamName;
+    private String measurementTarget;
+    private double putRecordUtilizationRef;
+    private int backoffNo;
 
-    public void setScheduler(ScheduledExecutorService scheduledThreadPool){
-        this.scheduledThreadPool = scheduledThreadPool;
-    }
-    
-    public void startController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
+    public void setupController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
 
         initValues(kinesisCtrl);
+
         initService(
                 cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
-        startKinesisCtrl(
-                kinesisCtrl.getStreamName(),
-                kinesisCtrl.getMeasurementTarget(),
-                kinesisCtrl.getRefValue(),
-                kinesisCtrl.getMonitoringPeriod(),
-                kinesisCtrl.getBackoffNo());
 
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
     private void initValues(KinesisCtrl kinesisCtrl) {
+        kinesisCtrlGainQ = new LinkedList<>();
+        streamName = kinesisCtrl.getStreamName();
+        measurementTarget = kinesisCtrl.getMeasurementTarget();
+        putRecordUtilizationRef = kinesisCtrl.getRefValue();
+        backoffNo = kinesisCtrl.getBackoffNo();
         ctrlId = kinesisCtrlDao.getPkId(kinesisCtrl.getFlowIdFk(), kinesisCtrl.getStreamName());
     }
 
@@ -78,30 +84,20 @@ public class KinesisCtrlServiceImpl extends CtrlService{
         kinesisMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    private void startKinesisCtrl(final String streamName, final String measurementTarget,
-            final double putRecordUtilizationRef, int schedulingPeriod, final int backoffNo) {
-
-        kinesisCtrlGainQ = new LinkedList<>();
-        final Runnable runMonitorAndControl = new Runnable() {
-            @Override
-            public void run() {
-                if (!isCtrlStopped(ctrlId, ctrlName)) {
-                    runController(streamName, measurementTarget, putRecordUtilizationRef, backoffNo);
-                } else {
-//                    scheduledThreadPool.shutdown();
-                    futureTask.cancel(false);
-                }
-            }
-
-        };
-        futureTask = scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
+    @Override
+    public void run() {
+        if (!isCtrlStopped(ctrlId, ctrlName)) {
+            runController();
+        } else {
+            futureTask.cancel(false);
+        }
     }
 
     private boolean isCtrlStopped(int id, String ctrl) {
         return ctrlStatsDao.getCtrlStatus(id, ctrl).equals(STOPPED_STATUS);
     }
 
-    private void runController(String streamName, String measurementTarget, double putRecordUtilizationRef, int backoffNo) {
+    private void runController() {
         double error;
         double k0;
         double uk0;

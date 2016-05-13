@@ -27,9 +27,9 @@ import org.springframework.stereotype.Service;
  *
  * @author kho01f
  */
-@Service
-@Scope("prototype")
-public class DynamoCtrlServiceImpl extends CtrlService {
+//@Service
+//@Scope("prototype")
+public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
 
     @Autowired
     private DynamoMgmtService dynamoMgmtService;
@@ -42,18 +42,27 @@ public class DynamoCtrlServiceImpl extends CtrlService {
 
     String ctrlName = "DynamoDB";
 
-    private ScheduledExecutorService scheduledThreadPool;
+    public ScheduledFuture<?> getFutureTask() {
+        return futureTask;
+    }
 
+    public void setFutureTask(ScheduledFuture<?> futureTask) {
+        this.futureTask = futureTask;
+    }
+
+//    private ScheduledExecutorService scheduledThreadPool;
     Queue dynamoCtrlGainQ;
     private ScheduledFuture<?> futureTask;
 
     private int ctrlId;
 
-    public void setScheduler(ScheduledExecutorService scheduledThreadPool) {
-        this.scheduledThreadPool = scheduledThreadPool;
-    }
+    int flowId;
+    String tblName;
+    String measurementTarget;
+    double writeUtilizationRef;
+    int initBackoff;
 
-    public void startConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
+    public void setupConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
 
         initValues(dynamoCtrl);
         initService(
@@ -61,18 +70,17 @@ public class DynamoCtrlServiceImpl extends CtrlService {
                 cloudSetting.getAccessKey(),
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
-        startDynamoCtrl(
-                dynamoCtrl.getTableName(),
-                dynamoCtrl.getMeasurementTarget(),
-                dynamoCtrl.getRefValue(),
-                dynamoCtrl.getMonitoringPeriod(),
-                dynamoCtrl.getBackoffNo());
-
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
     private void initValues(DynamoCtrl dynamoCtrl) {
-        ctrlId = dynamoCtrlDao.getPkId(dynamoCtrl.getFlowIdFk(), dynamoCtrl.getTableName());
+        dynamoCtrlGainQ = new LinkedList<>();
+        flowId = dynamoCtrl.getFlowIdFk();
+        tblName = dynamoCtrl.getTableName();
+        measurementTarget = dynamoCtrl.getMeasurementTarget();
+        writeUtilizationRef = dynamoCtrl.getRefValue();
+        initBackoff = dynamoCtrl.getBackoffNo();
+        ctrlId = dynamoCtrlDao.getPkId(flowId, tblName);
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -80,30 +88,34 @@ public class DynamoCtrlServiceImpl extends CtrlService {
         dynamoMgmtService.initService(provider, accessKey, secretKey, region);
     }
 
-    private void startDynamoCtrl(final String tblName, final String measurementTarget,
-            final double refValue, int schedulingPeriod, final int backoffNo) {
-
-        dynamoCtrlGainQ = new LinkedList<>();
-
-        final Runnable runMonitorAndControl = new Runnable() {
-            @Override
-            public void run() {
-                if (!isCtrlStopped(ctrlId, ctrlName)) {
-                    runController(tblName, measurementTarget, refValue, backoffNo);
-                } else {
-                    futureTask.cancel(false);
-                }
-            }
-        };
-        futureTask = scheduledThreadPool.scheduleAtFixedRate(runMonitorAndControl, 0, schedulingPeriod, TimeUnit.MINUTES);
+    @Override
+    public void run() {
+        if (!isCtrlStopped(ctrlId, ctrlName)) {
+            runController();
+        } else {
+            futureTask.cancel(false);
+        }
     }
 
+//    private void startDynamoCtrl(final String tblName, final String measurementTarget,
+//            final double refValue, int schedulingPeriod, final int backoffNo) {
+//
+//        final Runnable runMonitorAndControl = new Runnable() {
+//            @Override
+//            public void run() {
+//                if (!isCtrlStopped(ctrlId, ctrlName)) {
+//                    runController(tblName, measurementTarget, refValue, backoffNo);
+//                } else {
+//                    futureTask.cancel(false);
+//                }
+//            }
+//        };
+//    }
     private boolean isCtrlStopped(int id, String ctrl) {
         return ctrlStatsDao.getCtrlStatus(id, ctrl).equals(STOPPED_STATUS);
     }
 
-    private void runController(String tblName, String measurementTarget,
-            double writeUtilizationRef, int initBackoff) {
+    private void runController() {
         double error;
         double k0;
         double uk0;

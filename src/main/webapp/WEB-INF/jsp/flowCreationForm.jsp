@@ -196,20 +196,20 @@
                     if (!$('#flow-owner').val()) {
                         $('#flow-owner').css('border', '1px solid red');
                     } else {
-                        $('#flow-owner').css('border','');
+                        $('#flow-owner').css('border', '');
                     }
                 });
-                
+
                 function validateFlowSettingForm() {
                     var isValid = true;
                     if (!$('#flow-name').val()) {
                         $('#flow-name').attr('style', 'border:1px solid red');
                         isValid = false;
                     }
-                    if (!$('#flow-owner').val()) {
-                        $('#flow-owner').css('border', '1px solid red');
-                        isValid = false;
-                    }
+//                    if (!$('#flow-owner').val()) {
+//                        $('#flow-owner').css('border', '1px solid red');
+//                        isValid = false;
+//                    }
                     return isValid;
                 }
 
@@ -260,6 +260,15 @@
                             case 'DynamoDB':
                                 platform = 'dyn';
                                 break;
+                            case 'Apache Kafka':
+                                platform = 'kaf';
+                                break;
+                            case 'Apache Spark':
+                                platform = 'spa';
+                                break;
+                            case 'Apache Cassandra':
+                                platform = 'cas';
+                                break;
                             default:
                                 return false;
                         }
@@ -287,6 +296,18 @@
                             break;
                         case 'dynBtn':
                             divDialogName = 'dynamo';
+                            deleteEnabled = true;
+                            break;
+                        case 'kafBtn':
+                            divDialogName = 'kafka';
+                            deleteEnabled = true;
+                            break;
+                        case 'spaBtn':
+                            divDialogName = 'spark';
+                            deleteEnabled = true;
+                            break;
+                        case 'casBtn':
+                            divDialogName = 'cassandra';
                             deleteEnabled = true;
                             break;
                         default:
@@ -364,13 +385,14 @@
                     <hr style="width:85%;" align="left">
                     <form id="flow-general-setting" action="submitFlowSettingForm" method="post">
                         <fieldset>
-                            <div style="float:left"> <label class="conf">Analytics Flow Name*</label>
+                            <div style="float:left"> <label class="conf">Analytics Flow Name <font color="red">*</font></label>
                                 <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/></div>
-                            <div style="float:left; margin-left: 50px"><label class="conf">Flow Owner*</label>
-                                <select name="flowOwner" id="flow-owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
+                            <div style="float:left; margin-left: 50px">
+                                <!--<label class="conf">Flow Owner*</label>-->
+<!--                                <select name="flowOwner" id="flow-owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">
                                     <option value=""></option>
                                     <option value="currentUser">Current User</option>
-                                </select>
+                                </select>-->
                             </div>
                             <input type="hidden" name="platforms" id="hiddenListInput" />
                         </fieldset>

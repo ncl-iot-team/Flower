@@ -18,6 +18,15 @@
     <context:component-scan base-package="com.csiro.flower.service" />
     <context:component-scan base-package="com.csiro.flower.util" />
 
+	<bean id="ctrlFactoryService" class="com.csiro.flower.service.CtrlFactoryService">
+		<lookup-method name="getDynamoCtrlServiceImpl" bean="dynamoCtrlServiceImpl"/>
+                <lookup-method name="getStormCtrlServiceImpl" bean="stormCtrlServiceImpl"/>
+		<lookup-method name="getKinesisCtrlServiceImpl" bean="kinesisCtrlServiceImpl"/>
+	</bean>
+
+	<bean id="dynamoCtrlServiceImpl" class="com.csiro.flower.service.DynamoCtrlServiceImpl" scope="prototype"/>
+	<bean id="stormCtrlServiceImpl" class="com.csiro.flower.service.StormCtrlServiceImpl" scope="prototype"/>
+	<bean id="kinesisCtrlServiceImpl" class="com.csiro.flower.service.KinesisCtrlServiceImpl" scope="prototype"/>
 
   
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  

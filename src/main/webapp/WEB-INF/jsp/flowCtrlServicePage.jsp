@@ -55,34 +55,6 @@
 
         </style>
         <style>
-            div.kill {
-                color: #ffffff;
-                width: 70px;
-                height: 30px;
-                text-align: center;
-                line-height: 30px;
-                font-size: 14px;
-                cursor: pointer;
-                position: relative;
-                background-color: #67B168;  
-                -webkit-border-radius: 50%;
-                -moz-border-radius: 50%;
-                border-radius: 5%;
-                -webkit-box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;
-                box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;
-                -webkit-transition: all .2s ease;
-                transition: all .2s ease;
-                margin-right: 5px; 
-                float: left;
-            }
-            div.kill:hover,
-            div.kill.active {
-                -webkit-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
-                -moz-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
-                box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
-                color: #fff;
-                background-color: #CD391F;
-            }
             div.play {
                 color: #ffffff;
                 width: 70px;
@@ -174,8 +146,8 @@
                                      <th>Backoff No</th> <th>Last update</th>\n\
                                     <th></th><th></th></tr></thead>');
                                 $.get("stormCtrl/" + $flowId, function(stormCtrl) {
-                                        $('#ApacheStormTbl tr:last')
-                                                .after('<tr><td>' + stormCtrl.targetTopology + '</td>\n\
+                                    $('#ApacheStormTbl tr:last')
+                                            .after('<tr><td>' + stormCtrl.targetTopology + '</td>\n\
                                         <td>Active</td>\n\
                                         <td>' + stormCtrl.measurementTarget + '</td>\n\
                                         <td>' + stormCtrl.refValue + '</td> \n\
@@ -259,24 +231,15 @@
                         });
                     } else {
                         $this.text('stop');
-//                        $.ajax({
-//                            type: 'POST',
-//                            url: restartControllerService,
-//                            data: {ctrlName: $id}
-//                        });
+                        $.ajax({
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            type: 'GET',
+                            url: '../ctrls/restartCtrl',
+                            data: {ctrlName: $ctrlName, resource: $id, flowId: $flowId}
+                        });
                     }
                 });
-
-//                $('.kill').click(function() {
-//                    var $this = $(this);
-//                    $this.toggleClass('active');
-//                    if ($this.hasClass('active')) {
-//                        $this.text('stop');
-//                        $('.play').off('click');
-//                    } else {
-//                        $this.toggleClass('active');
-//                    }
-//                });
 
 
                 function getTime() {
@@ -304,7 +267,6 @@
                     type: 'pie',
                     data: pieData
                 });
-
 
 
 
