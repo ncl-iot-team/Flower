@@ -114,6 +114,8 @@
                 var flow = '${flow.platforms}';
                 var $flowId = '${flow.flowId}';
                 var systems = flow.split(",");
+                var $ctrlStatus;
+                var $ctrlBtnCls;
                 var system;
                 for (var i = 0; i < systems.length; i++) {
                     system = systems[i].replace(' ', '');
@@ -195,15 +197,17 @@
                                     <th></th><th></th></tr></thead>');
                                 $.get("kinesisCtrl/" + $flowId, function(data) {
                                     $.each(data, function(i, kinesisCtrl) {
+                                        $ctrlStatus = getCtrlStatus('AmazonKinesis', kinesisCtrl.streamName, $flowId);
+                                        ($ctrlStatus === 'Running') ? $ctrlBtnCls = "active" : $ctrlBtnCls = "";
                                         $('#AmazonKinesisTbl tr:last')
                                                 .after('<tr><td>' + kinesisCtrl.streamName + '</td>\n\
-                                                    <td>Running</td>\n\
+                                                    <td>' + $ctrlStatus + '</td>\n\
                                                     <td>' + kinesisCtrl.measurementTarget + '</td>\n\
                                                     <td>' + kinesisCtrl.refValue + '</td> \n\
                                                     <td>' + kinesisCtrl.monitoringPeriod + '</td>\n\
                                                     <td>' + kinesisCtrl.backoffNo + '</td>\n\
                                                     <td>7.03</td>\n\
-                                                    <td><div id="' + kinesisCtrl.streamName + '" class="play active" style="text-shadow:none">stop</div></td>\n\
+                                                    <td><div class="play ' + $ctrlStatus + '" style="text-shadow:none">stop</div></td>\n\
                                                     <td><input type="radio" name="AmazonKinesisRadio" value="' + kinesisCtrl.streamName + '" \n\
                                                     checked="checked" ></td></tr>');
                                     });
@@ -213,12 +217,28 @@
                     }
                 }
 
+                function getCtrlStatus(ctrlName, resource, flowId) {
+                    var status;
+                    $.ajax({
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        type: 'GET',
+                        url: '../ctrls/getCtrlStatus',
+                        data: {ctrlName: ctrlName, resource: resource, flowId: flowId},
+                        success: function(data) {
+                            status = data;
+                        }
+                    });
+                    return status;
+                }
 
 
                 $(document).on('click', '.play', function() {
                     var $this = $(this);
-                    var $id = $this.attr('id');
+//                    var $id = $this.attr('id');
                     var $ctrlName = $this.parents('table').attr('id').replace('Tbl', '');
+                    var $resource = $(this).closest('tr').find('td:eq(0)').text();
+                    var $measurementTarget = $(this).closest('tr').find('td:eq(2)').text();
                     $this.toggleClass('active');
                     if (!$this.hasClass('active')) {
                         $this.text('start');
@@ -227,7 +247,7 @@
                             dataType: 'json',
                             type: 'GET',
                             url: '../ctrls/stopCtrl',
-                            data: {ctrlName: $ctrlName, resource: $id, flowId: $flowId}
+                            data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId}
                         });
                     } else {
                         $this.text('stop');
@@ -236,7 +256,7 @@
                             dataType: 'json',
                             type: 'GET',
                             url: '../ctrls/restartCtrl',
-                            data: {ctrlName: $ctrlName, resource: $id, flowId: $flowId}
+                            data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         });
                     }
                 });

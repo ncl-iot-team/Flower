@@ -24,10 +24,6 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-//    public void setDatasource(JdbcTemplate jdbcTemplate) {
-//        this.jdbcTemplate = jdbcTemplate;
-//    }
-
     @Override
     public void save(StormCtrl stormCtrl) {
         String sqlInsert = "INSERT INTO storm_ctrl_tbl (flow_id_fk, topology_name, "
@@ -63,7 +59,6 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
                 return stormCtrl;
             }
         });
-
     }
 
     @Override
@@ -78,6 +73,16 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
         int id = (int) jdbcTemplate.queryForObject(sqlSelect,
                 new Object[]{flowId, topology}, Integer.class);
         return id;
+    }
+
+    @Override
+    public StormCtrl get(int flowId, String measurementTarget) {
+         String sqlSelect = "SELECT * FROM storm_ctrl_tbl "
+                 + "WHERE flow_id_fk=? AND measurement_target=?";
+        StormCtrl stormCtrl = (StormCtrl) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{flowId, measurementTarget},
+                StormCtrl.class);
+        return stormCtrl;
     }
 
 }

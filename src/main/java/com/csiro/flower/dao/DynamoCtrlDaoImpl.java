@@ -64,4 +64,13 @@ public class DynamoCtrlDaoImpl implements DynamoCtrlDao {
         return id;
     }
 
+    @Override
+    public DynamoCtrl get(int flowId, String tbl, String measurementTarget) {
+        String sqlSelect = "SELECT id FROM dynamodb_ctrl_tbl WHERE "
+                + "flow_id_fk = ? AND table_name = ? AND measurement_target=?";
+        DynamoCtrl dynamoCtrl = (DynamoCtrl) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{flowId, tbl, measurementTarget}, DynamoCtrl.class);
+        return dynamoCtrl;
+    }
+
 }

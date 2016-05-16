@@ -6,8 +6,6 @@
 package com.csiro.flower.service;
 
 import com.csiro.flower.dao.CtrlStatsDao;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

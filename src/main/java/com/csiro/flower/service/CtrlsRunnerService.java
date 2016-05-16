@@ -5,11 +5,18 @@
  */
 package com.csiro.flower.service;
 
+import com.csiro.flower.dao.CloudSettingDao;
+import com.csiro.flower.dao.CtrlStatsDao;
+import com.csiro.flower.dao.DynamoCtrlDao;
+import com.csiro.flower.dao.KinesisCtrlDao;
+import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,9 +34,25 @@ import org.springframework.stereotype.Service;
 public class CtrlsRunnerService {
 
     private final int taskNo = 10;
+    private final String STOPPED_STATUS = "Stopped";
 
     @Autowired
     CtrlFactoryService ctrlFactoryService;
+
+    @Autowired
+    private StormCtrlDao stormCtrlDao;
+
+    @Autowired
+    private KinesisCtrlDao kinesisCtrlDao;
+
+    @Autowired
+    private DynamoCtrlDao dynamoCtrlDao;
+
+    @Autowired
+    private CtrlStatsDao ctrlStatsDao;
+
+    @Autowired
+    private CloudSettingDao cloudSettingDao;
 
     public void startCtrls(FlowDetailSetting flowSetting) {
 
@@ -52,7 +75,6 @@ public class CtrlsRunnerService {
         }
         if (flowSetting.getKinesisCtrls() != null) {
             for (KinesisCtrl kinesisCtrl : flowSetting.getKinesisCtrls()) {
-
                 KinesisCtrlServiceImpl kinesisCtrlServiceImpl = ctrlFactoryService.getKinesisCtrlServiceImpl();
                 kinesisCtrlServiceImpl.setupController(flowSetting.getCloudSetting(), kinesisCtrl);
                 futureTask = scheduledThreadPool.scheduleAtFixedRate(kinesisCtrlServiceImpl, 0, kinesisCtrl.getMonitoringPeriod(), TimeUnit.MINUTES);
@@ -61,7 +83,38 @@ public class CtrlsRunnerService {
         }
     }
 
+    public void restartCtrl(String ctrlName, int flowId, String resource, String measurementTarget) {
+        FlowDetailSetting flowSetting = new FlowDetailSetting();
+        flowSetting.setCloudSetting(cloudSettingDao.get(flowId));
+        switch (ctrlName) {
+            case "AmazonKinesis":
+                List<KinesisCtrl> kinesisCtrls = new ArrayList<>();
+                kinesisCtrls.add(kinesisCtrlDao.get(flowId, resource, measurementTarget));
+                flowSetting.setKinesisCtrls(kinesisCtrls);
+                break;
+            case "ApacheStorm":
+                flowSetting.setStormCtrl(stormCtrlDao.get(flowId, measurementTarget));
+                break;
+            case "DynamoDB":
+                List<DynamoCtrl> dynamoCtrls = new ArrayList<>();
+                dynamoCtrls.add(dynamoCtrlDao.get(flowId, resource, measurementTarget));
+                flowSetting.setDynamoCtrls(dynamoCtrls);
+                break;
+        }
+        startCtrls(flowSetting);
+    }
+
     public void stopCtrl(String ctrlName, int flowId, String resource) {
+        int id = getCtrlPkId(ctrlName, flowId, resource);
+        ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+    }
+
+    public String getCtrlStatus(String ctrlName, int flowId, String resource) {
+        int id = getCtrlPkId(ctrlName, flowId, resource);
+        return ctrlStatsDao.getCtrlStatus(id, ctrlName);
+    }
+
+    private int getCtrlPkId(String ctrlName, int flowId, String resource) {
         int id = 0;
         switch (ctrlName) {
             case "AmazonKinesis":
@@ -74,7 +127,6 @@ public class CtrlsRunnerService {
                 id = dynamoCtrlDao.getPkId(flowId, resource);
                 break;
         }
-        ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+        return id;
     }
-
 }

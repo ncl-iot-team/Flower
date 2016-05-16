@@ -67,11 +67,8 @@ public class CtrlManagementController {
     @Autowired
     private CtrlsRunnerService ctrlsRunnerService;
 
-    @Autowired
-    private CtrlStatsDao ctrlStatsDao;
-
-    private final String STOPPED_STATUS = "Stopped";
-
+//    @Autowired
+//    private CtrlStatsDao ctrlStatsDao;
     @InitBinder
     public void nullValueHandler(WebDataBinder binder) {
         binder.registerCustomEditor(int.class, new CustomNumberEditor(Integer.class, true) {
@@ -170,24 +167,13 @@ public class CtrlManagementController {
 
     @RequestMapping(value = "/restartCtrl")
     public @ResponseBody
-    void stopCtrlService(
+    void restartCtrlService(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
-            @RequestParam("resource") String resource) {
-        
-//        int id = 0;
-//        switch (ctrlName) {
-//            case "AmazonKinesis":
-//                id = kinesisCtrlDao.getPkId(flowId, resource);
-//                break;
-//            case "ApacheStorm":
-//                id = stormCtrlDao.getPkId(flowId, resource);
-//                break;
-//            case "DynamoDB":
-//                id = dynamoCtrlDao.getPkId(flowId, resource);
-//                break;
-//        }
-//        ctrlsRunnerService
+            @RequestParam("resource") String resource,
+            @RequestParam("measurementTarget") String measurementTarget) {
+
+        ctrlsRunnerService.restartCtrl(ctrlName, flowId, resource, measurementTarget);
     }
 
     @RequestMapping(value = "/stopCtrl")
@@ -197,6 +183,17 @@ public class CtrlManagementController {
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource) {
 
+        ctrlsRunnerService.stopCtrl(ctrlName, flowId, resource);
+    }
+
+    @RequestMapping(value = "/getCtrlStatus")
+    public @ResponseBody
+    String getCtrlStatus(
+            @RequestParam("ctrlName") String ctrlName,
+            @RequestParam("flowId") int flowId,
+            @RequestParam("resource") String resource) {
+
+        return ctrlsRunnerService.getCtrlStatus(ctrlName, flowId, resource);
     }
 
 //Using flashattributes for sending objects after redirect

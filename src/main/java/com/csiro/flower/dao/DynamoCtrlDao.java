@@ -24,4 +24,5 @@ public interface DynamoCtrlDao {
     
     public int getPkId(int flowId, String tbl);
 
+    public DynamoCtrl get(int flowId, String resource, String measurementTarget);
 }

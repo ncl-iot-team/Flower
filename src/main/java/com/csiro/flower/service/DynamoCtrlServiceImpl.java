@@ -7,7 +7,6 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
-import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.DynamoCtrl;
@@ -15,20 +14,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 /**
  *
  * @author kho01f
  */
-//@Service
-//@Scope("prototype")
 public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
 
     @Autowired
@@ -50,7 +42,6 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
         this.futureTask = futureTask;
     }
 
-//    private ScheduledExecutorService scheduledThreadPool;
     Queue dynamoCtrlGainQ;
     private ScheduledFuture<?> futureTask;
 

@@ -64,4 +64,13 @@ public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
         return id;
     }
 
+    @Override
+    public KinesisCtrl get(int flowId, String stream, String measurementTarget) {
+        String sqlSelect = "SELECT * FROM kinesis_ctrl_tbl WHERE "
+                + " flow_id_fk = ? AND stream_name = ? AND measurement_target = ?";
+        KinesisCtrl kinesisCtrl = (KinesisCtrl) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{flowId, stream, measurementTarget},
+                new BeanPropertyRowMapper(KinesisCtrl.class));
+        return kinesisCtrl;
+    }
 }

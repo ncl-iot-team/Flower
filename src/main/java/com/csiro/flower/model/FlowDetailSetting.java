@@ -19,7 +19,6 @@ public class FlowDetailSetting {
     private StormCtrl stormCtrl;
     private List<DynamoCtrl> dynamoCtrls;
     private List<KinesisCtrl> kinesisCtrls;
-    
 
     public CloudSetting getCloudSetting() {
         return cloudSetting;
