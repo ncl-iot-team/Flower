@@ -91,7 +91,7 @@ public class CtrlStatsDaoImpl implements CtrlStatsDao {
             String ctrlName, Timestamp startDate) {
         String sqlSelect = "SELECT measurement_target_value AS measurementTargetValue,"
                 + " uk0 AS allocatedResource, error, round_uk1 AS nextCtrlDecisionValue,"
-                + " date_created AS dateTime FROM ctrl_monitor_tbl WHERE ctrl_fk_id = ? "
+                + " date_created AS timeStamp, ctrl_name FROM ctrl_monitor_tbl WHERE ctrl_fk_id = ? "
                 + "AND ctrl_name = ? AND date_created >= ?";
         List<CtrlMonitoringResultSet> result = jdbcTemplate.query(sqlSelect,
                 new Object[]{ctrlFkId, ctrlName, startDate},

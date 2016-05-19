@@ -13,12 +13,30 @@ import java.sql.Timestamp;
  * @author kho01f
  */
 public class CtrlMonitoringResultSet {
+    
     private double measurementTargetValue;
     //allocatedResource is in fact uk0 in our Ctrl Terms.
     private double allocatedResource;
     private double error;
     private int nextCtrlDecisionValue;
-    private Timestamp dateTime;
+    private Timestamp timeStamp;
+    private String ctrlName;
+
+    public Timestamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public String getCtrlName() {
+        return ctrlName;
+    }
+
+    public void setCtrlName(String ctrlName) {
+        this.ctrlName = ctrlName;
+    }
 
     public double getMeasurementTargetValue() {
         return measurementTargetValue;
@@ -50,14 +68,6 @@ public class CtrlMonitoringResultSet {
 
     public void setNextCtrlDecisionValue(int nextCtrlDecisionValue) {
         this.nextCtrlDecisionValue = nextCtrlDecisionValue;
-    }
-
-    public Timestamp getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(Timestamp dateTime) {
-        this.dateTime = dateTime;
     }
     
 }

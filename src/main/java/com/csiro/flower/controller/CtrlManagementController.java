@@ -10,6 +10,7 @@ import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.CtrlMonitoringResultSet;
 import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
@@ -20,7 +21,6 @@ import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
 import com.csiro.flower.service.KinesisMgmtService;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -194,6 +194,17 @@ public class CtrlManagementController {
             @RequestParam("resource") String resource) {
 
         return ctrlsRunnerService.getCtrlStatus(ctrlName, flowId, resource);
+    }
+
+    @RequestMapping(value = "/getCtrlStats")
+    public @ResponseBody
+    List<CtrlMonitoringResultSet> getCtrlMonitoringStats(
+            @RequestParam("ctrlName") String ctrlName,
+            @RequestParam("flowId") int flowId,
+            @RequestParam("resource") String resource,
+            @RequestParam("timeStamp") Timestamp timeStamp) {
+
+        return ctrlsRunnerService.getCtrlMonitoringStats(ctrlName, flowId, resource, timeStamp);
     }
 
 //Using flashattributes for sending objects after redirect

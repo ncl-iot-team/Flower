@@ -10,6 +10,7 @@ import com.csiro.flower.model.StormCtrl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -20,13 +21,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class StormCtrlDaoImpl implements StormCtrlDao {
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public void save(StormCtrl stormCtrl) {
-        String sqlInsert = "INSERT INTO storm_ctrl_tbl (flow_id_fk, topology_name, "
+        String sqlInsert = "INSERT INTO storm_ctrl_tbl (flow_id_fk, target_topology, "
                 + "measurement_target, ref_value, monitoring_period, backoff_no) VALUES (?,?,?,?,?,?)";
         Object[] params = new Object[]{stormCtrl.getFlowIdFk(),
             stormCtrl.getTargetTopology(),
@@ -54,7 +55,7 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
                 stormCtrl.setMonitoringPeriod(Integer.parseInt(result.getString("monitoring_period")));
                 stormCtrl.setBackoffNo(Integer.parseInt(result.getString("backoff_no")));
                 stormCtrl.setRefValue(Integer.parseInt(result.getString("ref_value")));
-                stormCtrl.setTargetTopology(result.getString("topology_name"));
+                stormCtrl.setTargetTopology(result.getString("target_topology"));
                 stormCtrl.setFlowIdFk(result.getInt("flow_id_fk"));
                 return stormCtrl;
             }
@@ -69,7 +70,7 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
     @Override
     public int getPkId(int flowId, String topology) {
         String sqlSelect = "SELECT id FROM storm_ctrl_tbl WHERE "
-                + "flow_id_fk = ? AND topology_name = ?";
+                + "flow_id_fk = ? AND target_topology = ?";
         int id = (int) jdbcTemplate.queryForObject(sqlSelect,
                 new Object[]{flowId, topology}, Integer.class);
         return id;
@@ -77,11 +78,13 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
 
     @Override
     public StormCtrl get(int flowId, String measurementTarget) {
-         String sqlSelect = "SELECT * FROM storm_ctrl_tbl "
-                 + "WHERE flow_id_fk=? AND measurement_target=?";
+//        String sqlSelect = "SELECT * FROM storm_ctrl_tbl "
+//                + "WHERE flow_id_fk=? AND measurement_target=?";
+        String sqlSelect = "SELECT * FROM storm_ctrl_tbl "
+                + "WHERE flow_id_fk=? AND measurement_target=?";
         StormCtrl stormCtrl = (StormCtrl) jdbcTemplate.queryForObject(sqlSelect,
                 new Object[]{flowId, measurementTarget},
-                StormCtrl.class);
+                new BeanPropertyRowMapper(StormCtrl.class));
         return stormCtrl;
     }
 

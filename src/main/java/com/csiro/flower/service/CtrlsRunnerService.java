@@ -9,10 +9,13 @@ import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
+import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.dao.StormCtrlDao;
+import com.csiro.flower.model.CtrlMonitoringResultSet;
 import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
+import com.csiro.flower.model.StormCtrl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +41,9 @@ public class CtrlsRunnerService {
 
     @Autowired
     CtrlFactoryService ctrlFactoryService;
+
+    @Autowired
+    private StormClusterDao stormClusterDao;
 
     @Autowired
     private StormCtrlDao stormCtrlDao;
@@ -94,6 +100,7 @@ public class CtrlsRunnerService {
                 break;
             case "ApacheStorm":
                 flowSetting.setStormCtrl(stormCtrlDao.get(flowId, measurementTarget));
+                flowSetting.setStormCluster(stormClusterDao.get(flowId));
                 break;
             case "DynamoDB":
                 List<DynamoCtrl> dynamoCtrls = new ArrayList<>();
@@ -107,6 +114,11 @@ public class CtrlsRunnerService {
     public void stopCtrl(String ctrlName, int flowId, String resource) {
         int id = getCtrlPkId(ctrlName, flowId, resource);
         ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
+    }
+
+    public List<CtrlMonitoringResultSet> getCtrlMonitoringStats(String ctrlName, int flowId, String resource, Timestamp timeStamp) {
+        int id = getCtrlPkId(ctrlName, flowId, resource);
+        return ctrlStatsDao.getCtrlMonitoringStats(id, ctrlName, timeStamp);
     }
 
     public String getCtrlStatus(String ctrlName, int flowId, String resource) {
@@ -129,4 +141,5 @@ public class CtrlsRunnerService {
         }
         return id;
     }
+
 }

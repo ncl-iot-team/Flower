@@ -32,8 +32,6 @@ import org.springframework.stereotype.Service;
  *
  * @author kho01f
  */
-//@Service
-//@Scope(value = "prototype")
 public class StormCtrlServiceImpl extends CtrlService implements Runnable {
 
     long TRANSITION_WAIT_TIME = 45000;

@@ -114,9 +114,8 @@
                 var flow = '${flow.platforms}';
                 var $flowId = '${flow.flowId}';
                 var systems = flow.split(",");
-                var $ctrlStatus;
-                var $ctrlBtnCls;
                 var system;
+
                 for (var i = 0; i < systems.length; i++) {
                     system = systems[i].replace(' ', '');
                     $("#accordion").children().last()
@@ -145,19 +144,19 @@
                                         .append('<thead>\n\
                                     <tr><th>Topology Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th><th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Last update</th>\n\
-                                    <th></th><th></th></tr></thead>');
+                                     <th>Backoff No</th> <th></th>\n\
+                                    <th></th></tr></thead>');
                                 $.get("stormCtrl/" + $flowId, function(stormCtrl) {
+                                    var $ctrlStatus = getCtrlStatus('ApacheStorm', stormCtrl.targetTopology, $flowId);
                                     $('#ApacheStormTbl tr:last')
                                             .after('<tr><td>' + stormCtrl.targetTopology + '</td>\n\
-                                        <td>Active</td>\n\
+                                        <td>' + $ctrlStatus + '</td>\n\
                                         <td>' + stormCtrl.measurementTarget + '</td>\n\
                                         <td>' + stormCtrl.refValue + '</td> \n\
                                         <td>' + stormCtrl.monitoringPeriod + '</td>\n\
                                         <td>' + stormCtrl.backoffNo + '</td>\n\
-                                        <td>7.03</td>\n\
-                                        <td><div id="' + stormCtrl.targetTopology + '" class="play active" style="text-shadow:none">pause</div></td>\n\
-                                        <td><input type="radio" name="ApacheStormRadio" value="' + stormCtrl.targetTopology + '" checked="checked" ></td></tr>');
+                                        <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
+                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '" checked="checked" ></td></tr>');
                                 });
                                 break;
                             }
@@ -167,22 +166,22 @@
                                         .append('<thead>\n\
                                     <tr><th>Table Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Last update</th>\n\
-                                    <th></th><th></th></tr></thead>');
+                                     <th>Backoff No</th> <th></th>\n\
+                                    <th></th></tr></thead>');
                                 //Technique 1: Consuming json using ajax and parsing using each function
                                 $.get("dynamoCtrl/" + $flowId, function(data) {
-                                    $.each(data, function(i, dynamoCtrl) {
+                                    $.each(data, function(dynamoCtrl) {
+                                        var $ctrlStatus = getCtrlStatus('DynamoDB', dynamoCtrl.tableName, $flowId);
                                         $('#DynamoDBTbl tr:last')
                                                 .after('<tr><td>' + dynamoCtrl.tableName + '</td>\n\
-                                        <td>Running</td>\n\
-                                        <td>' + dynamoCtrl.measurementTarget + '</td>\n\
-                                        <td>' + dynamoCtrl.refValue + '</td> \n\
-                                        <td>' + dynamoCtrl.monitoringPeriod + '</td>\n\
-                                        <td>' + dynamoCtrl.backoffNo + '</td>\n\
-                                        <td>7.03</td>\n\
-                                        <td><div id="' + dynamoCtrl.tableName + '" class="play active" style="text-shadow:none">stop</div></td>\n\
-                                        <td><input type="radio" name="DynamoDBRadio" value="' + dynamoCtrl.tableName + '" \n\
-                                            checked="checked" ></td></tr>');
+                                                    <td>' + $ctrlStatus + '</td>\n\
+                                                    <td>' + dynamoCtrl.measurementTarget + '</td>\n\
+                                                    <td>' + dynamoCtrl.refValue + '</td> \n\
+                                                    <td>' + dynamoCtrl.monitoringPeriod + '</td>\n\
+                                                    <td>' + dynamoCtrl.backoffNo + '</td>\n\
+                                                    <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
+                                                    <td><input type="radio" name="DynamoDB" value="' + dynamoCtrl.tableName + '" \n\
+                                                        checked="checked" ></td></tr>');
                                     });
                                 });
                                 break;
@@ -193,12 +192,11 @@
                                         .append('<thead>\n\
                                     <tr><th>Stream Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Last update</th>\n\
+                                     <th>Backoff No</th> <th></th>\n\
                                     <th></th><th></th></tr></thead>');
                                 $.get("kinesisCtrl/" + $flowId, function(data) {
-                                    $.each(data, function(i, kinesisCtrl) {
-                                        $ctrlStatus = getCtrlStatus('AmazonKinesis', kinesisCtrl.streamName, $flowId);
-                                        ($ctrlStatus === 'Running') ? $ctrlBtnCls = "active" : $ctrlBtnCls = "";
+                                    $.each(data, function(kinesisCtrl) {
+                                        var $ctrlStatus = getCtrlStatus('AmazonKinesis', kinesisCtrl.streamName, $flowId);
                                         $('#AmazonKinesisTbl tr:last')
                                                 .after('<tr><td>' + kinesisCtrl.streamName + '</td>\n\
                                                     <td>' + $ctrlStatus + '</td>\n\
@@ -207,8 +205,8 @@
                                                     <td>' + kinesisCtrl.monitoringPeriod + '</td>\n\
                                                     <td>' + kinesisCtrl.backoffNo + '</td>\n\
                                                     <td>7.03</td>\n\
-                                                    <td><div class="play ' + $ctrlStatus + '" style="text-shadow:none">stop</div></td>\n\
-                                                    <td><input type="radio" name="AmazonKinesisRadio" value="' + kinesisCtrl.streamName + '" \n\
+                                                    <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
+                                                    <td><input type="radio" name="AmazonKinesis" value="' + kinesisCtrl.streamName + '" \n\
                                                     checked="checked" ></td></tr>');
                                     });
                                 });
@@ -217,19 +215,26 @@
                     }
                 }
 
+                function getCtrlBtnCls($ctrlStatus) {
+                    var $ctrlBtnCls;
+                    ($ctrlStatus === 'Running') ? $ctrlBtnCls = "active" : $ctrlBtnCls = "";
+                    return $ctrlBtnCls;
+                }
+
+                function getCtrlBtnName($ctrlStatus) {
+                    var $ctrlBtnName;
+                    ($ctrlStatus === 'Running') ? $ctrlBtnName = "Stop" : $ctrlBtnName = "Start";
+                    return $ctrlBtnName;
+                }
+
                 function getCtrlStatus(ctrlName, resource, flowId) {
-                    var status;
-                    $.ajax({
+                    return $.ajax({
                         contentType: 'application/json',
-                        dataType: 'json',
                         type: 'GET',
                         url: '../ctrls/getCtrlStatus',
-                        data: {ctrlName: ctrlName, resource: resource, flowId: flowId},
-                        success: function(data) {
-                            status = data;
-                        }
-                    });
-                    return status;
+                        async: false,
+                        data: {ctrlName: ctrlName, resource: resource, flowId: flowId}
+                    }).responseText;
                 }
 
 
@@ -241,7 +246,7 @@
                     var $measurementTarget = $(this).closest('tr').find('td:eq(2)').text();
                     $this.toggleClass('active');
                     if (!$this.hasClass('active')) {
-                        $this.text('start');
+                        $this.text('Start');
                         $.ajax({
                             contentType: 'application/json',
                             dataType: 'json',
@@ -249,8 +254,9 @@
                             url: '../ctrls/stopCtrl',
                             data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId}
                         });
+                        $(this).closest('tr').find('td:eq(1)').text('Stopped');
                     } else {
-                        $this.text('stop');
+                        $this.text('Stop');
                         $.ajax({
                             contentType: 'application/json',
                             dataType: 'json',
@@ -258,25 +264,68 @@
                             url: '../ctrls/restartCtrl',
                             data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         });
+                        $(this).closest('tr').find('td:eq(1)').text('Running');
                     }
                 });
 
+                $(document).on('click', 'input:radio', function() {
+                    var $this = $(this);
+                    $ctrlName = $this.attr('name');
+                    $resource = $this.val();
+                    alert($resource);
+                    if ($this.is(':checked')) {
+                        var lineChart = drawLineChart($ctrlName);
+                        drawer(lineChart,$ctrlName,$resource,$flowId)
+                    }
+                });
+
+                function drawLineChart($ctrlName) {
+
+//                    switch (sysName) {
+//                        case 'ApacheStorm':
+                    var graph = $('#' + $ctrlName + 'LineChart').epoch({
+                        type: 'time.line',
+                        data: [{label: "S1", values: [{time: getTime, y: 0}]},
+                            {label: "S2", values: [{time: getTime, y: 0}]}],
+                        axes: ['bottom', 'left']
+                    });
+//                            break;
+//                        case 'DynamoDB':
+//                            break;
+//                        case 'AmazonKinesis':
+//                            break;
+//                    }
+                    return graph;
+                }
 
                 function getTime() {
                     return parseInt((new Date).getTime() / 1000);
                 }
-                var mygraph = $('#ApacheStormLineChart').epoch({
-                    type: 'time.line',
-                    data: [{label: "S1", values: [{time: getTime(), y: 10}]},
-                        {label: "S2", values: [{time: getTime(), y: 10}]}],
-                    axes: ['bottom', 'left']
-                });
-//                (function worker() {
-//                    var times = getTime();
-//                    var rnd = parseInt(Math.random() * 1000);
-//                    mygraph.push([{time: times, y: 100 + rnd}, {time: times, y: 350 + rnd}]);
-//                    setTimeout(worker, 60000);
-//                })();
+
+
+                function drawer(lineChart, $ctrlName, $resource, $flowId) {
+                    $.ajax({
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        type: 'GET',
+                        url: '../ctrls/getCtrlStats',
+                        data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId},
+                        success: function(ctrlStatRecords) {
+                            if (!ctrlStatRecords.length) {
+                                alert('error');
+                            } else {
+                                $.each(ctrlStatRecords, function(ctrlStatRecord) {
+                                    lineChart.push([{time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.measurementTargetValue},
+                                        {time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.allocatedResource}]);
+                                });
+                            }
+                        }
+                    });
+                    setTimeout(drawer(lineChart, $ctrlName, $resource, $flowId), 60000);
+                }
+
+
+
 
                 var pieData = [
                     {label: 'Slice 1', value: 10},
@@ -370,6 +419,7 @@
             <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
             <hr>
             <p id="ssman">${flowSetting.stormCtrl.measurementTarget}
+
             </p>
             <br>
         </div>
