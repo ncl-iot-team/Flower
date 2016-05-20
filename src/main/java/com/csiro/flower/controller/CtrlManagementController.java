@@ -67,8 +67,6 @@ public class CtrlManagementController {
     @Autowired
     private CtrlsRunnerService ctrlsRunnerService;
 
-//    @Autowired
-//    private CtrlStatsDao ctrlStatsDao;
     @InitBinder
     public void nullValueHandler(WebDataBinder binder) {
         binder.registerCustomEditor(int.class, new CustomNumberEditor(Integer.class, true) {
@@ -198,13 +196,13 @@ public class CtrlManagementController {
 
     @RequestMapping(value = "/getCtrlStats")
     public @ResponseBody
-    List<CtrlMonitoringResultSet> getCtrlMonitoringStats(
+    void getCtrlMonitoringStats(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource,
             @RequestParam("timeStamp") Timestamp timeStamp) {
 
-        return ctrlsRunnerService.getCtrlMonitoringStats(ctrlName, flowId, resource, timeStamp);
+//        return ctrlsRunnerService.getCtrlMonitoringStats(ctrlName, flowId, resource, timeStamp);
     }
 
 //Using flashattributes for sending objects after redirect

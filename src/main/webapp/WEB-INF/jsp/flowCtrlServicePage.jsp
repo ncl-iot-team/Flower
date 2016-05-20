@@ -270,12 +270,11 @@
 
                 $(document).on('click', 'input:radio', function() {
                     var $this = $(this);
-                    $ctrlName = $this.attr('name');
-                    $resource = $this.val();
-                    alert($resource);
+                    var $ctrlName = $this.attr('name');
+                    var $resource = $this.val();
                     if ($this.is(':checked')) {
                         var lineChart = drawLineChart($ctrlName);
-                        drawer(lineChart,$ctrlName,$resource,$flowId)
+                        drawer(lineChart, $ctrlName, $resource, $flowId);
                     }
                 });
 
@@ -283,10 +282,11 @@
 
 //                    switch (sysName) {
 //                        case 'ApacheStorm':
-                    var graph = $('#' + $ctrlName + 'LineChart').epoch({
+                    var chratName = '#' + $ctrlName + 'LineChart';
+                    var graph = $(chratName).epoch({
                         type: 'time.line',
-                        data: [{label: "S1", values: [{time: getTime, y: 0}]},
-                            {label: "S2", values: [{time: getTime, y: 0}]}],
+                        data: [{label: "S1", values: [{time: getTime(), y: 0}]},
+                            {label: "S2", values: [{time: getTime(), y: 0}]}],
                         axes: ['bottom', 'left']
                     });
 //                            break;
@@ -299,7 +299,7 @@
                 }
 
                 function getTime() {
-                    return parseInt((new Date).getTime() / 1000);
+                    return parseInt(((new Date).getTime() - 60000) / 1000);
                 }
 
 
@@ -309,19 +309,20 @@
                         dataType: 'json',
                         type: 'GET',
                         url: '../ctrls/getCtrlStats',
-                        data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId},
-                        success: function(ctrlStatRecords) {
-                            if (!ctrlStatRecords.length) {
-                                alert('error');
-                            } else {
-                                $.each(ctrlStatRecords, function(ctrlStatRecord) {
-                                    lineChart.push([{time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.measurementTargetValue},
-                                        {time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.allocatedResource}]);
-                                });
-                            }
+                        data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp:1463726193},
+                        success: function(data) {
+                            alert('OK');
+//                            if (!ctrlStatRecords.length) {
+//                                alert('error');
+//                            } else {
+//                                $.each(ctrlStatRecords, function(ctrlStatRecord) {
+//                                    lineChart.push([{time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.measurementTargetValue},
+//                                        {time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.allocatedResource}]);
+//                                });
+//                            }
                         }
                     });
-                    setTimeout(drawer(lineChart, $ctrlName, $resource, $flowId), 60000);
+//                    setTimeout(drawer(lineChart, $ctrlName, $resource, $flowId), 60000);
                 }
 
 
