@@ -10,7 +10,9 @@
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
       <img src="${pageContext.request.contextPath}/resources/img/flower.png" width="45" height="45"></div>
-  <div class="navbar-header"> <img src="${pageContext.request.contextPath}/resources/img/flower_icon.png" width="110" height="40"></div>
+      <div class="navbar-header"> <a href="/Flower"> 
+              <img src="${pageContext.request.contextPath}/resources/img/flower_icon.png" width="110" height="40"></a></div>
+              
     
   <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">

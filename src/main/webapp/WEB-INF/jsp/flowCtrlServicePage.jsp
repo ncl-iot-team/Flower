@@ -247,23 +247,17 @@
                     $this.toggleClass('active');
                     if (!$this.hasClass('active')) {
                         $this.text('Start');
-                        $.ajax({
-                            contentType: 'application/json',
-                            dataType: 'json',
-                            type: 'GET',
-                            url: '../ctrls/stopCtrl',
-                            data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId}
-                        });
+                        $.post(
+                            'stopCtrl',
+                            {ctrlName: $ctrlName, resource: $resource, flowId: $flowId}
+                        );
                         $(this).closest('tr').find('td:eq(1)').text('Stopped');
                     } else {
                         $this.text('Stop');
-                        $.ajax({
-                            contentType: 'application/json',
-                            dataType: 'json',
-                            type: 'GET',
-                            url: '../ctrls/restartCtrl',
-                            data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
-                        });
+                        $.post(
+                            'restartCtrl',
+                            {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
+                        );
                         $(this).closest('tr').find('td:eq(1)').text('Running');
                     }
                 });
@@ -304,14 +298,10 @@
 
 
                 function drawer(lineChart, $ctrlName, $resource, $flowId) {
-                    $.ajax({
-                        contentType: 'application/json',
-                        dataType: 'json',
-                        type: 'GET',
-                        url: '../ctrls/getCtrlStats',
-                        data: {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp:1463726193},
-                        success: function(data) {
-                            alert('OK');
+                    $.get('getCtrlStats',
+                        {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp:1463890370},
+                        function(data) {
+                            alert(data);
 //                            if (!ctrlStatRecords.length) {
 //                                alert('error');
 //                            } else {
@@ -320,8 +310,7 @@
 //                                        {time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.allocatedResource}]);
 //                                });
 //                            }
-                        }
-                    });
+                        });
 //                    setTimeout(drawer(lineChart, $ctrlName, $resource, $flowId), 60000);
                 }
 

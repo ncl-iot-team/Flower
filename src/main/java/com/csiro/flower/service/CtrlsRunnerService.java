@@ -15,7 +15,6 @@ import com.csiro.flower.model.CtrlMonitoringResultSet;
 import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.model.KinesisCtrl;
-import com.csiro.flower.model.StormCtrl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;

@@ -20,10 +20,13 @@ import com.csiro.flower.service.CtrlsRunnerService;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
 import com.csiro.flower.service.KinesisMgmtService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.lang.invoke.MethodType;
 import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -164,8 +168,8 @@ public class CtrlManagementController {
     }
 
     @RequestMapping(value = "/restartCtrl")
-    public @ResponseBody
-    void restartCtrlService(
+    @ResponseBody
+    public void restartCtrlService(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource,
@@ -174,9 +178,9 @@ public class CtrlManagementController {
         ctrlsRunnerService.restartCtrl(ctrlName, flowId, resource, measurementTarget);
     }
 
-    @RequestMapping(value = "/stopCtrl")
-    public @ResponseBody
-    void stopCtrlService(
+    @RequestMapping(value = "/stopCtrl", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void stopCtrlService(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource) {
@@ -196,13 +200,13 @@ public class CtrlManagementController {
 
     @RequestMapping(value = "/getCtrlStats")
     public @ResponseBody
-    void getCtrlMonitoringStats(
+    List<CtrlMonitoringResultSet> getCtrlMonitoringStats(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource,
-            @RequestParam("timeStamp") Timestamp timeStamp) {
+            @RequestParam("timeStamp") long timeStamp) {
 
-//        return ctrlsRunnerService.getCtrlMonitoringStats(ctrlName, flowId, resource, timeStamp);
+        return ctrlsRunnerService.getCtrlMonitoringStats(ctrlName, flowId, resource, new Timestamp(timeStamp));
     }
 
 //Using flashattributes for sending objects after redirect
