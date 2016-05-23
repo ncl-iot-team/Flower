@@ -135,7 +135,7 @@
                                    <div id="' + system + 'Pie" class="epoch category20c" style="width: 180px; height: 180px"></div></div>\n\
                                     <div class="form-style-ctrl-diag">\n\
                                     <div class="form-style-3-heading">System Performance Monitoring</div>\n\
-                                     <div id="' + system + 'LineChart" class="epoch category30" style="width: 700px; height: 200px"></div>\n\
+                                     </div>\n\
                                         </div></div></div>');
                     switch (system) {
                         case "ApacheStorm":
@@ -156,7 +156,7 @@
                                         <td>' + stormCtrl.monitoringPeriod + '</td>\n\
                                         <td>' + stormCtrl.backoffNo + '</td>\n\
                                         <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
-                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '" checked="checked" ></td></tr>');
+                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '" ></td></tr>');
                                 });
                                 break;
                             }
@@ -181,7 +181,7 @@
                                                     <td>' + dynamoCtrl.backoffNo + '</td>\n\
                                                     <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
                                                     <td><input type="radio" name="DynamoDB" value="' + dynamoCtrl.tableName + '" \n\
-                                                        checked="checked" ></td></tr>');
+                                                        ></td></tr>');
                                     });
                                 });
                                 break;
@@ -207,7 +207,7 @@
                                                     <td>7.03</td>\n\
                                                     <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
                                                     <td><input type="radio" name="AmazonKinesis" value="' + kinesisCtrl.streamName + '" \n\
-                                                    checked="checked" ></td></tr>');
+                                                    ></td></tr>');
                                     });
                                 });
                                 break;
@@ -266,39 +266,36 @@
                     var $this = $(this);
                     var $ctrlName = $this.attr('name');
                     var $resource = $this.val();
+                    var chartDiv = '#' + $resource + 'LineChart';
                     var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000;
                     if ($this.is(':checked')) {
-                        var lineChart = drawLineChart($ctrlName);
+//                        if (!$(chartDiv).length) {
+                        $this.parents('div[class="form-style-ctrl-stat"]')
+                                .siblings('div[class="form-style-ctrl-diag"]').append(
+                                '<div id="' + $resource + 'LineChart" class="epoch category30" style="width: 700px; height: 200px">');
+//                        }
+                        var lineChart = setupLineChart(chartDiv);
                         drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
                     }
                 });
 
                 $(document).on('change', 'input:radio', function() {
                     var $this = $(this);
-                    var $ctrlName = $this.attr('name');
-                    if ($this.is(':not(:checked)')) {
-                        clearTimeout(timeoutMap[$ctrlName]);
-                        delete timeoutMap[$ctrlName];
+                    var $resource = $this.val();
+                    if (!$this.is(':checked')) {
+                        clearTimeout(timeoutMap[$resource]);
+                        delete timeoutMap[$resource];
+                        $('#' + $resource + 'LineChart').remove();
                     }
                 });
 
-                function drawLineChart($ctrlName) {
-
-//                    switch (sysName) {
-//                        case 'ApacheStorm':
-                    var chratName = '#' + $ctrlName + 'LineChart';
-                    var graph = $(chratName).epoch({
+                function setupLineChart(chartDiv) {
+                    var graph = $(chartDiv).epoch({
                         type: 'time.line',
                         data: [{label: "S1", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
                             {label: "S2", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
                         axes: ['bottom', 'left', 'right']
                     });
-//                            break;
-//                        case 'DynamoDB':
-//                            break;
-//                        case 'AmazonKinesis':
-//                            break;
-//                    }
                     return graph;
                 }
 
@@ -313,14 +310,14 @@
                             {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp: (new Date()).getTime() - $timeInterval},
                     function(ctrlStatRecords) {
                         if (!ctrlStatRecords.length) {
-                            alert(ctrlStatRecords.length);
+                            console.log(ctrlStatRecords.length);
                         } else {
                             $.each(ctrlStatRecords, function(i, ctrlStatRecord) {
                                 lineChart.push([{time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.measurementTargetValue},
                                     {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
                             });
                         }
-                        timeoutMap[$ctrlName] = setTimeout(function() {
+                        timeoutMap[$resource] = setTimeout(function() {
                             drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
                         }, $timeInterval);
                     });
