@@ -170,7 +170,7 @@
                                     <th></th></tr></thead>');
                                 //Technique 1: Consuming json using ajax and parsing using each function
                                 $.get("dynamoCtrl/" + $flowId, function(data) {
-                                    $.each(data, function(dynamoCtrl) {
+                                    $.each(data, function(i, dynamoCtrl) {
                                         var $ctrlStatus = getCtrlStatus('DynamoDB', dynamoCtrl.tableName, $flowId);
                                         $('#DynamoDBTbl tr:last')
                                                 .after('<tr><td>' + dynamoCtrl.tableName + '</td>\n\
@@ -195,7 +195,7 @@
                                      <th>Backoff No</th> <th></th>\n\
                                     <th></th><th></th></tr></thead>');
                                 $.get("kinesisCtrl/" + $flowId, function(data) {
-                                    $.each(data, function(kinesisCtrl) {
+                                    $.each(data, function(i, kinesisCtrl) {
                                         var $ctrlStatus = getCtrlStatus('AmazonKinesis', kinesisCtrl.streamName, $flowId);
                                         $('#AmazonKinesisTbl tr:last')
                                                 .after('<tr><td>' + kinesisCtrl.streamName + '</td>\n\
@@ -237,7 +237,6 @@
                     }).responseText;
                 }
 
-
                 $(document).on('click', '.play', function() {
                     var $this = $(this);
 //                    var $id = $this.attr('id');
@@ -248,27 +247,38 @@
                     if (!$this.hasClass('active')) {
                         $this.text('Start');
                         $.post(
-                            'stopCtrl',
-                            {ctrlName: $ctrlName, resource: $resource, flowId: $flowId}
+                                'stopCtrl',
+                                {ctrlName: $ctrlName, resource: $resource, flowId: $flowId}
                         );
                         $(this).closest('tr').find('td:eq(1)').text('Stopped');
                     } else {
                         $this.text('Stop');
                         $.post(
-                            'restartCtrl',
-                            {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
+                                'restartCtrl',
+                                {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         );
                         $(this).closest('tr').find('td:eq(1)').text('Running');
                     }
                 });
 
+                var timeoutMap = {};
                 $(document).on('click', 'input:radio', function() {
                     var $this = $(this);
                     var $ctrlName = $this.attr('name');
                     var $resource = $this.val();
+                    var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000;
                     if ($this.is(':checked')) {
                         var lineChart = drawLineChart($ctrlName);
-                        drawer(lineChart, $ctrlName, $resource, $flowId);
+                        drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
+                    }
+                });
+
+                $(document).on('change', 'input:radio', function() {
+                    var $this = $(this);
+                    var $ctrlName = $this.attr('name');
+                    if ($this.is(':not(:checked)')) {
+                        clearTimeout(timeoutMap[$ctrlName]);
+                        delete timeoutMap[$ctrlName];
                     }
                 });
 
@@ -279,9 +289,9 @@
                     var chratName = '#' + $ctrlName + 'LineChart';
                     var graph = $(chratName).epoch({
                         type: 'time.line',
-                        data: [{label: "S1", values: [{time: getTime(), y: 0}]},
-                            {label: "S2", values: [{time: getTime(), y: 0}]}],
-                        axes: ['bottom', 'left']
+                        data: [{label: "S1", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
+                            {label: "S2", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
+                        axes: ['bottom', 'left', 'right']
                     });
 //                            break;
 //                        case 'DynamoDB':
@@ -292,26 +302,28 @@
                     return graph;
                 }
 
-                function getTime() {
-                    return parseInt(((new Date).getTime() - 60000) / 1000);
+                function getTimeStampSec(timeStampMill) {
+                    return parseInt(timeStampMill / 1000);
                 }
 
 
-                function drawer(lineChart, $ctrlName, $resource, $flowId) {
+
+                function drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval) {
                     $.get('getCtrlStats',
-                        {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp:1463890370},
-                        function(data) {
-                            alert(data);
-//                            if (!ctrlStatRecords.length) {
-//                                alert('error');
-//                            } else {
-//                                $.each(ctrlStatRecords, function(ctrlStatRecord) {
-//                                    lineChart.push([{time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.measurementTargetValue},
-//                                        {time: ctrlStatRecord.timeStamp, y: ctrlStatRecord.allocatedResource}]);
-//                                });
-//                            }
-                        });
-//                    setTimeout(drawer(lineChart, $ctrlName, $resource, $flowId), 60000);
+                            {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp: (new Date()).getTime() - $timeInterval},
+                    function(ctrlStatRecords) {
+                        if (!ctrlStatRecords.length) {
+                            alert(ctrlStatRecords.length);
+                        } else {
+                            $.each(ctrlStatRecords, function(i, ctrlStatRecord) {
+                                lineChart.push([{time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.measurementTargetValue},
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
+                            });
+                        }
+                        timeoutMap[$ctrlName] = setTimeout(function() {
+                            drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
+                        }, $timeInterval);
+                    });
                 }
 
 

@@ -19,14 +19,14 @@ public class CtrlMonitoringResultSet {
     private double allocatedResource;
     private double error;
     private int nextCtrlDecisionValue;
-    private Timestamp timeStamp;
+    private long timeStamp;
     private String ctrlName;
 
-    public Timestamp getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(Timestamp timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 

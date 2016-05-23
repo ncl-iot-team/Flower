@@ -115,7 +115,7 @@ public class CtrlsRunnerService {
         ctrlStatsDao.updateCtrlStatus(id, ctrlName, STOPPED_STATUS, new Timestamp(new Date().getTime()));
     }
 
-    public List<CtrlMonitoringResultSet> getCtrlMonitoringStats(String ctrlName, int flowId, String resource, Timestamp timeStamp) {
+    public List<CtrlMonitoringResultSet> getCtrlMonitoringStats(String ctrlName, int flowId, String resource, long timeStamp) {
         int id = getCtrlPkId(ctrlName, flowId, resource);
         return ctrlStatsDao.getCtrlMonitoringStats(id, ctrlName, timeStamp);
     }

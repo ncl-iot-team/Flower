@@ -130,7 +130,7 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
         roundedUk1 = (int) Math.round(Math.abs(uk1));
 
         ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
-                new Timestamp(new Date().getTime()), k0, incomingRecords, uk0, uk1, roundedUk1);
+                (new Date().getTime()), k0, incomingRecords, uk0, uk1, roundedUk1);
 
         // If clouadwatch datapoint is null for current period, do not update gains and shard size!
         if (incomingRecords != 0) {

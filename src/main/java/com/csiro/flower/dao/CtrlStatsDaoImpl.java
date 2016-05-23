@@ -74,7 +74,7 @@ public class CtrlStatsDaoImpl implements CtrlStatsDao {
 //    }
     @Override
     public void saveCtrlMonitoringStats(int ctrlFkId, String ctrlName,
-            double error, Timestamp date, double k0,
+            double error, long date, double k0,
             double measurementTargetValue, double uk0, double uk1, int roundedUk1) {
         String sqlInsert = "INSERT INTO ctrl_monitor_tbl (ctrl_fk_id, ctrl_name,"
                 + " error, date_created, k0, measurement_target_value, uk0, uk1, round_uk1)"
@@ -88,7 +88,7 @@ public class CtrlStatsDaoImpl implements CtrlStatsDao {
 
     @Override
     public List<CtrlMonitoringResultSet> getCtrlMonitoringStats(int ctrlFkId,
-            String ctrlName, Timestamp startDate) {
+            String ctrlName, long startDate) {
         String sqlSelect = "SELECT measurement_target_value AS measurementTargetValue,"
                 + " uk0 AS allocatedResource, error, round_uk1 AS nextCtrlDecisionValue,"
                 + " date_created AS timeStamp, ctrl_name FROM ctrl_monitor_tbl WHERE ctrl_fk_id = ? "

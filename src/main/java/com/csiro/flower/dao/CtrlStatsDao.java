@@ -22,9 +22,9 @@ public interface CtrlStatsDao {
     public String getCtrlStatus(int ctrlFkId, String ctrlName);
 
     public void saveCtrlMonitoringStats(int ctrlFkId, String ctrlName,
-            double error, Timestamp date, double k0, double measurementTargetValue,
+            double error, long date, double k0, double measurementTargetValue,
             double uk0, double uk1, int roundedUk1);
 
     public List<CtrlMonitoringResultSet> getCtrlMonitoringStats(
-            int ctrlFkId, String ctrlName, Timestamp startDate);
+            int ctrlFkId, String ctrlName, long startDate);
 }

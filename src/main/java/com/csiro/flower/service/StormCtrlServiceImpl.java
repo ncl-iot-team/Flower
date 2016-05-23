@@ -139,7 +139,7 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
             roundedUk1 = (int) Math.round(uk1);
 
             ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
-                    new Timestamp(new Date().getTime()), k0, cpu, uk0, uk1, roundedUk1);
+                    new Date().getTime(), k0, (cpu + (Math.random()*100)) , (uk0 + (Math.random()*100)), uk1 , roundedUk1);
 
             if (roundedUk1 > uk0) {
                 roundedUk1 = roundedUk1 - uk0;
