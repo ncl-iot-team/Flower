@@ -86,26 +86,37 @@
             }
 
             .form-style-ctrl-stat{
-                width: 980px;
+                width: 880px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
-                /*float: left;*/
+                float: left;
             }
             .form-style-ctrl-diag{
-                width: 780px;
+                width: 700px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
                 float: left;
             }
             .form-style-resource-share{
-                width: 200px;
+                width: 260px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
                 float: left;
             }
+
+            .legend { list-style: none; font-size: 12px;}
+            .legend li { float: left; margin-right: 10px; }
+            .legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
+            .legend .allocated { background-color: #ff7f0e; }
+            .legend .used { background-color: #3182bd; }
+            .legend .sharelimit { background-color: #3182bd; }
+            
+            #wrapper   { display: table; }
+            #firstDiv  { display: table-footer-group; }
+            #secondDiv { display: table-header-group; }
 
         </style>
         <script type="text/javascript">
@@ -132,7 +143,7 @@
                                         <tbody> </tbody></table>\n\
                                       </div><div class="form-style-resource-share">\n\
                                     <div class="form-style-3-heading">Resource Share</div>\n\
-                                   <div id="' + system + 'Pie" class="epoch category20c" style="width: 180px; height: 180px"></div></div>\n\
+                                   </div>\n\
                                     <div class="form-style-ctrl-diag">\n\
                                     <div class="form-style-3-heading">System Performance Monitoring</div>\n\
                                      </div>\n\
@@ -156,7 +167,7 @@
                                         <td>' + stormCtrl.monitoringPeriod + '</td>\n\
                                         <td>' + stormCtrl.backoffNo + '</td>\n\
                                         <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
-                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '" ></td></tr>');
+                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '"></td></tr>');
                                 });
                                 break;
                             }
@@ -181,7 +192,7 @@
                                                     <td>' + dynamoCtrl.backoffNo + '</td>\n\
                                                     <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
                                                     <td><input type="radio" name="DynamoDB" value="' + dynamoCtrl.tableName + '" \n\
-                                                        ></td></tr>');
+                                                     checked></td></tr>');
                                     });
                                 });
                                 break;
@@ -207,7 +218,7 @@
                                                     <td>7.03</td>\n\
                                                     <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
                                                     <td><input type="radio" name="AmazonKinesis" value="' + kinesisCtrl.streamName + '" \n\
-                                                    ></td></tr>');
+                                                    checked></td></tr>');
                                     });
                                 });
                                 break;
@@ -262,38 +273,63 @@
                 });
 
                 var timeoutMap = {};
-                $(document).on('click', 'input:radio', function() {
+                function setupDeselectEvent() {
+                    var selected = {};
+                    $(document).on('click', 'input[type="radio"]', function() {
+                        if (this.name in selected && this != selected[this.name])
+                            $(selected[this.name]).trigger("deselect");
+                        selected[this.name] = this;
+                    }).filter(':checked').each(function() {
+                        selected[this.name] = this;
+                    });
+                }
+
+                setupDeselectEvent(true);
+
+                var resourceMap = {};
+                resourceMap["DynamoDB"] = 'WriteCapacityUnits';
+                resourceMap["AmazonKinesis"] = 'No. of Shards';
+                resourceMap["ApacheStorm"] = 'No. of VMs';
+
+                $(document).on('deselect', 'input:radio', function() {
+                    var $resource = $(this).val();
+                    clearTimeout(timeoutMap[$resource]);
+                    delete timeoutMap[$resource];
+                    $('#' + $resource + 'LineChart').remove();
+                    $('#' + $resource + 'PieChart').parent('.wrapper').remove();
+
+                }).on('change', 'input:radio', function() {
                     var $this = $(this);
                     var $ctrlName = $this.attr('name');
                     var $resource = $this.val();
-                    var chartDiv = '#' + $resource + 'LineChart';
-                    var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000;
-                    if ($this.is(':checked')) {
-//                        if (!$(chartDiv).length) {
-                        $this.parents('div[class="form-style-ctrl-stat"]')
-                                .siblings('div[class="form-style-ctrl-diag"]').append(
-                                '<div id="' + $resource + 'LineChart" class="epoch category30" style="width: 700px; height: 200px">');
-//                        }
-                        var lineChart = setupLineChart(chartDiv);
-                        drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
-                    }
-                });
+                    var lineChartDiv = '#' + $resource + 'LineChart';
+                    var pieChartDiv = '#' + $resource + 'PieChart';
+                    var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000 * 5;
+                    var $measurementTarget = $(this).closest('tr').find('td:eq(2)').text();
+                    $this.parents('div[class="form-style-ctrl-stat"]')
+                            .siblings('div[class="form-style-ctrl-diag"]').append(
+                            '<div id="' + $resource + 'LineChart" class="epoch category3" style="width: 700px; height: 200px">\n\
+                             <div style="z-index: 1"><ul class="legend"><li><span class="used"></span>' + $measurementTarget + '</li>\n\
+                            <li><span class="allocated"></span>Allocated Resource</li></ul></div></div>');
+                    var lineChart = setupLineChart(lineChartDiv);
 
-                $(document).on('change', 'input:radio', function() {
-                    var $this = $(this);
-                    var $resource = $this.val();
-                    if (!$this.is(':checked')) {
-                        clearTimeout(timeoutMap[$resource]);
-                        delete timeoutMap[$resource];
-                        $('#' + $resource + 'LineChart').remove();
-                    }
+                    $this.parents('div[class="form-style-ctrl-stat"]')
+                            .siblings('div[class="form-style-resource-share"]').append(
+                            '<div class="wrapper"><div id="' + $resource + 'PieChart" class="firstDiv epoch category3" style="width: 150px; height: 160px"></div>\n\
+                            <div class="secondDiv"><ul class="legend">\n\
+                            <li><span class="allocated"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
+                            <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
+                            </ul></div></div>');
+                    var pieChart = setupPieChart(pieChartDiv);
+
+                    drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
                 });
 
                 function setupLineChart(chartDiv) {
                     var graph = $(chartDiv).epoch({
                         type: 'time.line',
-                        data: [{label: "S1", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
-                            {label: "S2", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
+                        data: [{label: "used", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
+                            {label: "allocated", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
                         axes: ['bottom', 'left', 'right']
                     });
                     return graph;
@@ -302,8 +338,6 @@
                 function getTimeStampSec(timeStampMill) {
                     return parseInt(timeStampMill / 1000);
                 }
-
-
 
                 function drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval) {
                     $.get('getCtrlStats',
@@ -324,17 +358,18 @@
                 }
 
 
+                function setupPieChart(chartDiv) {
+                    var i = parseInt(Math.random() * 100);
+                    var pie = $(chartDiv).epoch({
+                        type: 'pie',
+                        data: [{label: i.toString(), value: i}, {label: (100 - i).toString(), value: 100 - i}],
+                        inner: 40,
+                        width: 150,
+                        height: 150
+                    });
+                    return pie;
+                }
 
-
-                var pieData = [
-                    {label: 'Slice 1', value: 10},
-                    {label: 'Slice 2', value: 20}
-                ];
-
-                $('#ApacheStormPie').epoch({
-                    type: 'pie',
-                    data: pieData
-                });
 
 
 
