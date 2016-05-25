@@ -6,8 +6,6 @@
 
 package com.csiro.flower.model;
 
-import java.sql.Timestamp;
-
 /**
  *
  * @author kho01f

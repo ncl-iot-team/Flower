@@ -18,15 +18,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 /**
  *
@@ -139,7 +134,7 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
             roundedUk1 = (int) Math.round(uk1);
 
             ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
-                    new Date().getTime(), k0, (cpu + (Math.random()*100)) , (uk0 + (Math.random()*100)), uk1 , roundedUk1);
+                    new Date().getTime(), k0, (cpu + 10) , (uk0 + 100), uk1 , roundedUk1 + 10);
 
             if (roundedUk1 > uk0) {
                 roundedUk1 = roundedUk1 - uk0;

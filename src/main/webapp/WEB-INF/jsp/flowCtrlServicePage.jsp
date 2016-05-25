@@ -55,28 +55,29 @@
 
         </style>
         <style>
-            div.play {
+
+            div.play,div.setting {
                 color: #ffffff;
-                width: 70px;
-                height: 30px;
+                width: 60px;
+                height: 22px;
                 text-align: center;
-                line-height: 30px;
-                font-size: 14px;
+                line-height: 23px;
+                font-size: 12px;
                 cursor: pointer;
                 position: relative;
-                background-color: #67B168;  
+                background-color: #67B168;
                 -webkit-border-radius: 50%;
                 -moz-border-radius: 50%;
                 border-radius: 5%;
-                -webkit-box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;
-                box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;
+                /*-webkit-box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;*/
+                /*box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;*/
                 -webkit-transition: all .2s ease;
                 transition: all .2s ease;
                 margin-right: 5px; 
                 float: left;
             }
 
-            div.play:hover,
+            div.play:hover,div.setting:hover,
             div.play.active {
                 -webkit-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
                 -moz-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
@@ -86,21 +87,21 @@
             }
 
             .form-style-ctrl-stat{
-                width: 880px;
+                width: 950px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
                 float: left;
             }
             .form-style-ctrl-diag{
-                width: 700px;
+                width: 690px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
                 float: left;
             }
             .form-style-resource-share{
-                width: 260px;
+                width: 370px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
@@ -112,8 +113,10 @@
             .legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
             .legend .allocated { background-color: #ff7f0e; }
             .legend .used { background-color: #3182bd; }
+            .legend .pending { background-color: #ff7f0e; }
             .legend .sharelimit { background-color: #3182bd; }
-            
+            .legend .usedshare { background-color: #31a354; }
+
             #wrapper   { display: table; }
             #firstDiv  { display: table-footer-group; }
             #secondDiv { display: table-header-group; }
@@ -145,7 +148,7 @@
                                     <div class="form-style-3-heading">Resource Share</div>\n\
                                    </div>\n\
                                     <div class="form-style-ctrl-diag">\n\
-                                    <div class="form-style-3-heading">System Performance Monitoring</div>\n\
+                                    <div class="form-style-3-heading">Controller Performance Monitoring</div>\n\
                                      </div>\n\
                                         </div></div></div>');
                     switch (system) {
@@ -155,7 +158,7 @@
                                         .append('<thead>\n\
                                     <tr><th>Topology Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th><th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th></th>\n\
+                                     <th>Backoff No</th> <th>Actions</th>\n\
                                     <th></th></tr></thead>');
                                 $.get("stormCtrl/" + $flowId, function(stormCtrl) {
                                     var $ctrlStatus = getCtrlStatus('ApacheStorm', stormCtrl.targetTopology, $flowId);
@@ -166,8 +169,10 @@
                                         <td>' + stormCtrl.refValue + '</td> \n\
                                         <td>' + stormCtrl.monitoringPeriod + '</td>\n\
                                         <td>' + stormCtrl.backoffNo + '</td>\n\
-                                        <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div></td>\n\
-                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '"></td></tr>');
+                                        <td><div class="play ' + getCtrlBtnCls($ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName($ctrlStatus) + '</div>\n\
+                                        <a href="/Flower/configTestForm"><div class="setting" style="text-shadow:none">Settings</div></a></td>\n\
+                                        <td><input type="radio" name="ApacheStorm" value="' + stormCtrl.targetTopology + '">\n\
+                                            </td></tr>');
                                 });
                                 break;
                             }
@@ -177,7 +182,7 @@
                                         .append('<thead>\n\
                                     <tr><th>Table Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th></th>\n\
+                                     <th>Backoff No</th> <th>Actions</th>\n\
                                     <th></th></tr></thead>');
                                 //Technique 1: Consuming json using ajax and parsing using each function
                                 $.get("dynamoCtrl/" + $flowId, function(data) {
@@ -203,7 +208,7 @@
                                         .append('<thead>\n\
                                     <tr><th>Stream Name</th><th>Controller Status</th> \n\
                                      <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th></th>\n\
+                                     <th>Backoff No</th> <th>Actions</th>\n\
                                     <th></th><th></th></tr></thead>');
                                 $.get("kinesisCtrl/" + $flowId, function(data) {
                                     $.each(data, function(i, kinesisCtrl) {
@@ -296,33 +301,34 @@
                     clearTimeout(timeoutMap[$resource]);
                     delete timeoutMap[$resource];
                     $('#' + $resource + 'LineChart').remove();
-                    $('#' + $resource + 'PieChart').parent('.wrapper').remove();
+                    $('#' + $resource + 'BarChart').parent('.wrapper').remove();
 
                 }).on('change', 'input:radio', function() {
                     var $this = $(this);
                     var $ctrlName = $this.attr('name');
                     var $resource = $this.val();
                     var lineChartDiv = '#' + $resource + 'LineChart';
-                    var pieChartDiv = '#' + $resource + 'PieChart';
-                    var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000 * 5;
+                    var barChartDiv = '#' + $resource + 'BarChart';
+                    var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000;
                     var $measurementTarget = $(this).closest('tr').find('td:eq(2)').text();
                     $this.parents('div[class="form-style-ctrl-stat"]')
                             .siblings('div[class="form-style-ctrl-diag"]').append(
-                            '<div id="' + $resource + 'LineChart" class="epoch category3" style="width: 700px; height: 200px">\n\
+                            '<div id="' + $resource + 'LineChart" class="epoch category3" style="width: 670px; height: 200px">\n\
                              <div style="z-index: 1"><ul class="legend"><li><span class="used"></span>' + $measurementTarget + '</li>\n\
                             <li><span class="allocated"></span>Allocated Resource</li></ul></div></div>');
                     var lineChart = setupLineChart(lineChartDiv);
 
                     $this.parents('div[class="form-style-ctrl-stat"]')
                             .siblings('div[class="form-style-resource-share"]').append(
-                            '<div class="wrapper"><div id="' + $resource + 'PieChart" class="firstDiv epoch category3" style="width: 150px; height: 160px"></div>\n\
+                            '<div class="wrapper"><div id="' + $resource + 'BarChart" class="firstDiv epoch category3" style="width: 350px; height: 200px"></div>\n\
                             <div class="secondDiv"><ul class="legend">\n\
-                            <li><span class="allocated"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
+                            <li><span class="usedshare"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
+                            <li><span class="pending"></span>Pending Resizing</li>\n\
                             <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
                             </ul></div></div>');
-                    var pieChart = setupPieChart(pieChartDiv);
+                    var barChart = setupBarChart(barChartDiv);
 
-                    drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
+                    drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $timeInterval);
                 });
 
                 function setupLineChart(chartDiv) {
@@ -339,7 +345,7 @@
                     return parseInt(timeStampMill / 1000);
                 }
 
-                function drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval) {
+                function drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $timeInterval) {
                     $.get('getCtrlStats',
                             {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, timeStamp: (new Date()).getTime() - $timeInterval},
                     function(ctrlStatRecords) {
@@ -347,28 +353,48 @@
                             console.log(ctrlStatRecords.length);
                         } else {
                             $.each(ctrlStatRecords, function(i, ctrlStatRecord) {
-                                lineChart.push([{time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.measurementTargetValue},
+                                lineChart.push([
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.measurementTargetValue},
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
+
+                                barChart.push([
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: Math.random() * 100},
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.nextCtrlDecisionValue},
                                     {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
                             });
                         }
                         timeoutMap[$resource] = setTimeout(function() {
-                            drawer(lineChart, $ctrlName, $resource, $flowId, $timeInterval);
+                            drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $timeInterval);
                         }, $timeInterval);
                     });
                 }
 
-
-                function setupPieChart(chartDiv) {
-                    var i = parseInt(Math.random() * 100);
-                    var pie = $(chartDiv).epoch({
-                        type: 'pie',
-                        data: [{label: i.toString(), value: i}, {label: (100 - i).toString(), value: 100 - i}],
-                        inner: 40,
-                        width: 150,
-                        height: 150
+                function setupBarChart(chartDiv) {
+                    var bar = $(chartDiv).epoch({
+                        type: 'time.bar',
+                        data: [{values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
+                            {values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
+                            {values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
+                        axes: ['bottom', 'left', 'right'],
+                        windowSize: 10
                     });
-                    return pie;
+//                            var layer_num = 1;
+//                            var catname = "category4";
+//                            bar.getVisibleLayers()[layer_num].className = "layer " + catname;
+                    return bar;
                 }
+
+//                function setupPieChart(chartDiv) {
+//                    var i = parseInt(Math.random() * 100);
+//                    var pie = $(chartDiv).epoch({
+//                        type: 'pie',
+//                        data: [{label: i.toString(), value: i}, {label: (100 - i).toString(), value: 100 - i}],
+//                        inner: 40,
+//                        width: 150,
+//                        height: 150
+//                    });
+//                    return pie;
+//                }
 
 
 
