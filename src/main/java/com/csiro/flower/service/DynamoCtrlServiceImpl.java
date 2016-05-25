@@ -9,6 +9,7 @@ import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.DynamoCtrl;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -33,15 +34,6 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
     private CloudWatchService cloudWatchService;
 
     String ctrlName = "DynamoDB";
-
-    public ScheduledFuture<?> getFutureTask() {
-        return futureTask;
-    }
-
-    public void setFutureTask(ScheduledFuture<?> futureTask) {
-        this.futureTask = futureTask;
-    }
-
     Queue dynamoCtrlGainQ;
     private ScheduledFuture<?> futureTask;
 
@@ -52,6 +44,21 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
     String measurementTarget;
     double writeUtilizationRef;
     int initBackoff;
+
+    private double upperK0;
+    private double upInitK0;
+    private double lowInitK0;
+    private double lowerK0;
+    private double k_init;
+    private double gamma;
+
+    public ScheduledFuture<?> getFutureTask() {
+        return futureTask;
+    }
+
+    public void setFutureTask(ScheduledFuture<?> futureTask) {
+        this.futureTask = futureTask;
+    }
 
     public void setupConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
 
@@ -72,6 +79,14 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
         writeUtilizationRef = dynamoCtrl.getRefValue();
         initBackoff = dynamoCtrl.getBackoffNo();
         ctrlId = dynamoCtrlDao.getPkId(flowId, tblName);
+        
+        CtrlInternalSetting ctrlInternalSetting = dynamoCtrlDao.getInternalSetting(ctrlId);
+        upperK0 = ctrlInternalSetting.getUpperK0();
+        upInitK0 = ctrlInternalSetting.getUpInitK0();
+        lowInitK0 = ctrlInternalSetting.getLowInitK0();
+        lowerK0 = ctrlInternalSetting.getLowerK0();
+        k_init = ctrlInternalSetting.getK_init();
+        gamma = ctrlInternalSetting.getGamma();
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -142,7 +157,7 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
         roundedUk1 = (int) Math.round(Math.abs(uk1));
 
         ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
-                new Date().getTime(), k0, writeRate+ (Math.random()*100), uk0+ (Math.random()*100), uk1, roundedUk1);
+                new Date().getTime(), k0, writeRate + (Math.random() * 100), uk0 + (Math.random() * 100), uk1, roundedUk1);
 
         // If clouadwatch datapoint is null for current period, do not update gains and ProvisionedThroughput!
         if (writeRate != 0) {

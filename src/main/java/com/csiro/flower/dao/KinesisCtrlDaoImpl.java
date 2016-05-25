@@ -5,6 +5,7 @@
  */
 package com.csiro.flower.dao;
 
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +73,19 @@ public class KinesisCtrlDaoImpl implements KinesisCtrlDao {
                 new Object[]{flowId, stream, measurementTarget},
                 new BeanPropertyRowMapper(KinesisCtrl.class));
         return kinesisCtrl;
+    }
+
+    @Override
+    public CtrlInternalSetting getInternalSetting(int id) {
+        String sqlSelect = "SELECT epsilon, upper_k0, up_init_k0, low_init_k0, lower_k0, k_init, gamma "
+                + "FROM kinesis_ctrl_tbl WHERE id=?";
+        CtrlInternalSetting ctrlInternalSetting = (CtrlInternalSetting) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{id}, new BeanPropertyRowMapper(CtrlInternalSetting.class));
+        return ctrlInternalSetting;
+    }
+
+    @Override
+    public void updateInternalSetting(int flowId, String stream) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

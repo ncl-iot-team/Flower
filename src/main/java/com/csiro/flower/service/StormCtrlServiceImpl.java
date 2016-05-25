@@ -10,6 +10,7 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.StormCluster;
 import com.csiro.flower.model.StormCtrl;
 import java.sql.Timestamp;
@@ -53,6 +54,13 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
     private int backoffNo;
     private int flowId;
 
+    private double upperK0;
+    private double upInitK0;
+    private double lowInitK0;
+    private double lowerK0;
+    private double k_init;
+    private double gamma;
+
     public ScheduledFuture<?> getFutureTask() {
         return futureTask;
     }
@@ -64,12 +72,12 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
     public void setupController(CloudSetting cloudSetting, StormCluster stormCluster, StormCtrl stormCtrl) {
 
         initValues(stormCluster, stormCtrl);
-        
+
         initService(cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
-        
+
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
@@ -82,6 +90,14 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
         cpuRef = stormCtrl.getRefValue();
         backoffNo = stormCtrl.getBackoffNo();
         ctrlId = stormCtrlDao.getPkId(flowId, topologyName);
+
+        CtrlInternalSetting ctrlInternalSetting = stormCtrlDao.getInternalSetting(ctrlId);
+        upperK0 = ctrlInternalSetting.getUpperK0();
+        upInitK0 = ctrlInternalSetting.getUpInitK0();
+        lowInitK0 = ctrlInternalSetting.getLowInitK0();
+        lowerK0 = ctrlInternalSetting.getLowerK0();
+        k_init = ctrlInternalSetting.getK_init();
+        gamma = ctrlInternalSetting.getGamma();
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -134,7 +150,7 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
             roundedUk1 = (int) Math.round(uk1);
 
             ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
-                    new Date().getTime(), k0, (cpu + 10) , (uk0 + 100), uk1 , roundedUk1 + 10);
+                    new Date().getTime(), k0, (cpu + 10), (uk0 + 100), uk1, roundedUk1 + 10);
 
             if (roundedUk1 > uk0) {
                 roundedUk1 = roundedUk1 - uk0;

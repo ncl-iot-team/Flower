@@ -5,6 +5,7 @@
  */
 package com.csiro.flower.dao;
 
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.StormCtrl;
 
 /**
@@ -24,4 +25,8 @@ public interface StormCtrlDao {
     public int getPkId(int flowId, String topology);
     
     public StormCtrl get(int flowId, String measurementTarget);
+    
+    public CtrlInternalSetting getInternalSetting(int id);
+    
+    public void updateInternalSetting(int flowId, String measurementTarget);
 }

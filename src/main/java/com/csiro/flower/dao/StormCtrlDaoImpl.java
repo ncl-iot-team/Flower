@@ -6,6 +6,7 @@
 package com.csiro.flower.dao;
 
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.StormCtrl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -86,6 +87,20 @@ public class StormCtrlDaoImpl implements StormCtrlDao {
                 new Object[]{flowId, measurementTarget},
                 new BeanPropertyRowMapper(StormCtrl.class));
         return stormCtrl;
+    }
+
+    @Override
+    public CtrlInternalSetting getInternalSetting(int id) {
+        String sqlSelect = "SELECT epsilon, upper_k0, up_init_k0, low_init_k0, lower_k0, k_init, gamma "
+                + "FROM storm_ctrl_tbl WHERE id=?";
+        CtrlInternalSetting ctrlInternalSetting = (CtrlInternalSetting) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{id}, new BeanPropertyRowMapper(CtrlInternalSetting.class));
+        return ctrlInternalSetting;
+    }
+
+    @Override
+    public void updateInternalSetting(int flowId, String measurementTarget) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package com.csiro.flower.dao;
 
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.DynamoCtrl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,20 @@ public class DynamoCtrlDaoImpl implements DynamoCtrlDao {
         DynamoCtrl dynamoCtrl = (DynamoCtrl) jdbcTemplate.queryForObject(sqlSelect,
                 new Object[]{flowId, tbl, measurementTarget}, new BeanPropertyRowMapper(DynamoCtrl.class));
         return dynamoCtrl;
+    }
+
+    @Override
+    public CtrlInternalSetting getInternalSetting(int id) {
+        String sqlSelect = "SELECT epsilon, upper_k0, up_init_k0, low_init_k0, lower_k0, k_init, gamma "
+                + "FROM dynamodb_ctrl_tbl WHERE id=?";
+        CtrlInternalSetting ctrlInternalSetting = (CtrlInternalSetting) jdbcTemplate.queryForObject(sqlSelect,
+                new Object[]{id}, new BeanPropertyRowMapper(CtrlInternalSetting.class));
+        return ctrlInternalSetting;
+    }
+
+    @Override
+    public void updateInternalSetting(int flowId, String tbl) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

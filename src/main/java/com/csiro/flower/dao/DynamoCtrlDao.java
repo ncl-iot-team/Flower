@@ -5,6 +5,7 @@
  */
 package com.csiro.flower.dao;
 
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.DynamoCtrl;
 import java.util.List;
 
@@ -19,10 +20,14 @@ public interface DynamoCtrlDao {
     public void delete(int id);
 
     public List<DynamoCtrl> get(int flowId);
-   
+
     public void update(DynamoCtrl dynamoCtrl);
-    
+
     public int getPkId(int flowId, String tbl);
 
     public DynamoCtrl get(int flowId, String resource, String measurementTarget);
+
+    public CtrlInternalSetting getInternalSetting(int id);
+
+    public void updateInternalSetting(int flowId, String tbl);
 }

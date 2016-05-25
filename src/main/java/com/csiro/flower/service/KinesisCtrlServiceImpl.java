@@ -10,6 +10,7 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.csiro.flower.dao.CtrlStatsDao;
 import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.CtrlInternalSetting;
 import com.csiro.flower.model.KinesisCtrl;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -41,14 +42,6 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
 
     private ScheduledFuture<?> futureTask;
 
-    public ScheduledFuture<?> getFutureTask() {
-        return futureTask;
-    }
-
-    public void setFutureTask(ScheduledFuture<?> futureTask) {
-        this.futureTask = futureTask;
-    }
-
     Queue kinesisCtrlGainQ;
     private final String ctrlName = "AmazonKinesis";
     private int ctrlId;
@@ -56,6 +49,21 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
     private String measurementTarget;
     private double putRecordUtilizationRef;
     private int backoffNo;
+
+    private double upperK0;
+    private double upInitK0;
+    private double lowInitK0;
+    private double lowerK0;
+    private double k_init;
+    private double gamma;
+
+    public ScheduledFuture<?> getFutureTask() {
+        return futureTask;
+    }
+
+    public void setFutureTask(ScheduledFuture<?> futureTask) {
+        this.futureTask = futureTask;
+    }
 
     public void setupController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
 
@@ -77,6 +85,14 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
         putRecordUtilizationRef = kinesisCtrl.getRefValue();
         backoffNo = kinesisCtrl.getBackoffNo();
         ctrlId = kinesisCtrlDao.getPkId(kinesisCtrl.getFlowIdFk(), kinesisCtrl.getStreamName());
+
+        CtrlInternalSetting ctrlInternalSetting = kinesisCtrlDao.getInternalSetting(ctrlId);
+        upperK0 = ctrlInternalSetting.getUpperK0();
+        upInitK0 = ctrlInternalSetting.getUpInitK0();
+        lowInitK0 = ctrlInternalSetting.getLowInitK0();
+        lowerK0 = ctrlInternalSetting.getLowerK0();
+        k_init = ctrlInternalSetting.getK_init();
+        gamma = ctrlInternalSetting.getGamma();
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {
@@ -130,7 +146,7 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
         roundedUk1 = (int) Math.round(Math.abs(uk1));
 
         ctrlStatsDao.saveCtrlMonitoringStats(ctrlId, ctrlName, error,
-                (new Date().getTime()), k0, incomingRecords+ (Math.random()*100), uk0+ (Math.random()*100), uk1, roundedUk1);
+                (new Date().getTime()), k0, incomingRecords + (Math.random() * 100), uk0 + (Math.random() * 100), uk1, roundedUk1);
 
         // If clouadwatch datapoint is null for current period, do not update gains and shard size!
         if (incomingRecords != 0) {
