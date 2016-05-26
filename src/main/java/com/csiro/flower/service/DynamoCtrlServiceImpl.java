@@ -7,10 +7,8 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
-import com.csiro.flower.dao.DynamoCtrlDao;
 import com.csiro.flower.model.CloudSetting;
-import com.csiro.flower.model.CtrlInternalSetting;
-import com.csiro.flower.model.DynamoCtrl;
+import com.csiro.flower.model.Ctrl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
@@ -28,22 +26,19 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
     private DynamoMgmtService dynamoMgmtService;
 
     @Autowired
-    private DynamoCtrlDao dynamoCtrlDao;
-
-    @Autowired
     private CloudWatchService cloudWatchService;
 
-    String ctrlName = "DynamoDB";
-    Queue dynamoCtrlGainQ;
+    private String ctrlName;
+    private Queue dynamoCtrlGainQ;
     private ScheduledFuture<?> futureTask;
 
     private int ctrlId;
 
-    int flowId;
-    String tblName;
-    String measurementTarget;
-    double writeUtilizationRef;
-    int initBackoff;
+    private int flowId;
+    private String tblName;
+    private String measurementTarget;
+    private double writeUtilizationRef;
+    private int initBackoff;
 
     private double upperK0;
     private double upInitK0;
@@ -60,7 +55,7 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
         this.futureTask = futureTask;
     }
 
-    public void setupConroller(CloudSetting cloudSetting, DynamoCtrl dynamoCtrl) {
+    public void setupConroller(CloudSetting cloudSetting, Ctrl dynamoCtrl) {
 
         initValues(dynamoCtrl);
         initService(
@@ -71,22 +66,22 @@ public class DynamoCtrlServiceImpl extends CtrlService implements Runnable {
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
-    private void initValues(DynamoCtrl dynamoCtrl) {
+    private void initValues(Ctrl dynamoCtrl) {
         dynamoCtrlGainQ = new LinkedList<>();
+        ctrlName = dynamoCtrl.getCtrlName();
         flowId = dynamoCtrl.getFlowIdFk();
-        tblName = dynamoCtrl.getTableName();
+        tblName = dynamoCtrl.getResourceName();
         measurementTarget = dynamoCtrl.getMeasurementTarget();
         writeUtilizationRef = dynamoCtrl.getRefValue();
         initBackoff = dynamoCtrl.getBackoffNo();
-        ctrlId = dynamoCtrlDao.getPkId(flowId, tblName);
-        
-        CtrlInternalSetting ctrlInternalSetting = dynamoCtrlDao.getInternalSetting(ctrlId);
-        upperK0 = ctrlInternalSetting.getUpperK0();
-        upInitK0 = ctrlInternalSetting.getUpInitK0();
-        lowInitK0 = ctrlInternalSetting.getLowInitK0();
-        lowerK0 = ctrlInternalSetting.getLowerK0();
-        k_init = ctrlInternalSetting.getK_init();
-        gamma = ctrlInternalSetting.getGamma();
+        ctrlId = ctrlDao.getPkId(flowId, ctrlName, tblName, measurementTarget);
+
+        upperK0 = dynamoCtrl.getUpperK0();
+        upInitK0 = dynamoCtrl.getUpInitK0();
+        lowInitK0 = dynamoCtrl.getLowInitK0();
+        lowerK0 = dynamoCtrl.getLowerK0();
+        k_init = dynamoCtrl.getK_init();
+        gamma = dynamoCtrl.getGamma();
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {

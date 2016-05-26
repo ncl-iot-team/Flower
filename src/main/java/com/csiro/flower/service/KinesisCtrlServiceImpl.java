@@ -7,35 +7,23 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
-import com.csiro.flower.dao.CtrlStatsDao;
-import com.csiro.flower.dao.KinesisCtrlDao;
 import com.csiro.flower.model.CloudSetting;
-import com.csiro.flower.model.CtrlInternalSetting;
-import com.csiro.flower.model.KinesisCtrl;
+import com.csiro.flower.model.Ctrl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 /**
  *
  * @author kho01f
  */
-//@Service
-//@Scope("prototype")
 public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
 
     @Autowired
     private KinesisMgmtService kinesisMgmtService;
-
-    @Autowired
-    private KinesisCtrlDao kinesisCtrlDao;
 
     @Autowired
     private CloudWatchService cloudWatchService;
@@ -43,8 +31,8 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
     private ScheduledFuture<?> futureTask;
 
     Queue kinesisCtrlGainQ;
-    private final String ctrlName = "AmazonKinesis";
     private int ctrlId;
+    private String ctrlName;
     private String streamName;
     private String measurementTarget;
     private double putRecordUtilizationRef;
@@ -65,7 +53,7 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
         this.futureTask = futureTask;
     }
 
-    public void setupController(CloudSetting cloudSetting, KinesisCtrl kinesisCtrl) {
+    public void setupController(CloudSetting cloudSetting, Ctrl kinesisCtrl) {
 
         initValues(kinesisCtrl);
 
@@ -78,21 +66,20 @@ public class KinesisCtrlServiceImpl extends CtrlService implements Runnable {
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
-    private void initValues(KinesisCtrl kinesisCtrl) {
+    private void initValues(Ctrl kinesisCtrl) {
         kinesisCtrlGainQ = new LinkedList<>();
-        streamName = kinesisCtrl.getStreamName();
+        ctrlName = kinesisCtrl.getCtrlName();
+        streamName = kinesisCtrl.getResourceName();
         measurementTarget = kinesisCtrl.getMeasurementTarget();
         putRecordUtilizationRef = kinesisCtrl.getRefValue();
         backoffNo = kinesisCtrl.getBackoffNo();
-        ctrlId = kinesisCtrlDao.getPkId(kinesisCtrl.getFlowIdFk(), kinesisCtrl.getStreamName());
-
-        CtrlInternalSetting ctrlInternalSetting = kinesisCtrlDao.getInternalSetting(ctrlId);
-        upperK0 = ctrlInternalSetting.getUpperK0();
-        upInitK0 = ctrlInternalSetting.getUpInitK0();
-        lowInitK0 = ctrlInternalSetting.getLowInitK0();
-        lowerK0 = ctrlInternalSetting.getLowerK0();
-        k_init = ctrlInternalSetting.getK_init();
-        gamma = ctrlInternalSetting.getGamma();
+        ctrlId = ctrlDao.getPkId(kinesisCtrl.getFlowIdFk(), ctrlName, streamName, measurementTarget);
+        upperK0 = kinesisCtrl.getUpperK0();
+        upInitK0 = kinesisCtrl.getUpInitK0();
+        lowInitK0 = kinesisCtrl.getLowInitK0();
+        lowerK0 = kinesisCtrl.getLowerK0();
+        k_init = kinesisCtrl.getK_init();
+        gamma = kinesisCtrl.getGamma();
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {

@@ -5,6 +5,7 @@
  */
 package com.csiro.flower.service;
 
+import com.csiro.flower.dao.CtrlDao;
 import com.csiro.flower.dao.CtrlStatsDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,4 +31,8 @@ public abstract class CtrlService {
 
     @Autowired
     CtrlStatsDao ctrlStatsDao;
+    
+    @Autowired
+    CtrlDao ctrlDao;
+      
 }

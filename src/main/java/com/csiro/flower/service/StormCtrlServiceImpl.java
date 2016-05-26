@@ -7,12 +7,9 @@ package com.csiro.flower.service;
 
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
-import com.csiro.flower.dao.CtrlStatsDao;
-import com.csiro.flower.dao.StormCtrlDao;
 import com.csiro.flower.model.CloudSetting;
-import com.csiro.flower.model.CtrlInternalSetting;
+import com.csiro.flower.model.Ctrl;
 import com.csiro.flower.model.StormCluster;
-import com.csiro.flower.model.StormCtrl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,16 +33,13 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
     private StormMgmtService stormMgmtService;
 
     @Autowired
-    private StormCtrlDao stormCtrlDao;
-
-    @Autowired
     private CloudWatchService cloudWatchService;
 
     private ScheduledFuture<?> futureTask;
 
     Queue stormCtrlGainQ;
 
-    private final String ctrlName = "ApacheStorm";
+    private String ctrlName;
     private int ctrlId;
     private String nimbusIp;
     private String topologyName;
@@ -69,7 +63,7 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
         this.futureTask = futureTask;
     }
 
-    public void setupController(CloudSetting cloudSetting, StormCluster stormCluster, StormCtrl stormCtrl) {
+    public void setupController(CloudSetting cloudSetting, StormCluster stormCluster, Ctrl stormCtrl) {
 
         initValues(stormCluster, stormCtrl);
 
@@ -81,23 +75,23 @@ public class StormCtrlServiceImpl extends CtrlService implements Runnable {
         ctrlStatsDao.saveCtrlStatus(ctrlId, ctrlName, RUNNING_STATUS, new Timestamp(new Date().getTime()));
     }
 
-    private void initValues(StormCluster stormCluster, StormCtrl stormCtrl) {
+    private void initValues(StormCluster stormCluster, Ctrl stormCtrl) {
         stormCtrlGainQ = new LinkedList<>();
         nimbusIp = stormCluster.getNimbusIp();
         flowId = stormCtrl.getFlowIdFk();
-        topologyName = stormCtrl.getTargetTopology();
+        ctrlName = stormCtrl.getCtrlName();
+        topologyName = stormCtrl.getResourceName();
         measurementTarget = stormCtrl.getMeasurementTarget();
         cpuRef = stormCtrl.getRefValue();
         backoffNo = stormCtrl.getBackoffNo();
-        ctrlId = stormCtrlDao.getPkId(flowId, topologyName);
+        ctrlId = ctrlDao.getPkId(flowId, ctrlName, topologyName, measurementTarget);
 
-        CtrlInternalSetting ctrlInternalSetting = stormCtrlDao.getInternalSetting(ctrlId);
-        upperK0 = ctrlInternalSetting.getUpperK0();
-        upInitK0 = ctrlInternalSetting.getUpInitK0();
-        lowInitK0 = ctrlInternalSetting.getLowInitK0();
-        lowerK0 = ctrlInternalSetting.getLowerK0();
-        k_init = ctrlInternalSetting.getK_init();
-        gamma = ctrlInternalSetting.getGamma();
+        upperK0 = stormCtrl.getUpperK0();
+        upInitK0 = stormCtrl.getUpInitK0();
+        lowInitK0 = stormCtrl.getLowInitK0();
+        lowerK0 = stormCtrl.getLowerK0();
+        k_init = stormCtrl.getK_init();
+        gamma = stormCtrl.getGamma();
     }
 
     private void initService(String provider, String accessKey, String secretKey, String region) {

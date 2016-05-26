@@ -7,6 +7,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <html><head>
+        <script type='text/javascript' >
+            var globalIndexMap = -1;
+        </script>
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
@@ -15,7 +18,7 @@
 
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.smartWizard.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/cloudSetting.form.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/ctrl.step.forms.js"></script>
 
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid.min.css" />
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.4.1/jsgrid-theme.min.css" />
@@ -96,12 +99,8 @@
                         "cloudSetting.secretKey": "required",
                         "cloudSetting.cloudProvider": "required",
                         "cloudSetting.region": "required",
-                        "dynamoCtrl.measurementTarget": "required",
-                        "dynamoCtrl.refValue": "required",
-                        "kinesisCtrl.measurementTarget": "required",
-                        "kinesisCtrl.refValue": "required",
-                        "stormCtrl.measurementTarget": "required",
-                        "stormCtrl.refValue": "required",
+                        "ctrl.measurementTarget": "required",
+                        "ctrl.refValue": "required",
                         "stormCtrl.targetTopology": "required",
                         "stormCluster.nimbusIp": "required",
                         "stormCluster.supervisorPrefix": "required"
@@ -143,13 +142,22 @@
                             } else {
                                 $.each(data, function(index, str) {
                                     if (!$('input[value=' + str + ']').length) {
+                                        globalIndexMap++;
                                         $('#kinesisTbl tr:last').after('<tr> <td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
-                                                                name="kinesisCtrls[' + index + '].streamName" readonly=true value="' + str + '"></td><td>\n\
-                                                                <select name="kinesisCtrls[' + index + '].measurementTarget" class="select-field">\n\
+                                                                name="ctrls[' + globalIndexMap + '].resourceName" readonly=true value="' + str + '"></td><td>\n\
+                                                                <select name="ctrls[' + globalIndexMap + '].measurementTarget" class="select-field">\n\
                                                                 <option value=""></option><option value="IncomingRecords">Incoming Records</option>\n\
-                                                                </td><td> <input type="text" class="input-field" name="kinesisCtrls[' + index + '].refValue" value=""/></td> \n\
-                                                                <td><input type="text" class="input-field" name="kinesisCtrls[' + index + '].monitoringPeriod" value=""/>\n\
-                                                                </td><td><input type="text" class="input-field" name="kinesisCtrls[' + index + '].backoffNo" value=""/></td>\n\
+                                                                </td><td> <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].refValue" value=""/></td> \n\
+                                                                <td><input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].monitoringPeriod" value=""/>\n\
+                                                                </td><td><input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].backoffNo" value=""/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].ctrlName" value="AmazonKinesis"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].epsilon" value="0.0001"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].upperK0" value="0.1"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].upInitK0" value="0.08"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].lowInitK0" value="0.02"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].lowerK0" value="0"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].k_init" value="0.03"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].gamma" value="0.0003"/></td>\n\
                                                                 <td><img class="bin"/></td></tr>');
                                     }
                                 });
@@ -176,13 +184,22 @@
                             } else {
                                 $.each(data, function(index, tbl) {
                                     if (!$('input[value=' + tbl + ']').length) {
+                                        globalIndexMap++;
                                         $('#dynamoTbl tr:last').after('<tr><td><input type="text" style="border: 0px;background:#fafafa;text-align:center" \n\
-                                                        name="dynamoCtrls[' + index + '].tableName" readonly=true value="' + tbl + '"></td><td>\n\
-                                                        <select name="dynamoCtrls[' + index + '].measurementTarget" class="select-field">\n\
+                                                        name="ctrls[' + globalIndexMap + '].resourceName" readonly=true value="' + tbl + '"></td><td>\n\
+                                                        <select name="ctrls[' + globalIndexMap + '].measurementTarget" class="select-field">\n\
                                                         <option value=""></option><option value="ConsumedWriteCapacityUnits">Write Capacity</option></td>\n\
-                                                        <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].refValue"/></td>\n\
-                                                        <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].monitoringPeriod"/></td>\n\
-                                                        <td><input type="text" class="input-field" name="dynamoCtrls[' + index + '].backoffNo"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].refValue"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].monitoringPeriod"/></td>\n\
+                                                        <td><input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].backoffNo"/> \n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].ctrlName" value="DynamoDB"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].epsilon" value="0.0001"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].upperK0" value="0.1"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].upInitK0" value="0.08"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].lowInitK0" value="0.02"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].lowerK0" value="0"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].k_init" value="0.03"/>\n\
+                                                                <input type="hidden" name="ctrls[' + globalIndexMap + '].gamma" value="0.0003"/></td>\n\
                                                         <td><img class="bin"/></td></tr>');
                                     }
                                 });

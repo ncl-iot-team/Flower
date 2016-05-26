@@ -14,6 +14,5 @@ import com.csiro.flower.model.FlowDetailSetting;
  */
 public interface FlowCtrlsManagerService {
 
-    public void saveFlowCtrlsSettings(String[] platforms, 
-            int flowId, FlowDetailSetting flowSetting);
+    public void saveFlowCtrlsSettings(int flowId, FlowDetailSetting flowSetting);
 }

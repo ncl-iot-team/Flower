@@ -9,8 +9,15 @@ package com.csiro.flower.model;
  *
  * @author kho01f
  */
-public class CtrlInternalSetting {
+public class Ctrl {
 
+    private String measurementTarget;
+    private String ctrlName;
+    private String resourceName;
+    private double refValue;
+    private int monitoringPeriod;
+    private int backoffNo;
+    private int flowIdFk;
     private double epsilon;
     private double upperK0;
     private double upInitK0;
@@ -18,6 +25,62 @@ public class CtrlInternalSetting {
     private double lowerK0;
     private double k_init;
     private double gamma;
+
+    public String getMeasurementTarget() {
+        return measurementTarget;
+    }
+
+    public void setMeasurementTarget(String measurementTarget) {
+        this.measurementTarget = measurementTarget;
+    }
+
+    public String getCtrlName() {
+        return ctrlName;
+    }
+
+    public void setCtrlName(String ctrlName) {
+        this.ctrlName = ctrlName;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+
+    public double getRefValue() {
+        return refValue;
+    }
+
+    public void setRefValue(double refValue) {
+        this.refValue = refValue;
+    }
+
+    public int getMonitoringPeriod() {
+        return monitoringPeriod;
+    }
+
+    public void setMonitoringPeriod(int monitoringPeriod) {
+        this.monitoringPeriod = monitoringPeriod;
+    }
+
+    public int getBackoffNo() {
+        return backoffNo;
+    }
+
+    public void setBackoffNo(int backoffNo) {
+        this.backoffNo = backoffNo;
+    }
+
+    public int getFlowIdFk() {
+        return flowIdFk;
+    }
+
+    public void setFlowIdFk(int flowIdFk) {
+        this.flowIdFk = flowIdFk;
+    }
 
     public double getEpsilon() {
         return epsilon;
@@ -74,6 +137,4 @@ public class CtrlInternalSetting {
     public void setGamma(double gamma) {
         this.gamma = gamma;
     }
-    
-    
 }

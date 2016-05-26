@@ -18,6 +18,7 @@ function createDynamoCtrlForm(divLoc) {
 
 function createStormCtrlForm(divLoc) {
     var divContainer = $(divLoc);
+    globalIndexMap++;
     divContainer.html('<div class="form-style-2"> \n\
      <div class="form-style-2-heading">Storm cluster settings</div> \n\
         <label for="field0"><span>Nimbus IP <span class="required">*</span></span>\n\
@@ -27,21 +28,28 @@ function createStormCtrlForm(divLoc) {
         <div class="form-style-2-heading">Storm cntroller settings</div> \n\
         <label for="field1">\n\
         <span>Measurement Target <span class="required">*</span></span></label>\n\
-        <label for="field2"><select id="stormCat" name="stormCtrl.measurementTarget" class="select-field">\n\
+        <label for="field2"><select id="stormCat" name="ctrls[' + globalIndexMap + '].measurementTarget" class="select-field">\n\
         <option value=""></option> \n\
         <option value="CPUUtilization">CPU</option>\n\
         <option value="Memory">Memory</option>\n\</select>\n\
         </label><label for="field3">\n\
         <span>Target Topology <span class="required">*</span></span>\n\
-        <input type="text" id="topology" class="select-field" name="stormCtrl.targetTopology" \>\n\
+        <input type="text" id="topology" class="select-field" name="ctrls[' + globalIndexMap + '].resourceName" \>\n\
         </label>\n\
         <label for="field4"><span>Reference Value <span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="stormCtrl.refValue" style="width:50px"/>\n\
+        <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].refValue" style="width:50px"/>\n\
         </label><label for="field5"><span>Monitoring Period</span>\n\
-        <input type="text" class="input-field" name="stormCtrl.monitoringPeriod" value="" style="width:50px"/>\n\
+        <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].monitoringPeriod" value="" style="width:50px"/>\n\
         </label><label for="field6"><span>Backoff No.</span>\n\
-        <input type="text" class="input-field" name="stormCtrl.backoffNo" value="" style="width:50px"/>\n\
-        </label><label></label></div>');
+        <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].backoffNo" value="" style="width:50px"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].ctrlName" value="ApacheStorm"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].epsilon" value="0.0001"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].upperK0" value="0.1"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].upInitK0" value="0.08"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].lowInitK0" value="0.02"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].lowerK0" value="0"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].k_init" value="0.03"/>\n\
+                <input type="hidden" name="ctrls[' + globalIndexMap + '].gamma" value="0.0003"/></label><label></label></div>');
 }
 
 function createKinesisCtrlForm(divLoc) {

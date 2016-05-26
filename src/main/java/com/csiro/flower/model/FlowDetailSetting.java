@@ -15,10 +15,16 @@ import java.util.List;
 public class FlowDetailSetting {
     
     private CloudSetting cloudSetting;
+    private List<Ctrl> ctrls;
     private StormCluster stormCluster;
-    private StormCtrl stormCtrl;
-    private List<DynamoCtrl> dynamoCtrls;
-    private List<KinesisCtrl> kinesisCtrls;
+
+    public List<Ctrl> getCtrls() {
+        return ctrls;
+    }
+
+    public void setCtrls(List<Ctrl> ctrls) {
+        this.ctrls = ctrls;
+    }
 
     public CloudSetting getCloudSetting() {
         return cloudSetting;
@@ -35,29 +41,29 @@ public class FlowDetailSetting {
     public void setStormCluster(StormCluster stormCluster) {
         this.stormCluster = stormCluster;
     }
-
-    public StormCtrl getStormCtrl() {
-        return stormCtrl;
-    }
-
-    public void setStormCtrl(StormCtrl stormCtrl) {
-        this.stormCtrl = stormCtrl;
-    }
-
-    public List<DynamoCtrl> getDynamoCtrls() {
-        return dynamoCtrls;
-    }
-
-    public void setDynamoCtrls(List<DynamoCtrl> dynamoCtrls) {
-        this.dynamoCtrls = dynamoCtrls;
-    }
-
-    public List<KinesisCtrl> getKinesisCtrls() {
-        return kinesisCtrls;
-    }
-
-    public void setKinesisCtrls(List<KinesisCtrl> kinesisCtrls) {
-        this.kinesisCtrls = kinesisCtrls;
-    }
+//
+//    public StormCtrl getStormCtrl() {
+//        return stormCtrl;
+//    }
+//
+//    public void setStormCtrl(StormCtrl stormCtrl) {
+//        this.stormCtrl = stormCtrl;
+//    }
+//
+//    public List<DynamoCtrl> getDynamoCtrls() {
+//        return dynamoCtrls;
+//    }
+//
+//    public void setDynamoCtrls(List<DynamoCtrl> dynamoCtrls) {
+//        this.dynamoCtrls = dynamoCtrls;
+//    }
+//
+//    public List<KinesisCtrl> getKinesisCtrls() {
+//        return kinesisCtrls;
+//    }
+//
+//    public void setKinesisCtrls(List<KinesisCtrl> kinesisCtrls) {
+//        this.kinesisCtrls = kinesisCtrls;
+//    }
 
 }

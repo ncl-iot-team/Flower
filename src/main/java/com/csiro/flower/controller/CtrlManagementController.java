@@ -5,16 +5,12 @@
  */
 package com.csiro.flower.controller;
 
-import com.csiro.flower.dao.DynamoCtrlDao;
-import com.csiro.flower.dao.KinesisCtrlDao;
-import com.csiro.flower.dao.StormCtrlDao;
+import com.csiro.flower.dao.CtrlDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.Ctrl;
 import com.csiro.flower.model.CtrlMonitoringResultSet;
-import com.csiro.flower.model.DynamoCtrl;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
-import com.csiro.flower.model.KinesisCtrl;
-import com.csiro.flower.model.StormCtrl;
 import com.csiro.flower.service.CtrlsRunnerService;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowCtrlsManagerService;
@@ -56,13 +52,7 @@ public class CtrlManagementController {
     private DynamoMgmtService dynamoMgmtService;
 
     @Autowired
-    private StormCtrlDao stormCtrlDao;
-
-    @Autowired
-    private KinesisCtrlDao kinesisCtrlDao;
-
-    @Autowired
-    private DynamoCtrlDao dynamoCtrlDao;
+    private CtrlDao ctrlDao;
 
     @Autowired
     private CtrlsRunnerService ctrlsRunnerService;
@@ -101,7 +91,7 @@ public class CtrlManagementController {
             @ModelAttribute("flow") Flow flow) {
 
         int flowId = flow.getFlowId();
-        flowCtrlsManagerService.saveFlowCtrlsSettings(flow.getPlatforms().split(","), flowId, flowSetting);
+        flowCtrlsManagerService.saveFlowCtrlsSettings(flowId, flowSetting);
         startFlowCtrlService(flowSetting);
         return "redirect:/ctrls/flowCtrlServicePage";
     }
@@ -145,24 +135,23 @@ public class CtrlManagementController {
         return kinesisMgmtService.getStreamList();
     }
 
-    @RequestMapping(value = "/dynamoCtrl/{flowId}")
+    @RequestMapping(value = "/getCtrls/{flowId}")
     public @ResponseBody
-    List<DynamoCtrl> getDynamoCtrl(@PathVariable int flowId) {
-        return dynamoCtrlDao.get(flowId);
+    List<Ctrl> getCtrls(@PathVariable int flowId) {
+        return ctrlDao.get(flowId);
     }
 
-    @RequestMapping(value = "/kinesisCtrl/{flowId}")
-    public @ResponseBody
-    List<KinesisCtrl> getKinesisCtrl(@PathVariable int flowId) {
-        return kinesisCtrlDao.get(flowId);
-    }
-
-    @RequestMapping(value = "/stormCtrl/{flowId}")
-    public @ResponseBody
-    StormCtrl getStormCtrl(@PathVariable int flowId) {
-        return stormCtrlDao.get(flowId);
-    }
-
+//    @RequestMapping(value = "/kinesisCtrl/{flowId}")
+//    public @ResponseBody
+//    List<KinesisCtrl> getKinesisCtrl(@PathVariable int flowId) {
+//        return kinesisCtrlDao.get(flowId);
+//    }
+//
+//    @RequestMapping(value = "/stormCtrl/{flowId}")
+//    public @ResponseBody
+//    StormCtrl getStormCtrl(@PathVariable int flowId) {
+//        return stormCtrlDao.get(flowId);
+//    }
     @RequestMapping(value = "/restartCtrl")
     @ResponseBody
     public void restartCtrlService(
@@ -179,9 +168,10 @@ public class CtrlManagementController {
     public void stopCtrlService(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
-            @RequestParam("resource") String resource) {
+            @RequestParam("resource") String resource,
+            @RequestParam("measurementTarget") String measurementTarget) {
 
-        ctrlsRunnerService.stopCtrl(ctrlName, flowId, resource);
+        ctrlsRunnerService.stopCtrl(flowId, ctrlName, resource, measurementTarget);
     }
 
     @RequestMapping(value = "/getCtrlStatus")
@@ -189,9 +179,10 @@ public class CtrlManagementController {
     String getCtrlStatus(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
-            @RequestParam("resource") String resource) {
+            @RequestParam("resource") String resource,
+            @RequestParam("measurementTarget") String measurementTarget) {
 
-        return ctrlsRunnerService.getCtrlStatus(ctrlName, flowId, resource);
+        return ctrlsRunnerService.getCtrlStatus(flowId, ctrlName, resource, measurementTarget);
     }
 
     @RequestMapping(value = "/getCtrlStats")
@@ -200,9 +191,10 @@ public class CtrlManagementController {
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource,
+            @RequestParam("measurementTarget") String measurementTarget,
             @RequestParam("timeStamp") long timeStamp) {
 
-        return ctrlsRunnerService.getCtrlMonitoringStats(ctrlName, flowId, resource, timeStamp);
+        return ctrlsRunnerService.getCtrlMonitoringStats(flowId, ctrlName, resource, measurementTarget, timeStamp);
     }
 
 //Using flashattributes for sending objects after redirect
