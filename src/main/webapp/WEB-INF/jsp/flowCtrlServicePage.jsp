@@ -16,6 +16,7 @@
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script src="${pageContext.request.contextPath}/resources/js/epoch.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/ctrl.service.js"></script>
 
         <style>
             .ui-accordion .ui-accordion-header {
@@ -125,6 +126,7 @@
         <script type="text/javascript">
             $(function() {
 
+                var dialog, form;
                 var flow = '${flow.platforms}';
                 var $flowId = '${flow.flowId}';
                 var systems = flow.split(",");
@@ -149,11 +151,9 @@
                                     <th></th></tr></thead><tbody> </tbody></table>\n\
                                       </div><div class="form-style-resource-share">\n\
                                     <div class="form-style-3-heading">Resource Share</div>\n\
-                                   </div>\n\
-                                    <div class="form-style-ctrl-diag">\n\
+                                   </div><div class="form-style-ctrl-diag">\n\
                                     <div class="form-style-3-heading">Controller Performance Monitoring</div>\n\
-                                     </div>\n\
-                                        </div></div></div>');
+                                     </div></div></div></div>');
                 }
 
                 //Technique 1: Consuming json using ajax and parsing using each function
@@ -205,10 +205,9 @@
 
                 $(document).on('click', '.play', function() {
                     var $this = $(this);
-//                    var $id = $this.attr('id');
                     var $ctrlName = $this.parents('table').attr('id').replace('Tbl', '');
-                    var $resource = $(this).closest('tr').find('td:eq(0)').text();
-                    var $measurementTarget = $(this).closest('tr').find('td:eq(2)').text();
+                    var $resource = $this.closest('tr').find('td:eq(0)').text();
+                    var $measurementTarget = $this.closest('tr').find('td:eq(2)').text();
                     $this.toggleClass('active');
                     if (!$this.hasClass('active')) {
                         $this.text('Start');
@@ -216,14 +215,14 @@
                                 'stopCtrl',
                                 {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         );
-                        $(this).closest('tr').find('td:eq(1)').text('Stopped');
+                        $this.closest('tr').find('td:eq(1)').text('Stopped');
                     } else {
                         $this.text('Stop');
                         $.post(
                                 'restartCtrl',
                                 {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         );
-                        $(this).closest('tr').find('td:eq(1)').text('Running');
+                        $this.closest('tr').find('td:eq(1)').text('Running');
                     }
                 });
                 var timeoutMap = {};
@@ -338,7 +337,36 @@
 //                    return pie;
 //                }
 
+                function initDialog(dialogId) {
+                    dialog = $(dialogId).dialog({
+                        autoOpen: false,
+                        height: 350,
+                        width: 350,
+                        modal: true,
+                        buttons: {
+                            "Save": function() {
+                                saveData(dialogId);
+                            },
+                            Cancel: function() {
+                                dialog.dialog("close");
+                            }
+                        }
+                    });
+                }
 
+//                form = dialog.find("form").on("save", function(event) {
+//                    event.preventDefault();
+//                });
+
+                $(document).on("click", '.setting', function() {
+                    var $this = $(this);
+                    var $ctrlName = $this.parents('table').attr('id').replace('Tbl', '');
+                    var $resource = $this.closest('tr').find('td:eq(0)').text();
+                    var $measurementTarget = $this.closest('tr').find('td:eq(2)').text();
+                    var dialogId = createCtrlSettingForm($flowId, $ctrlName, $resource, $measurementTarget);
+                    initDialog(dialogId);
+                    dialog.dialog("open");
+                });
 
 
 
@@ -426,6 +454,7 @@
             <br>
         </div>
 
+            <div id="settingForm"></div>
 
         <div  class="jumbotron_body">
 

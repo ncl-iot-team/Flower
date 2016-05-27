@@ -141,6 +141,17 @@ public class CtrlManagementController {
         return ctrlDao.get(flowId);
     }
 
+    @RequestMapping(value = "/getCtrl")
+    public @ResponseBody
+    Ctrl getCtrl(
+            @RequestParam("ctrlName") String ctrlName,
+            @RequestParam("flowId") int flowId,
+            @RequestParam("resource") String resource,
+            @RequestParam("measurementTarget") String measurementTarget) {
+
+        return ctrlDao.get(flowId, ctrlName, resource, measurementTarget);
+    }
+
 //    @RequestMapping(value = "/kinesisCtrl/{flowId}")
 //    public @ResponseBody
 //    List<KinesisCtrl> getKinesisCtrl(@PathVariable int flowId) {
