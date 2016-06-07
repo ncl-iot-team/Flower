@@ -70,8 +70,6 @@
                 -webkit-border-radius: 50%;
                 -moz-border-radius: 50%;
                 border-radius: 5%;
-                /*-webkit-box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;*/
-                /*box-shadow: inset 0 0 0 1px #ddd, inset 0 0 0 3px #fff,inset 0 0 0 4px #ddd;*/
                 -webkit-transition: all .2s ease;
                 transition: all .2s ease;
                 margin-right: 5px; 
@@ -118,9 +116,9 @@
             .legend .sharelimit { background-color: #3182bd; }
             .legend .usedshare { background-color: #31a354; }
 
-            #wrapper   { display: table; }
-            #firstDiv  { display: table-footer-group; }
-            #secondDiv { display: table-header-group; }
+            #wrapper   { overflow: auto }
+            #firstDiv  {  float: left;}
+            #secondDiv {  float: left;}
 
         </style>
         <script type="text/javascript">
@@ -264,12 +262,12 @@
                     var lineChart = setupLineChart(lineChartDiv);
                     $this.parents('div[class="form-style-ctrl-stat"]')
                             .siblings('div[class="form-style-resource-share"]').append(
-                            '<div class="wrapper"><div id="' + $resource + 'BarChart" class="firstDiv epoch category3" style="width: 350px; height: 200px"></div>\n\
-                            <div class="secondDiv"><ul class="legend">\n\
+                            '<div class="wrapper"><div id="' + $resource + 'BarChart" class="epoch category3" style="width: 350px; height: 200px"></div>\n\
+                            <ul class="legend">\n\
                             <li><span class="usedshare"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
                             <li><span class="pending"></span>Pending Resizing</li>\n\
                             <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
-                            </ul></div></div>');
+                            </ul></div>');
                     var barChart = setupBarChart(barChartDiv);
                     drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $measurementTarget, $timeInterval);
                 });
@@ -340,31 +338,60 @@
                 function initDialog(dialogId) {
                     dialog = $(dialogId).dialog({
                         autoOpen: false,
-                        height: 350,
-                        width: 350,
+                        height: 770,
+                        width: 465,
                         modal: true,
-                        buttons: {
-                            "Save": function() {
-                                saveData(dialogId);
-                            },
-                            Cancel: function() {
-                                dialog.dialog("close");
-                            }
+                        open: function(event, ui) {
+                            $('.ui-dialog').css('z-index', 1000);
+                            $('.ui-dialog').css('line-height', 0.7);
+                            $('.ui-dialog').css('font-size', 12);
                         }
+//                        buttons: {
+//                            "Save": function() {
+//                                saveData(dialogId);
+//                            },
+//                            "Cancel": function() {
+//                                dialog.dialog("close");
+//                            }
+//                        }
                     });
                 }
 
-//                form = dialog.find("form").on("save", function(event) {
-//                    event.preventDefault();
-//                });
+                $(document).on("click", 'input[value = "Cancel"]', function() {
+                    closeDialog('#CtrlInternalSettingsForm');
+                });
+
+                function closeDialog(frm) {
+                    dialog.dialog("close");
+                    if ($(frm)) {
+                        $(frm).children().remove();
+                    }
+                }
+
+                $('#CtrlInternalSettingsForm').on('submit', function(event) {
+                    var frm = $('#CtrlInternalSettingsForm');
+                    var t = frm.serialize();
+                    $.post("updateCtrlSettings", t);
+//                    $.ajax({
+//                        type: "POST",
+//                        url: "updateCtrlSettings",
+//                        dataType: "json",
+//                        contentType: 'application/json',
+//                        data: frm.serialize()
+////                        type: frm.attr('method'),
+////                        url: frm.attr('action')
+//                    });
+                    closeDialog('#CtrlInternalSettingsForm');
+                    event.preventDefault();
+                });
 
                 $(document).on("click", '.setting', function() {
                     var $this = $(this);
                     var $ctrlName = $this.parents('table').attr('id').replace('Tbl', '');
                     var $resource = $this.closest('tr').find('td:eq(0)').text();
                     var $measurementTarget = $this.closest('tr').find('td:eq(2)').text();
-                    var dialogId = createCtrlSettingForm($flowId, $ctrlName, $resource, $measurementTarget);
-                    initDialog(dialogId);
+                    createCtrlSettingForm($flowId, $ctrlName, $resource, $measurementTarget);
+                    initDialog("#settingForm");
                     dialog.dialog("open");
                 });
 
@@ -454,7 +481,11 @@
             <br>
         </div>
 
-            <div id="settingForm"></div>
+        <div id="settingForm">
+            <form id="CtrlInternalSettingsForm" action="updateCtrlSettings" method="post">
+
+            </form>
+        </div>
 
         <div  class="jumbotron_body">
 

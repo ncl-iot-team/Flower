@@ -152,6 +152,12 @@ public class CtrlManagementController {
         return ctrlDao.get(flowId, ctrlName, resource, measurementTarget);
     }
 
+    @RequestMapping(value = "/updateCtrlSettings", method=RequestMethod.POST)
+    public @ResponseBody
+    void updateCtrl(@ModelAttribute Ctrl ctrl) {
+        ctrlDao.update(ctrl);
+    }
+
 //    @RequestMapping(value = "/kinesisCtrl/{flowId}")
 //    public @ResponseBody
 //    List<KinesisCtrl> getKinesisCtrl(@PathVariable int flowId) {

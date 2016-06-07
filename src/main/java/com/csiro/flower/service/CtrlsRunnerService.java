@@ -43,13 +43,6 @@ public class CtrlsRunnerService {
 
     @Autowired
     private CtrlDao ctrlDao;
-//    private StormCtrlDao stormCtrlDao;
-//
-//    @Autowired
-//    private KinesisCtrlDao kinesisCtrlDao;
-//
-//    @Autowired
-//    private DynamoCtrlDao dynamoCtrlDao;
 
     @Autowired
     private CtrlStatsDao ctrlStatsDao;
@@ -98,20 +91,7 @@ public class CtrlsRunnerService {
         if (ctrlName.equals("ApacheStorm")) {
             flowSetting.setStormCluster(stormClusterDao.get(flowId));
         }
-//    case "AmazonKinesis":
-//
-//                break;
-//            case "ApacheStorm":
-//                flowSetting.setStormCtrl(stormCtrlDao.get(flowId, measurementTarget));
-//                flowSetting.setStormCluster(stormClusterDao.get(flowId));
-//                break;
-//            case "DynamoDB":
-//                List<DynamoCtrl> dynamoCtrls = new ArrayList<>();
-//                dynamoCtrls.add(dynamoCtrlDao.get(flowId, resource, measurementTarget));
-//                flowSetting.setDynamoCtrls(dynamoCtrls);
-//                break;
-//        }
-//
+
         startCtrls(flowSetting);
     }
 
@@ -131,18 +111,6 @@ public class CtrlsRunnerService {
     }
 
     private int getCtrlPkId(int flowId, String ctrlName, String resource, String measurementTarget) {
-//        int id = 0;
-//        switch (ctrlName) {
-//            case "AmazonKinesis":
-//                id = kinesisCtrlDao.getPkId(flowId, resource);
-//                break;
-//            case "ApacheStorm":
-//                id = stormCtrlDao.getPkId(flowId, resource);
-//                break;
-//            case "DynamoDB":
-//                id = dynamoCtrlDao.getPkId(flowId, resource);
-//                break;
-//        }
         return ctrlDao.getPkId(flowId, ctrlName, resource, measurementTarget);
     }
 
