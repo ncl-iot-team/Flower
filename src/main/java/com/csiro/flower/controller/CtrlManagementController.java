@@ -114,8 +114,8 @@ public class CtrlManagementController {
 //        return "redirect:/ctrls/launchFlowCtrlServicePage";
 //    }
     @RequestMapping(value = "/loadDynamoTables")
-    public @ResponseBody
-    List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
+    @ResponseBody
+    public List<String> getTableList(@RequestBody CloudSetting cloudSetting) {
         dynamoMgmtService.initService(
                 cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
@@ -125,8 +125,8 @@ public class CtrlManagementController {
     }
 
     @RequestMapping(value = "/loadKinesisStreams")
-    public @ResponseBody
-    List<String> getStreamList(@RequestBody CloudSetting cloudSetting) {
+    @ResponseBody
+    public List<String> getStreamList(@RequestBody CloudSetting cloudSetting) {
         kinesisMgmtService.initService(
                 cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
@@ -136,14 +136,14 @@ public class CtrlManagementController {
     }
 
     @RequestMapping(value = "/getCtrls/{flowId}")
-    public @ResponseBody
-    List<Ctrl> getCtrls(@PathVariable int flowId) {
+    @ResponseBody
+    public List<Ctrl> getCtrls(@PathVariable int flowId) {
         return ctrlDao.get(flowId);
     }
 
     @RequestMapping(value = "/getCtrl")
-    public @ResponseBody
-    Ctrl getCtrl(
+    @ResponseBody
+    public Ctrl getCtrl(
             @RequestParam("ctrlName") String ctrlName,
             @RequestParam("flowId") int flowId,
             @RequestParam("resource") String resource,
@@ -152,9 +152,9 @@ public class CtrlManagementController {
         return ctrlDao.get(flowId, ctrlName, resource, measurementTarget);
     }
 
-    @RequestMapping(value = "/updateCtrlSettings", method=RequestMethod.POST)
-    public @ResponseBody
-    void updateCtrl(@ModelAttribute Ctrl ctrl) {
+    @RequestMapping(value = "/updateCtrlSettings", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void updateCtrl(@ModelAttribute("ctrl") Ctrl ctrl) {
         ctrlDao.update(ctrl);
     }
 

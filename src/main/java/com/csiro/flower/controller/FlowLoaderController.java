@@ -11,7 +11,6 @@ import com.csiro.flower.model.Flow;
 import java.util.Date;
 import java.sql.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,5 +46,10 @@ public class FlowLoaderController {
         redirectAttributes.addFlashAttribute(flow);
         model.setViewName("redirect:/ctrls/flowCtrlStepForm");
         return model;
+    }
+    
+    @RequestMapping("/flowList")
+    public String viewFlowListPage(){
+        return "flowListPage";
     }
 }

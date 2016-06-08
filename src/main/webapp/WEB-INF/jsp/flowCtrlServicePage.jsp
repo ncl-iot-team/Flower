@@ -271,6 +271,7 @@
                     var barChart = setupBarChart(barChartDiv);
                     drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $measurementTarget, $timeInterval);
                 });
+
                 function setupLineChart(chartDiv) {
                     var graph = $(chartDiv).epoch({
                         type: 'time.line',
@@ -346,14 +347,6 @@
                             $('.ui-dialog').css('line-height', 0.7);
                             $('.ui-dialog').css('font-size', 12);
                         }
-//                        buttons: {
-//                            "Save": function() {
-//                                saveData(dialogId);
-//                            },
-//                            "Cancel": function() {
-//                                dialog.dialog("close");
-//                            }
-//                        }
                     });
                 }
 
@@ -369,18 +362,28 @@
                 }
 
                 $('#CtrlInternalSettingsForm').on('submit', function(event) {
-                    var frm = $('#CtrlInternalSettingsForm');
-                    var t = frm.serialize();
-                    $.post("updateCtrlSettings", t);
-//                    $.ajax({
-//                        type: "POST",
-//                        url: "updateCtrlSettings",
-//                        dataType: "json",
-//                        contentType: 'application/json',
-//                        data: frm.serialize()
-////                        type: frm.attr('method'),
-////                        url: frm.attr('action')
-//                    });
+                    var $frm = $('#CtrlInternalSettingsForm');
+                    var formData = $frm.serializeArray();
+                    var ctrlName = formData[1].value;
+                    var resourceName = formData[2].value;
+                    var refVal = formData[4].value;
+                    var monitoringPeriod = formData[5].value;
+                    var backoffNo = formData[6].value;
+
+                    $.ajax({
+                        data: formData,
+                        type: $frm.attr('method'),
+                        url: $frm.attr('action'),
+                        success: function() {
+                            var tblRow = $("#" + ctrlName + "Tbl tr td").filter(function() {
+                                return $(this).text() === resourceName;
+                            }).closest("tr");
+                            tblRow.find('td:eq(3)').text(refVal);
+                            tblRow.find('td:eq(4)').text(monitoringPeriod);
+                            tblRow.find('td:eq(5)').text(backoffNo);
+                        }
+                    });
+
                     closeDialog('#CtrlInternalSettingsForm');
                     event.preventDefault();
                 });
@@ -475,9 +478,9 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
             <hr>
-            <p id="ssman">${flowSetting.stormCtrl.measurementTarget}
+<!--            <p id="sman">
 
-            </p>
+            </p>-->
             <br>
         </div>
 
