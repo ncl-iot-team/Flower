@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,8 +31,9 @@ public class FlowDaoImpl implements FlowDao {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Flow> getAll() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Flow> getAll(String user) {
+        String sqlSelect = "SELECT * FROM flow_tbl WHERE flow_owner='" + user + "'";
+        return jdbcTemplate.query(sqlSelect, new BeanPropertyRowMapper(Flow.class));
     }
 
     @Override
@@ -70,7 +72,7 @@ public class FlowDaoImpl implements FlowDao {
                 flow.setFlowName(result.getString("flow_name"));
                 flow.setFlowOwner(result.getString("flow_owner"));
                 flow.setPlatforms(result.getString("platforms"));
-                flow.setCreationDate(result.getTimestamp("date_created"));
+                flow.setCreationDate(result.getTimestamp("creation_date"));
                 return flow;
             }
         });

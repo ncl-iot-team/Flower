@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface FlowDao {
 
-    public List<Flow> getAll() throws Exception;
+    public List<Flow> getAll(String user);
 
     public int save(Flow flow);
 

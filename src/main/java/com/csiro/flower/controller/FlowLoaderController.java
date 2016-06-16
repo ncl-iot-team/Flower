@@ -10,11 +10,14 @@ import com.csiro.flower.dao.FlowDao;
 import com.csiro.flower.model.Flow;
 import java.util.Date;
 import java.sql.Timestamp;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -22,8 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  *
  * @author kho01f
  */
-
 @Controller
+//@RequestMapping("flow")
 public class FlowLoaderController {
 
     @Autowired
@@ -47,9 +50,16 @@ public class FlowLoaderController {
         model.setViewName("redirect:/ctrls/flowCtrlStepForm");
         return model;
     }
-    
+
     @RequestMapping("/flowList")
-    public String viewFlowListPage(){
+    public String viewFlowListPage() {
         return "flowListPage";
+    }
+
+    @RequestMapping("/getFlowList/{user}")
+    @ResponseBody
+    public List<Flow> getFlowList(@PathVariable String user) {
+        List<Flow> list = flowDao.getAll(user);
+        return list;
     }
 }
