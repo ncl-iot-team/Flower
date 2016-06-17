@@ -10,6 +10,8 @@ import com.csiro.flower.dao.CtrlDao;
 import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.model.Ctrl;
 import com.csiro.flower.model.FlowDetailSetting;
+import java.sql.Timestamp;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,7 @@ public class FlowCtrlsManagerServiceImpl implements FlowCtrlsManagerService {
 
         flowSetting.getCloudSetting().setFlowIdFk(flowId);
         cloudSettingDao.save(flowSetting.getCloudSetting());
-        
+
         if (flowSetting.getStormCluster() != null) {
             flowSetting.getStormCluster().setFlowIdFk(flowId);
             stormClusterDao.save(flowSetting.getStormCluster());
@@ -44,6 +46,8 @@ public class FlowCtrlsManagerServiceImpl implements FlowCtrlsManagerService {
 
         for (Ctrl ctrl : flowSetting.getCtrls()) {
             ctrl.setFlowIdFk(flowId);
+            ctrl.setCreationDate(new Timestamp(new Date().getTime()));
+            ctrl.setLastUpdateDate(new Timestamp(new Date().getTime()));
             if (ctrl.getCtrlName() != null) {
                 ctrlDao.save(ctrl);
             }

@@ -17,6 +17,8 @@ public interface CtrlDao {
     public void save(Ctrl ctrl);
 
     public List<Ctrl> get(int flowId);
+    
+    public List<Ctrl> get(String user);
 
     public void update(Ctrl ctrl);
 

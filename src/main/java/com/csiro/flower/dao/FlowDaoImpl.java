@@ -39,7 +39,7 @@ public class FlowDaoImpl implements FlowDao {
     @Override
     public int save(final Flow flow) {
         final String sqlInsert = "INSERT INTO flow_tbl (flow_name, flow_owner, "
-                + "platforms, date_created) VALUES (?,?,?,?)";
+                + "platforms, creation_date) VALUES (?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(new PreparedStatementCreator() {

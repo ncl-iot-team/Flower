@@ -6,6 +6,7 @@
 package com.csiro.flower.controller;
 
 import com.csiro.flower.dao.CtrlDao;
+import com.csiro.flower.dao.FlowDao;
 import com.csiro.flower.model.CloudSetting;
 import com.csiro.flower.model.Ctrl;
 import com.csiro.flower.model.CtrlMonitoringResultSet;
@@ -57,6 +58,9 @@ public class CtrlManagementController {
     @Autowired
     private CtrlsRunnerService ctrlsRunnerService;
 
+    @Autowired
+    private FlowDao flowDao;
+
     @InitBinder
     public void nullValueHandler(WebDataBinder binder) {
         binder.registerCustomEditor(int.class, new CustomNumberEditor(Integer.class, true) {
@@ -78,31 +82,32 @@ public class CtrlManagementController {
         return new Flow();
     }
 
-    @RequestMapping(value = "/flowCtrlStepForm", method = {RequestMethod.GET})
-    public ModelAndView viewStepFormPage() {
-        ModelAndView modelAndView = new ModelAndView("flowCtrlStepForm");
-        return modelAndView;
-    }
+
 
     // this method submit and launch the ctrl service
-    @RequestMapping(value = "/submitFlowCtrlSettingForm", method = {RequestMethod.POST})
-    public String submitFlowCtrlSetting(
-            @ModelAttribute("flowSetting") FlowDetailSetting flowSetting,
-            @ModelAttribute("flow") Flow flow) {
+    @RequestMapping(value = "/submitFlowCtrlSettingForm/{flowId}", method = {RequestMethod.POST})
+    public String submitFlowCtrlSetting(@PathVariable int flowId,
+            @ModelAttribute("flowSetting") FlowDetailSetting flowSetting){
+//            ,@ModelAttribute("flow") Flow flow) {
 
-        int flowId = flow.getFlowId();
+//        int flowId = flow.getFlowId();
         flowCtrlsManagerService.saveFlowCtrlsSettings(flowId, flowSetting);
         startFlowCtrlService(flowSetting);
-        return "redirect:/ctrls/flowCtrlServicePage";
+        return "redirect:/ctrls/flowCtrlServicePage/" + flowId;
     }
 
     private void startFlowCtrlService(FlowDetailSetting flowSetting) {
         ctrlsRunnerService.startCtrls(flowSetting);
     }
 
-    @RequestMapping(value = "/flowCtrlServicePage", method = RequestMethod.GET)
-    public String launchCtrlServicePage() {
-        return "flowCtrlServicePage";
+    @RequestMapping(value = "/flowCtrlServicePage/{flowId}", method = RequestMethod.GET)
+    public ModelAndView launchCtrlServicePage(@PathVariable int flowId) {
+        ModelAndView model = new ModelAndView();
+        Flow flow = flowDao.get(flowId);
+        flow.setFlowId(flowId);
+        model.addObject(flow);
+        model.setViewName("/flowCtrlServicePage");
+        return model;
     }
 
 //    @RequestMapping(value = "/submitFlowCtrlSettingForm", method = {RequestMethod.POST})

@@ -19,13 +19,18 @@ public class HomeController {
     public String viewHome() {
         return "home";
     }
-    
+
     @RequestMapping("/ElasticityService")
-    public String viewElasticityService(){
+    public String viewElasticityService() {
         // If user has signed in successfully go to 1, else go to sign in page.
         // 1) If user has already created and selected a particular Flow go to 3, else go to 2
         // 2) load flowCreationForm.
         // 3) Show flowCtrlServicePage
+        return "redirect:/flowCreationForm";
+    }
+
+    @RequestMapping("/FlowCreationFom")
+    public String viewFlowCreationPage() {
         return "redirect:/flowCreationForm";
     }
 }

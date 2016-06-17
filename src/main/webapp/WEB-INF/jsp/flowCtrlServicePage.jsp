@@ -157,7 +157,7 @@
                 //Technique 1: Consuming json using ajax and parsing using each function
                 var ctrlStatus;
                 var ctrlMap = {};
-                $.get("getCtrls/" + $flowId, function(ctrls) {
+                $.get("../getCtrls/" + $flowId, function(ctrls) {
                     $.each(ctrls, function(i, ctrl) {
                         ctrlStatus = getCtrlStatus($flowId, ctrl.ctrlName, ctrl.resourceName, ctrl.measurementTarget);
                         ctrlMap[ctrl.ctrlName] = ctrl.ctrlName;
@@ -195,7 +195,7 @@
                     return $.ajax({
                         contentType: 'application/json',
                         type: 'GET',
-                        url: '../ctrls/getCtrlStatus',
+                        url: '../getCtrlStatus',
                         async: false,
                         data: {flowId: flowId, ctrlName: ctrlName, resource: resourceName, measurementTarget: measurementTarget}
                     }).responseText;
@@ -210,14 +210,14 @@
                     if (!$this.hasClass('active')) {
                         $this.text('Start');
                         $.post(
-                                'stopCtrl',
+                                '../stopCtrl',
                                 {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         );
                         $this.closest('tr').find('td:eq(1)').text('Stopped');
                     } else {
                         $this.text('Stop');
                         $.post(
-                                'restartCtrl',
+                                '../restartCtrl',
                                 {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget}
                         );
                         $this.closest('tr').find('td:eq(1)').text('Running');
@@ -287,7 +287,7 @@
                 }
 
                 function drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $measurementTarget, $timeInterval) {
-                    $.get('getCtrlStats',
+                    $.get('../getCtrlStats',
                             {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget, timeStamp: (new Date()).getTime() - $timeInterval},
                     function(ctrlStatRecords) {
                         if (!ctrlStatRecords.length) {
@@ -485,7 +485,7 @@
         </div>
 
         <div id="settingForm">
-            <form id="CtrlInternalSettingsForm" action="updateCtrlSettings" method="post">
+            <form id="CtrlInternalSettingsForm" action="../updateCtrlSettings" method="post">
 
             </form>
         </div>

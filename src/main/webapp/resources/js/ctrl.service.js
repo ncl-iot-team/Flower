@@ -6,7 +6,7 @@
 
 function createCtrlSettingForm($flowId, $ctrlName, $resource, $measurementTarget) {
 //    var dialogId = '#' + $ctrlName + '-' + $resource + '-' + $measurementTarget + '-form';
-    $.get('getCtrl',
+    $.get('../getCtrl',
             {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget},
     function(ctrl) {
         $('#CtrlInternalSettingsForm').html('<div class="form-style-2"> \n\

@@ -26,7 +26,7 @@ public class CtrlDaoImpl implements CtrlDao {
     public void save(Ctrl ctrl) {
         String sqlInsert = "INSERT INTO ctrl_service_tbl (flow_id_fk, resource_name, "
                 + "ctrl_name, measurement_target, ref_value, monitoring_period, backoff_no,"
-                + "upper_k0, up_init_k0, low_init_k0, lower_k0, k_init, gamma) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                + "upper_k0, up_init_k0, low_init_k0, lower_k0, k_init, gamma, creation_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Object[] params = new Object[]{
             ctrl.getFlowIdFk(),
             ctrl.getResourceName(),
@@ -40,7 +40,8 @@ public class CtrlDaoImpl implements CtrlDao {
             ctrl.getLowInitK0(),
             ctrl.getLowerK0(),
             ctrl.getK_init(),
-            ctrl.getGamma()
+            ctrl.getGamma(),
+            ctrl.getCreationDate()
         };
         jdbcTemplate.update(sqlInsert, params);
     }
@@ -54,6 +55,7 @@ public class CtrlDaoImpl implements CtrlDao {
 
     @Override
     public void update(Ctrl ctrl) {
+        // Update date feild needs also to be added....
         String sqlUpdate = "UPDATE ctrl_service_tbl SET ref_value = ?, monitoring_period = ?, backoff_no = ?,"
                 + "upper_k0 = ?, up_init_k0 = ?, low_init_k0 = ?, lower_k0 = ?, k_init = ?, gamma = ? "
                 + "WHERE flow_id_fk = ? AND resource_name = ? AND ctrl_name = ? AND measurement_target = ?";
@@ -91,6 +93,12 @@ public class CtrlDaoImpl implements CtrlDao {
         Ctrl ctrl = (Ctrl) jdbcTemplate.queryForObject(sqlSelect,
                 new Object[]{flowId, ctrlName, resource, measurementTarget}, new BeanPropertyRowMapper(Ctrl.class));
         return ctrl;
+    }
+
+    @Override
+    public List<Ctrl> get(String user) {
+//        String sqlSelect = "SELECT ";
+        return null;
     }
 
 }

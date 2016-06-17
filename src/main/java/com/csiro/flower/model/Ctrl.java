@@ -5,6 +5,8 @@
  */
 package com.csiro.flower.model;
 
+import java.sql.Timestamp;
+
 /**
  *
  * @author kho01f
@@ -25,6 +27,24 @@ public class Ctrl {
     private double lowerK0;
     private double k_init;
     private double gamma;
+    private Timestamp creationDate;
+    private Timestamp lastUpdateDate;
+
+    public Timestamp getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(Timestamp lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
 
     public String getMeasurementTarget() {
         return measurementTarget;

@@ -38,16 +38,26 @@ public class FlowLoaderController {
     }
 
     @RequestMapping(value = "/submitFlowSettingForm", method = {RequestMethod.POST})
-    public ModelAndView submitFlowSetting(@ModelAttribute("flow") Flow flow,
-            RedirectAttributes redirectAttributes) {
+    public ModelAndView submitFlowSetting(@ModelAttribute("flow") Flow flow) {
+//            ,RedirectAttributes redirectAttributes) {
 
         flow.setCreationDate(new Timestamp(new Date().getTime()));
         int flowId = this.flowDao.save(flow);
         flow.setFlowId(flowId);
 
         ModelAndView model = new ModelAndView();
-        redirectAttributes.addFlashAttribute(flow);
-        model.setViewName("redirect:/ctrls/flowCtrlStepForm");
+//        redirectAttributes.addFlashAttribute(flow);
+        model.setViewName("redirect:/redirectToStepForm/" + flowId);
+        return model;
+    }
+
+    @RequestMapping(value = "/redirectToStepForm/{flowId}", method = {RequestMethod.GET})
+    public ModelAndView viewStepFormPage(@PathVariable int flowId) {
+        Flow flow = flowDao.get(flowId);
+        flow.setFlowId(flowId);
+        ModelAndView model = new ModelAndView();
+        model.addObject(flow);
+        model.setViewName("/flowCtrlStepForm");
         return model;
     }
 
