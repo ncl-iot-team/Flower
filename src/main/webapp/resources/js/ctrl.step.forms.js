@@ -16,15 +16,43 @@ function createDynamoCtrlForm(divLoc) {
          </tbody></table>');
 }
 
+//function createDynamoMntrForm(divLoc) {
+//    var divContainer = $(divLoc);
+//    divContainer.html('<div class="form-style-2"> \n\
+//        <div class="form-style-2-heading">DynamoDB monitoring service setting</div> \n\
+//        Hooray! No settings required!');
+//}
+//function createKinesisMntrForm(divLoc) {
+//    var divContainer = $(divLoc);
+//    divContainer.html('<div class="form-style-2"> \n\
+//        <div class="form-style-2-heading">DynamoDB monitoring service setting</div> \n\
+//        Hooray! No settings required!');
+//}
+//
+//function createStormMntrForm(divLoc) {
+//    var divContainer = $(divLoc);
+//    divContainer.html('<div class="form-style-2"> \n\
+//     <div class="form-style-2-heading">Storm cluster settings</div> \n\
+//        <label><span>UI Host IP <span class="required">*</span></span>\n\
+//        <input type="text" class="input-field" name="stormCluster.uiIp"/>\n\
+//        </label><label for="field7"><span>Ui Port<span class="required">*</span></span>\n\
+//        <input type="text" class="input-field" name="stormCluster.uiPort" value=""/> </label>\n\
+//        </div>');
+//}
+
 function createStormCtrlForm(divLoc) {
     var divContainer = $(divLoc);
     globalIndexMap++;
     divContainer.html('<div class="form-style-2"> \n\
      <div class="form-style-2-heading">Storm cluster settings</div> \n\
-        <label for="field0"><span>Nimbus IP <span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="stormCluster.nimbusIp"/>\n\
-        </label><label for="field7"><span>Supervisor Prefix<span class="required">*</span></span>\n\
-        <input type="text" class="input-field" name="stormCluster.supervisorPrefix" value=""/> </label>\n\
+        <label><span>Nimbus IP <span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.nimbusIp" style="width:150px"/>\n\
+        </label><label><span>UI Host IP <span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.uiIp" style="width:150px"/>\n\
+       </label><label><span>UI Port<span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.uiPort" style="width:50px" value=""/> </label>\n\
+        <label for="field7"><span>Supervisor Prefix<span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.supervisorPrefix" style="width:150px" value=""/> </label>\n\
         <div class="form-style-2-heading">Storm cntroller settings</div> \n\
         <label for="field1">\n\
         <span>Measurement Target <span class="required">*</span></span></label>\n\
@@ -36,7 +64,7 @@ function createStormCtrlForm(divLoc) {
         <span>Target Topology <span class="required">*</span></span>\n\
         <input type="text" id="topology" class="select-field" name="ctrls[' + globalIndexMap + '].resourceName" \>\n\
         </label>\n\
-        <label for="field4"><span>Reference Value <span class="required">*</span></span>\n\
+        <label><span>Reference Value <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].refValue" style="width:50px"/>\n\
         </label><label for="field5"><span>Monitoring Period</span>\n\
         <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].monitoringPeriod" value="" style="width:50px"/>\n\

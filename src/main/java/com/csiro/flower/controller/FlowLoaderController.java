@@ -42,22 +42,33 @@ public class FlowLoaderController {
 //            ,RedirectAttributes redirectAttributes) {
 
         flow.setCreationDate(new Timestamp(new Date().getTime()));
-        int flowId = this.flowDao.save(flow);
+        int flowId = flowDao.save(flow);
         flow.setFlowId(flowId);
 
         ModelAndView model = new ModelAndView();
 //        redirectAttributes.addFlashAttribute(flow);
-        model.setViewName("redirect:/redirectToStepForm/" + flowId);
+//        model.setViewName("redirect:/redirectToStepForm/" + flowId);
+        model.setViewName("redirect:/flowList");
         return model;
     }
 
-    @RequestMapping(value = "/redirectToStepForm/{flowId}", method = {RequestMethod.GET})
-    public ModelAndView viewStepFormPage(@PathVariable int flowId) {
+    @RequestMapping(value = "/redirectToCtrlStepForm/{flowId}", method = {RequestMethod.GET})
+    public ModelAndView viewCtrlStepFormPage(@PathVariable int flowId) {
         Flow flow = flowDao.get(flowId);
         flow.setFlowId(flowId);
         ModelAndView model = new ModelAndView();
         model.addObject(flow);
         model.setViewName("/flowCtrlStepForm");
+        return model;
+    }
+
+    @RequestMapping(value = "/redirectToMntrStepForm/{flowId}", method = {RequestMethod.GET})
+    public ModelAndView viewMntrStepFormPage(@PathVariable int flowId) {
+        Flow flow = flowDao.get(flowId);
+        flow.setFlowId(flowId);
+        ModelAndView model = new ModelAndView();
+        model.addObject(flow);
+        model.setViewName("/flowMntrStepForm");
         return model;
     }
 

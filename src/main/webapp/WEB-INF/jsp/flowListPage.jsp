@@ -104,9 +104,9 @@
                 $("#tabs").tabs();
                 var user = "ali";
                 loadFlowDashboard();
-                $('#flowDashboard').on('click', function() {
-                    loadFlowDashboard();
-                });
+//                $('#flowDashboard').on('click', function() {
+//                    loadFlowDashboard();
+//                });
 
 //                $('#elelasticityServiceDashboard').on('click', function() {
 //                    loadElasticityDashboard();
@@ -150,11 +150,14 @@
                 $('a').on('click', function() {
                     var action = $(this).text();
                     var flowId = $('input[type=radio][name=flowDashboardRadio]:checked').val();
-                    if (action === 'Elasticity') {
+                    if (action === 'Monitor Elasticity') {
                         window.open('/Flower/ctrls/flowCtrlServicePage/' + flowId);
                     }
-                    if (action === 'Elasticity Service') {
-                        window.open('/Flower/redirectToStepForm/' + flowId);
+                    if (action === 'Elasticity') {
+                        window.open('/Flower/redirectToCtrlStepForm/' + flowId);
+                    }
+                    if (action === 'Monitoring') {
+                        window.open('/Flower/redirectToMntrStepForm/' + flowId);
                     }
                 });
 
@@ -174,12 +177,12 @@
                     $('#primary_nav_wrap').append('<ul>\n\
                                 <li class="current-menu-item"><a href="/Flower/FlowCreationFom">Launch Flow</a></li>\n\
                                 <li class="current-menu-item"><a href="#">Monitor Service</a>\n\
-                                    <ul><li><a href="#">Elasticity</a></li>\n\
+                                    <ul><li><a href="#">Monitor Elasticity</a></li>\n\
                                         <li><a href="#">Monitoring</a></li>\n\
                                         <li><a href="#">Recommender</a></li>\n\
                                     </ul></li>\n\
                                 <li class="current-menu-item"><a href="#">Launch Service</a>\n\
-                                    <ul><li><a href="#">Elasticity Service</a></li>\n\
+                                    <ul><li><a href="#">Elasticity</a></li>\n\
                                         <li><a href="#">Monitoring</a></li>\n\
                                         <li><a href="#">Recommender</a></li>\n\
                                     </ul></li></ul>');

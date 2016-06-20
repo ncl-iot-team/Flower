@@ -15,6 +15,24 @@ public class StormCluster {
 //    private String zookeeperEndpoint;
     private int flowIdFk;
     private String supervisorPrefix;
+    private String uiIp;
+    private String uiPort;
+
+    public String getUiIp() {
+        return uiIp;
+    }
+
+    public void setUiIp(String uiIp) {
+        this.uiIp = uiIp;
+    }
+
+    public String getUiPort() {
+        return uiPort;
+    }
+
+    public void setUiPort(String uiPort) {
+        this.uiPort = uiPort;
+    }
 
     public int getFlowIdFk() {
         return flowIdFk;

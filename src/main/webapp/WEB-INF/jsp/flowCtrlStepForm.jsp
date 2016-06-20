@@ -100,19 +100,20 @@
                         "cloudSetting.secretKey": "required",
                         "cloudSetting.cloudProvider": "required",
                         "cloudSetting.region": "required",
-                        "ctrl.measurementTarget": "required",
-                        "ctrl.refValue": "required",
-                        "stormCtrl.targetTopology": "required",
                         "stormCluster.nimbusIp": "required",
-                        "stormCluster.supervisorPrefix": "required"
+                        "stormCluster.supervisorPrefix": "required",
+                        "stormCluster.uiIp": "required",
+                        "stormCluster.uiPort": "required"
                     }});
+
                 function addValidationRule() {
-                    $('select[name*=measurementTarget],input[name*=refValue]').each(function() {
+                    $('select[name*=measurementTarget],input[name*=refValue],input[name*=resourceName]').each(function() {
                         $(this).rules('add', {
                             required: true
                         });
                     });
                 }
+                addValidationRule();
 
                 function populateCloudSettingObj() {
                     var cloudSetting = {};
@@ -135,7 +136,7 @@
                         type: 'POST',
                         contentType: 'application/json',
                         dataType: 'json',
-                        url: "loadKinesisStreams",
+                        url: "../ctrls/loadKinesisStreams",
                         data: JSON.stringify(populateCloudSettingObj()),
                         success: function(data) {
                             if (!data.length) {
@@ -176,7 +177,7 @@
                         type: 'POST',
                         contentType: 'application/json',
                         dataType: 'json',
-                        url: "loadDynamoTables",
+                        url: "../ctrls/loadDynamoTables",
                         data: JSON.stringify(populateCloudSettingObj()),
                         success: function(data) {
 //                            debugger;

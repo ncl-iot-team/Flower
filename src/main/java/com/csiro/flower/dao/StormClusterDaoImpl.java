@@ -26,10 +26,12 @@ public class StormClusterDaoImpl implements StormClusterDao {
     @Override
     public void save(StormCluster stormCluster) {
         String sqlInsert = "INSERT INTO storm_cluster_tbl (flow_id_fk, nimbus_ip, "
-                + "supervisor_prefix) VALUES (?,?,?)";
+                + "supervisor_prefix, ui_ip, ui_port) VALUES (?,?,?,?,?)";
         Object[] params = new Object[]{stormCluster.getFlowIdFk(),
             stormCluster.getNimbusIp(),
-            stormCluster.getSupervisorPrefix()
+            stormCluster.getSupervisorPrefix(),
+            stormCluster.getUiIp(),
+            stormCluster.getUiPort()
         };
         jdbcTemplate.update(sqlInsert, params);
     }
@@ -49,6 +51,8 @@ public class StormClusterDaoImpl implements StormClusterDao {
                 stormCluster.setNimbusIp(result.getString("nimbus_ip"));
                 stormCluster.setSupervisorPrefix(result.getString("supervisor_prefix"));
                 stormCluster.setFlowIdFk(result.getInt("flow_id_fk"));
+                stormCluster.setUiIp(result.getString("ui_ip"));
+                stormCluster.setUiPort(result.getString("ui_port"));
                 return stormCluster;
             }
         });
