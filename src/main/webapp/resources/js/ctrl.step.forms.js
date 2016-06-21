@@ -16,29 +16,29 @@ function createDynamoCtrlForm(divLoc) {
          </tbody></table>');
 }
 
-//function createDynamoMntrForm(divLoc) {
-//    var divContainer = $(divLoc);
-//    divContainer.html('<div class="form-style-2"> \n\
-//        <div class="form-style-2-heading">DynamoDB monitoring service setting</div> \n\
-//        Hooray! No settings required!');
-//}
-//function createKinesisMntrForm(divLoc) {
-//    var divContainer = $(divLoc);
-//    divContainer.html('<div class="form-style-2"> \n\
-//        <div class="form-style-2-heading">DynamoDB monitoring service setting</div> \n\
-//        Hooray! No settings required!');
-//}
-//
-//function createStormMntrForm(divLoc) {
-//    var divContainer = $(divLoc);
-//    divContainer.html('<div class="form-style-2"> \n\
-//     <div class="form-style-2-heading">Storm cluster settings</div> \n\
-//        <label><span>UI Host IP <span class="required">*</span></span>\n\
-//        <input type="text" class="input-field" name="stormCluster.uiIp"/>\n\
-//        </label><label for="field7"><span>Ui Port<span class="required">*</span></span>\n\
-//        <input type="text" class="input-field" name="stormCluster.uiPort" value=""/> </label>\n\
-//        </div>');
-//}
+function createDynamoMntrForm(divLoc) {
+    var divContainer = $(divLoc);
+    divContainer.html('<div class="form-style-2"> \n\
+        <div class="form-style-2-heading">DynamoDB monitoring service setting</div> \n\
+        Hooray! No settings required!');
+}
+function createKinesisMntrForm(divLoc) {
+    var divContainer = $(divLoc);
+    divContainer.html('<div class="form-style-2"> \n\
+        <div class="form-style-2-heading">DynamoDB monitoring service setting</div> \n\
+        Hooray! No settings required.');
+}
+
+function createStormMntrForm(divLoc) {
+    var divContainer = $(divLoc);
+    divContainer.html('<div class="form-style-2"> \n\
+     <div class="form-style-2-heading">Storm cluster settings</div> \n\
+        <label><span>UI Host IP <span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.uiIp"/>\n\
+        </label><label for="field7"><span>Ui Port <span class="required">*</span></span>\n\
+        <input type="text" class="input-field" name="stormCluster.uiPort" value=""/> </label>\n\
+        </div>');
+}
 
 function createStormCtrlForm(divLoc) {
     var divContainer = $(divLoc);
@@ -109,7 +109,7 @@ function createCloudSettingForm(divLoc) {
         <select id="-subcats" class="select-field" name="cloudSetting.region"> </select></label>\n\
         <label for="field4"><span>Access Key <span class="required">*</span></span>\n\
         <input id="accessKey" type="text" class="input-field" name="cloudSetting.accessKey" value="AKIAJJOK3DKPUOG7UZUQ"/>\n\
-        </label><label for="field5"><span>Secret Key<span class="required">*</span></span>\n\
+        </label><label for="field5"><span>Secret Key <span class="required">*</span></span>\n\
         <input id="secretKey" type="password" class="input-field" name="cloudSetting.secretKey" value="6mu7vz5jp2lmEewgNna2eYFgZAHgHGr+3VOG48MY"/>\n\
         </label><label></label></div>');
 

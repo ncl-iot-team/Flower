@@ -7,12 +7,15 @@ package com.csiro.flower.service;
 
 import com.csiro.flower.model.FlowDetailSetting;
 
-
 /**
  *
  * @author kho01f
  */
-public interface FlowCtrlsManagerService {
+public interface FlowManagerService {
 
     public void saveFlowCtrlsSettings(int flowId, FlowDetailSetting flowSetting);
+
+    public void saveFlowMntrSettings(int flowId, FlowDetailSetting flowSetting);
+
+    public boolean isFlowConfiged (int flowId);
 }

@@ -9,6 +9,7 @@ import com.csiro.flower.model.CloudSetting;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -19,24 +20,23 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class CloudSettingDaoImpl implements CloudSettingDao {
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
 //    public void setDatasource(JdbcTemplate jdbcTemplate) {
 //        this.jdbcTemplate = jdbcTemplate;
 //    }
-
     @Override
     public void save(CloudSetting cloudSetting) {
         String sqlInsert = "INSERT INTO cloud_setting_tbl (flow_id_fk, cloud_provider, "
                 + "region, accesskey, secretkey) VALUES (?,?,?,?,?)";
-        Object[] params = new Object[]{ cloudSetting.getFlowIdFk(),
+        Object[] params = new Object[]{cloudSetting.getFlowIdFk(),
             cloudSetting.getCloudProvider(),
             cloudSetting.getRegion(),
             cloudSetting.getAccessKey(),
             cloudSetting.getSecretKey()};
-        
+
         jdbcTemplate.update(sqlInsert, params);
     }
 
@@ -48,19 +48,22 @@ public class CloudSettingDaoImpl implements CloudSettingDao {
     @Override
     public CloudSetting get(int flowId) {
         String sqlSelect = "SELECT * FROM cloud_setting_tbl WHERE flow_id_fk=" + flowId;
-        return jdbcTemplate.queryForObject(sqlSelect, new RowMapper<CloudSetting>(){
-            @Override
-            public CloudSetting mapRow(ResultSet result, int rowNum) throws SQLException{
-                CloudSetting cloudSetting = new CloudSetting();
-                cloudSetting.setAccessKey(result.getString("accesskey"));
-                cloudSetting.setSecretKey(result.getString("secretkey"));
-                cloudSetting.setCloudProvider(result.getString("cloud_provider"));
-                cloudSetting.setRegion(result.getString("region"));
-                cloudSetting.setFlowIdFk(result.getInt("flow_id_fk"));
-                return cloudSetting;
-                
-            }
-        });
+        try {
+            return jdbcTemplate.queryForObject(sqlSelect, new RowMapper<CloudSetting>() {
+                @Override
+                public CloudSetting mapRow(ResultSet result, int rowNum) throws SQLException {
+                    CloudSetting cloudSetting = new CloudSetting();
+                    cloudSetting.setAccessKey(result.getString("accesskey"));
+                    cloudSetting.setSecretKey(result.getString("secretkey"));
+                    cloudSetting.setCloudProvider(result.getString("cloud_provider"));
+                    cloudSetting.setRegion(result.getString("region"));
+                    cloudSetting.setFlowIdFk(result.getInt("flow_id_fk"));
+                    return cloudSetting;
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

@@ -14,7 +14,7 @@ import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
 import com.csiro.flower.service.CtrlsRunnerService;
 import com.csiro.flower.service.DynamoMgmtService;
-import com.csiro.flower.service.FlowCtrlsManagerService;
+import com.csiro.flower.service.FlowManagerService;
 import com.csiro.flower.service.KinesisMgmtService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class CtrlManagementController {
 
     @Autowired
-    private FlowCtrlsManagerService flowCtrlsManagerService;
+    private FlowManagerService flowCtrlsManagerService;
 
     @Autowired
     private KinesisMgmtService kinesisMgmtService;
@@ -81,8 +81,6 @@ public class CtrlManagementController {
     public Flow flow() {
         return new Flow();
     }
-
-
 
     // this method submit and launch the ctrl service
     @RequestMapping(value = "/submitFlowCtrlSettingForm/{flowId}", method = {RequestMethod.POST})

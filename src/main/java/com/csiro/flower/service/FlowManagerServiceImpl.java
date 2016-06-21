@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author kho01f
  */
 @Service
-public class FlowCtrlsManagerServiceImpl implements FlowCtrlsManagerService {
+public class FlowManagerServiceImpl implements FlowManagerService {
 
     @Autowired
     CloudSettingDao cloudSettingDao;
@@ -52,7 +52,25 @@ public class FlowCtrlsManagerServiceImpl implements FlowCtrlsManagerService {
                 ctrlDao.save(ctrl);
             }
         }
-
     }
+
+    @Override
+    @Transactional
+    public void saveFlowMntrSettings(int flowId, FlowDetailSetting flowSetting) {
+        
+        flowSetting.getCloudSetting().setFlowIdFk(flowId);
+        cloudSettingDao.save(flowSetting.getCloudSetting());
+        if (flowSetting.getStormCluster() != null) {
+            flowSetting.getStormCluster().setFlowIdFk(flowId);
+            stormClusterDao.save(flowSetting.getStormCluster());
+        }
+    }
+
+    @Override
+    public boolean isFlowConfiged(int flowId) {
+        return (cloudSettingDao.get(flowId) != null);
+    }
+    
+    
 
 }
