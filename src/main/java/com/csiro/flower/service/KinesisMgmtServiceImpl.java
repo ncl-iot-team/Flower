@@ -189,4 +189,9 @@ public class KinesisMgmtServiceImpl implements KinesisMgmtService {
         return shards;
     }
 
+    @Override
+    public Map<String, Integer> getStreamShardMap() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

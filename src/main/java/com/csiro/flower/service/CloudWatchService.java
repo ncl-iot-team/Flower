@@ -18,5 +18,7 @@ public interface CloudWatchService {
 
     public GetMetricStatisticsResult getCriticalResourceStats(String resource, 
             String resourceId, String metric, long startTime);
+    
+    public double getSingleStat(String resource, String resourceId, String metric, long startTime);
 
 }

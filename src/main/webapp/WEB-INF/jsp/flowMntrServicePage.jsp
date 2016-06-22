@@ -69,7 +69,7 @@
                 border: none; 
             } 
             .tabs-min .ui-tabs-nav .ui-state-active { 
-                background: transparent url(img/uiTabsArrow.png) no-repeat bottom center; 
+                background: transparent no-repeat bottom center; 
                 border: none; 
             } 
             .tabs-min .ui-tabs-nav .ui-state-default a { 
@@ -104,7 +104,7 @@
                 float: left;
             }
             .form-style-small-box{
-                width: 300px;
+                width: 350px;
                 padding: 20px 12px 10px 20px;
                 font: 13px Arial, Helvetica, sans-serif;
                 position: relative;
@@ -237,34 +237,29 @@
                                     <div class="form-style-3-heading">Stream List</div>\n\
                                      <table id="kinesisTbl"> \n\
                                      <thead>\n\
-                                     <tr><th>Resource Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Actions</th>\n\
+                                     <tr><th>Stream Name</th>\n\
+                                     <th>Status</th><th>Open Shards</th><th>Closed Shards</th><th>Actions</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
-                                     </div><div class="form-style-small-box">\n\
+                                     </div><div id="IncomingRecords" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Total Incoming Records</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Write Throughput</div>\n\
-                                     </div><div class="form-style-small-box">\n\
+                                     </div><div id="GetRecords.Bytes" class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">Read Throughput</div>\n\
+                                     </div><div id="IncomingBytes" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Write Throughput</div></div>');
 
                 $(".tabs-min").tabs();
 
 
-                $.get("../getCtrls/" + $flowId, function(ctrls) {
-                    $.each(ctrls, function(i, ctrl) {
-                        ctrlStatus = getCtrlStatus($flowId, ctrl.ctrlName, ctrl.resourceName, ctrl.measurementTarget);
-                        ctrlMap[ctrl.ctrlName] = ctrl.ctrlName;
-                        $('#' + ctrl.ctrlName + 'Tbl tr:last')
-                                .after('<tr><td>' + ctrl.resourceName + '</td>\n\
-                                                    <td>' + ctrlStatus + '</td>\n\
-                                                    <td>' + ctrl.measurementTarget + '</td>\n\
-                                                    <td>' + ctrl.refValue + '</td> \n\
-                                                    <td>' + ctrl.monitoringPeriod + '</td>\n\
-                                                    <td>' + ctrl.backoffNo + '</td>\n\
-                                                    <td><div class="play ' + getCtrlBtnCls(ctrlStatus) + '" style="text-shadow:none">' + getCtrlBtnName(ctrlStatus) + '</div>\n\
-                                                    <div class="setting" style="text-shadow:none">Settings</div></td>\n\
-                                                    <td><input type="radio" name="' + ctrl.ctrlName + '" value="' + ctrl.resourceName + '"></td></tr>');
+                $.get("../loadKinesisStreams/" + $flowId, function(strs) {
+                    $.each(strs, function(i, str) {
+                        $('#kinesisTbl tr:last')
+                                .after('<tr><td>' + str + '</td>\n\
+                                                    <td>ACTIVE</td>\n\
+                                                    <td>1</td><td>0</td>\n\
+                                                    <td><img class="refresh" /> </td>\n\
+                                                    <td><input type="radio" name="AmazonKinesis" value="' + str + '">\n\
+                                                    <input type="radio" name="AmazonKinesis" style="display:none""></td>\n\
+                                                    </tr>');
                     });
 
                 });
@@ -283,48 +278,54 @@
                     });
                 }
 
+                var kinesisMetricMap = {};
+                kinesisMetricMap["IncomingRecords"] = 'IncomingRecords';
+                kinesisMetricMap["WriteThroughput"] = 'IncomingBytes';
+                kinesisMetricMap["ReadThroughput"] = 'GetRecordsBytes';
+
+
                 setupDeselectEvent(true);
                 var resourceMap = {};
                 resourceMap["DynamoDB"] = 'WriteCapacityUnits';
                 resourceMap["AmazonKinesis"] = 'No. of Shards';
                 resourceMap["ApacheStorm"] = 'No. of VMs';
                 $(document).on('deselect', 'input:radio', function() {
-                    var $resource = $(this).val();
+                    var $this = $(this);
+                    var $resource = $this.val();
                     clearTimeout(timeoutMap[$resource]);
                     delete timeoutMap[$resource];
                     $('#' + $resource + 'LineChart').remove();
                     $('#' + $resource + 'BarChart').parent('.wrapper').remove();
                 }).on('change', 'input:radio', function() {
                     var $this = $(this);
-                    var $ctrlName = $this.attr('name');
                     var $resource = $this.val();
-                    var lineChartDiv = '#' + $resource + 'LineChart';
-                    var barChartDiv = '#' + $resource + 'BarChart';
-                    var $timeInterval = parseInt($(this).closest('tr').find('td:eq(4)').text()) * 60000;
-                    var $measurementTarget = $(this).closest('tr').find('td:eq(2)').text();
-                    $this.parents('div[class="form-style-ctrl-stat"]')
-                            .siblings('div[class="form-style-ctrl-diag"]').append(
-                            '<div id="' + $resource + 'LineChart" class="epoch category3" style="width: 670px; height: 200px">\n\
-                             <div style="z-index: 1"><ul class="legend"><li><span class="used"></span>' + $measurementTarget + '</li>\n\
-                            <li><span class="allocated"></span>Allocated Resource</li></ul></div></div>');
-                    var lineChart = setupLineChart(lineChartDiv);
-                    $this.parents('div[class="form-style-ctrl-stat"]')
-                            .siblings('div[class="form-style-resource-share"]').append(
-                            '<div class="wrapper"><div id="' + $resource + 'BarChart" class="epoch category3" style="width: 350px; height: 200px"></div>\n\
-                            <ul class="legend">\n\
-                            <li><span class="usedshare"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
-                            <li><span class="pending"></span>Pending Resizing</li>\n\
-                            <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
-                            </ul></div>');
-                    var barChart = setupBarChart(barChartDiv);
-                    drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $measurementTarget, $timeInterval);
+                    var $platform = $this.attr('name');
+                    for (var key in kinesisMetricMap) {
+                        var lineChartDiv = '#' + kinesisMetricMap[key] + '-' + $resource + '-LineChart';
+//                        var barChartDiv = '#' + kinesisMetricMap[key] + '-' + $resource + 'BarChart';
+                        var $timeInterval = 1 * 60000;
+                        $('#'+kinesisMetricMap[key])
+                                .append('<div id="' + kinesisMetricMap[key] + '-' + $resource + '-LineChart" class="epoch category3" style="width: 350px; height: 200px">\n\
+                             <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
+                            </span>' + kinesisMetricMap[key] + '</li></ul></div></div>');
+                        var lineChart = setupLineChart(lineChartDiv);
+//                        $this.parents('div[class="form-style-ctrl-stat"]')
+//                                .siblings('div[class="form-style-resource-share"]').append(
+//                                '<div class="wrapper"><div id="' + $platform + '-' + $resource + 'BarChart" class="epoch category3" style="width: 350px; height: 200px"></div>\n\
+//                            <ul class="legend">\n\
+//                            <li><span class="usedshare"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
+//                            <li><span class="pending"></span>Pending Resizing</li>\n\
+//                            <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
+//                            </ul></div>');
+//                        var barChart = setupBarChart(barChartDiv);
+                        drawer(lineChart, $platform, $resource, $flowId, kinesisMetricMap[key], $timeInterval);
+                    }
                 });
 
                 function setupLineChart(chartDiv) {
                     var graph = $(chartDiv).epoch({
                         type: 'time.line',
-                        data: [{label: "used", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]},
-                            {label: "allocated", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
+                        data: [{label: "metric", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
                         axes: ['bottom', 'left', 'right']
                     });
                     return graph;
@@ -333,26 +334,25 @@
                 function getTimeStampSec(timeStampMill) {
                     return parseInt(timeStampMill / 1000);
                 }
-
-                function drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $measurementTarget, $timeInterval) {
-                    $.get('../getCtrlStats',
-                            {ctrlName: $ctrlName, resource: $resource, flowId: $flowId, measurementTarget: $measurementTarget, timeStamp: (new Date()).getTime() - $timeInterval},
-                    function(ctrlStatRecords) {
-                        if (!ctrlStatRecords.length) {
-                            console.log(ctrlStatRecords.length);
+                
+                function drawer(lineChart, $platform, $resource, $flowId, $metric, $timeInterval) {
+                    $.get('../getCloudWatchStats',
+                            {platform: $platform, resource: $resource, flowId: $flowId, metric: $metric, timeStamp:1000 * 60 * 2},
+                    function(data) {
+                        if (!data) {
+                            console.log(data);
                         } else {
-                            $.each(ctrlStatRecords, function(i, ctrlStatRecord) {
-                                lineChart.push([
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.measurementTargetValue},
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
-                                barChart.push([
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: Math.random() * 100},
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.nextCtrlDecisionValue},
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
-                            });
+//                            $.each(statRecords, function(i, statRecord) {
+                                lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: data}]);
+//                                    {time: getTimeStampSec(statRecord.timeStamp), y: statRecord.allocatedResource}]);
+//                                barChart.push([
+//                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: Math.random() * 100},
+//                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.nextCtrlDecisionValue},
+//                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
+//                            });
                         }
                         timeoutMap[$resource] = setTimeout(function() {
-                            drawer(lineChart, barChart, $ctrlName, $resource, $flowId, $measurementTarget, $timeInterval);
+                            drawer(lineChart, $platform, $resource, $flowId, $metric, $timeInterval);
                         }, $timeInterval);
                     });
                 }

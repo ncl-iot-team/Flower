@@ -7,6 +7,7 @@ package com.csiro.flower.service;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
+import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
@@ -45,7 +46,6 @@ public class CloudWatchServiceImpl implements CloudWatchService {
             case "AmazonKinesis":
                 result = getResult(NameSpaces.KINESIS_NAMESPACE, Dimensions.STREAM_NAME_KEY, resourceId, metric, startTime);
                 break;
-//            case "EC2":
             case "ApacheStorm":
                 result = getResult(NameSpaces.EC2_NAMESPACE, Dimensions.INSTANCE_ID, resourceId, metric, startTime);
                 break;
@@ -70,5 +70,19 @@ public class CloudWatchServiceImpl implements CloudWatchService {
                 .withStatistics(Stats.AVERAGE, Stats.MAX, Stats.MIN, Stats.SUM)
                 .withEndTime(endTime);
         return client.getMetricStatistics(req);
+    }
+
+    @Override
+    public double getSingleStat(String resource, String resourceId, String metric, long startTime) {
+        GetMetricStatisticsResult result = getCriticalResourceStats(resource, resourceId, metric, startTime);
+        double val = 0;
+        if (!result.getDatapoints().isEmpty()) {
+            for (Datapoint dataPoint : result.getDatapoints()) {
+                val += dataPoint.getSum();
+            }
+            return (val / oneMin);
+        } else {
+            return 0;
+        }
     }
 }
