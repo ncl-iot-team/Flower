@@ -86,6 +86,18 @@ public class MntrManagementController {
         return kinesisMgmtService.getStreamList();
     }
 
+    @RequestMapping(value = "/loadDynamoDBTbls/{flowId}")
+    @ResponseBody
+    public List<String> getTableList(@PathVariable int flowId) {
+        CloudSetting cloudSetting = cloudSettingDao.get(flowId);
+        dynamoMgmtService.initService(
+                cloudSetting.getCloudProvider(),
+                cloudSetting.getAccessKey(),
+                cloudSetting.getSecretKey(),
+                cloudSetting.getRegion());
+        return dynamoMgmtService.getTableList();
+    }
+
     @RequestMapping(value = "/getCloudWatchStats")
     public @ResponseBody
     double getCtrlMonitoringStats(
@@ -102,6 +114,7 @@ public class MntrManagementController {
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
 
+        metric = metric.compareTo("GetRecordsBytes") == 0 ? "GetRecords.Bytes" : metric;
         return cloudWatchService.getSingleStat(platform, resource, metric, timeStamp) + Math.random() * 100;
     }
 }

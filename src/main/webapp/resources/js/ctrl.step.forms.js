@@ -35,7 +35,7 @@ function createStormMntrForm(divLoc) {
      <div class="form-style-2-heading">Storm cluster settings</div> \n\
         <label><span>UI Host IP <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="stormCluster.uiIp"/>\n\
-        </label><label for="field7"><span>Ui Port <span class="required">*</span></span>\n\
+        </label><label><span>Ui Port <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="stormCluster.uiPort" value=""/> </label>\n\
         </div>');
 }
@@ -51,24 +51,24 @@ function createStormCtrlForm(divLoc) {
         <input type="text" class="input-field" name="stormCluster.uiIp" style="width:150px"/>\n\
        </label><label><span>UI Port<span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="stormCluster.uiPort" style="width:50px" value=""/> </label>\n\
-        <label for="field7"><span>Supervisor Prefix<span class="required">*</span></span>\n\
+        <label><span>Supervisor Prefix<span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="stormCluster.supervisorPrefix" style="width:150px" value=""/> </label>\n\
         <div class="form-style-2-heading">Storm cntroller settings</div> \n\
-        <label for="field1">\n\
+        <label>\n\
         <span>Measurement Target <span class="required">*</span></span></label>\n\
-        <label for="field2"><select id="stormCat" name="ctrls[' + globalIndexMap + '].measurementTarget" class="select-field">\n\
+        <label><select id="stormCat" name="ctrls[' + globalIndexMap + '].measurementTarget" class="select-field">\n\
         <option value=""></option> \n\
         <option value="CPUUtilization">CPU</option>\n\
         <option value="Memory">Memory</option>\n\</select>\n\
-        </label><label for="field3">\n\
+        </label><label>\n\
         <span>Target Topology <span class="required">*</span></span>\n\
         <input type="text" id="topology" class="select-field" name="ctrls[' + globalIndexMap + '].resourceName" \>\n\
         </label>\n\
         <label><span>Reference Value <span class="required">*</span></span>\n\
         <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].refValue" style="width:50px"/>\n\
-        </label><label for="field5"><span>Monitoring Period</span>\n\
+        </label><label><span>Monitoring Period</span>\n\
         <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].monitoringPeriod" value="" style="width:50px"/>\n\
-        </label><label for="field6"><span>Backoff No.</span>\n\
+        </label><label><span>Backoff No.</span>\n\
         <input type="text" class="input-field" name="ctrls[' + globalIndexMap + '].backoffNo" value="" style="width:50px"/>\n\
                 <input type="hidden" name="ctrls[' + globalIndexMap + '].ctrlName" value="ApacheStorm"/>\n\
                 <input type="hidden" name="ctrls[' + globalIndexMap + '].epsilon" value="0.0001"/>\n\
@@ -97,19 +97,19 @@ function createCloudSettingForm(divLoc) {
     var divContainer = $(divLoc);
     divContainer.html('<div class="form-style-2"> \n\
         <div class="form-style-2-heading">Cloud hosting information</div> \n\
-        <label for="field1">\n\
+        <label>\n\
         <span>Cloud Provider <span class="required">*</span></span></label>\n\
-        <label for="field2"><select id="-categories" name="cloudSetting.cloudProvider" class="select-field">\n\
+        <label><select id="-categories" name="cloudSetting.cloudProvider" class="select-field">\n\
         <option value=""></option> \n\
         <option value="Amazon">Amazon Cloud Services</option>\n\
         <option value="Google">Google Cloud Platform</option>\n\
         <option value="Microsoft">Microsoft Azure</option></select>\n\
-        </label><label for="field3">\n\
+        </label><label>\n\
         <span>Region <span class="required">*</span></span>\n\
         <select id="-subcats" class="select-field" name="cloudSetting.region"> </select></label>\n\
-        <label for="field4"><span>Access Key <span class="required">*</span></span>\n\
+        <label><span>Access Key <span class="required">*</span></span>\n\
         <input id="accessKey" type="text" class="input-field" name="cloudSetting.accessKey" value="AKIAJJOK3DKPUOG7UZUQ"/>\n\
-        </label><label for="field5"><span>Secret Key <span class="required">*</span></span>\n\
+        </label><label><span>Secret Key <span class="required">*</span></span>\n\
         <input id="secretKey" type="password" class="input-field" name="cloudSetting.secretKey" value="6mu7vz5jp2lmEewgNna2eYFgZAHgHGr+3VOG48MY"/>\n\
         </label><label></label></div>');
 

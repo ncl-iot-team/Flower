@@ -219,20 +219,19 @@
 
                 $('#DynamoDB').append('<div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Tables List</div>\n\
-                                     <table id="dynamoDBTblTbl"> \n\
+                                     <table id="dynamoTbl"> \n\
                                      <thead>\n\
-                                     <tr><th>Resource Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Actions</th>\n\
+                                      <tr><th>Table Name</th>\n\
+                                     <th>Status</th><th>Total Read Capaqcity</th><th>Total Write Capacity</th><th>Actions</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
-                                     </div><div class="form-style-xmedium-box">\n\
-                                     <div class="form-style-3-heading">Read Capacity</div>\n\
-                                     </div><div class="form-style-xmedium-box">\n\
-                                     <div class="form-style-3-heading">Write Capacity</div>\n\
-                                     </div><div class="form-style-xmedium-box">\n\
-                                     <div class="form-style-3-heading">Throttled write requests</div></div>\n\
-                                     <div class="form-style-xmedium-box">\n\
-                                     <div class="form-style-3-heading">Throttled read requests</div></div>');
+                                     </div><div id="ConsumedReadCapacityUnits" class="form-style-xmedium-box">\n\
+                                     <div class="form-style-3-heading">ConsumedReadCapacityUnits</div>\n\
+                                     </div><div id="ConsumedWriteCapacityUnits" class="form-style-xmedium-box">\n\
+                                     <div class="form-style-3-heading">ConsumedWriteCapacityUnits</div>\n\
+                                     </div><div id="ReadThrottleEvents" class="form-style-xmedium-box">\n\
+                                     <div class="form-style-3-heading">ReadThrottleEvents</div></div>\n\
+                                     <div id="WriteThrottleEvents" class="form-style-xmedium-box">\n\
+                                     <div class="form-style-3-heading">WriteThrottleEvents</div></div>');
                 $('#AmazonKinesis').append('<div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Stream List</div>\n\
                                      <table id="kinesisTbl"> \n\
@@ -242,7 +241,7 @@
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
                                      </div><div id="IncomingRecords" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Total Incoming Records</div>\n\
-                                     </div><div id="GetRecords.Bytes" class="form-style-small-box">\n\
+                                     </div><div id="GetRecordsBytes" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Read Throughput</div>\n\
                                      </div><div id="IncomingBytes" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Write Throughput</div></div>');
@@ -264,6 +263,21 @@
 
                 });
 
+                $.get("../loadDynamoDBTbls/" + $flowId, function(tbls) {
+                    $.each(tbls, function(i, tbl) {
+                        $('#dynamoTbl tr:last')
+                                .after('<tr><td>' + tbl + '</td>\n\
+                                                    <td>ACTIVE</td>\n\
+                                                    <td>2</td><td>2</td>\n\
+                                                    <td><img class="refresh" /> </td>\n\
+                                                    <td><input type="radio" name="DynamoDB" value="' + tbl + '">\n\
+                                                    <input type="radio" name="DynamoDB" style="display:none""></td>\n\
+                                                    </tr>');
+                    });
+
+                });
+
+
 
 
                 var timeoutMap = {};
@@ -283,31 +297,48 @@
                 kinesisMetricMap["WriteThroughput"] = 'IncomingBytes';
                 kinesisMetricMap["ReadThroughput"] = 'GetRecordsBytes';
 
+                var dynamoMetricMap = {};
+                dynamoMetricMap["ConsumedReadCapacityUnits"] = 'ConsumedReadCapacityUnits';
+                dynamoMetricMap["ConsumedWriteCapacityUnits"] = 'ConsumedWriteCapacityUnits';
+                dynamoMetricMap["WriteThrottleEvents"] = 'WriteThrottleEvents';
+                dynamoMetricMap["ReadThrottleEvents"] = 'ReadThrottleEvents';
+
+                function getMetricMap(system) {
+                    if (system === "AmazonKinesis") {
+                        return kinesisMetricMap;
+                    } else if (system === "DynamoDB") {
+                        return dynamoMetricMap;
+                    }
+                }
 
                 setupDeselectEvent(true);
-                var resourceMap = {};
-                resourceMap["DynamoDB"] = 'WriteCapacityUnits';
-                resourceMap["AmazonKinesis"] = 'No. of Shards';
-                resourceMap["ApacheStorm"] = 'No. of VMs';
+//                var resourceMap = {};
+//                resourceMap["DynamoDB"] = 'WriteCapacityUnits';
+//                resourceMap["AmazonKinesis"] = 'No. of Shards';
+//                resourceMap["ApacheStorm"] = 'No. of VMs';
                 $(document).on('deselect', 'input:radio', function() {
                     var $this = $(this);
-                    var $resource = $this.val();
-                    clearTimeout(timeoutMap[$resource]);
-                    delete timeoutMap[$resource];
-                    $('#' + $resource + 'LineChart').remove();
-                    $('#' + $resource + 'BarChart').parent('.wrapper').remove();
+                    var $platform = $this.attr('name');
+                    var metricMap = getMetricMap($platform);
+                    for (var key in metricMap) {
+                        clearTimeout(timeoutMap[metricMap[key]]);
+                        delete timeoutMap[metricMap[key]];
+                        $('#' + metricMap[key] + 'LineChart').remove();
+                    }
+//                    $('#' + $resource + 'BarChart').parent('.wrapper').remove();
                 }).on('change', 'input:radio', function() {
                     var $this = $(this);
                     var $resource = $this.val();
                     var $platform = $this.attr('name');
-                    for (var key in kinesisMetricMap) {
-                        var lineChartDiv = '#' + kinesisMetricMap[key] + '-' + $resource + '-LineChart';
+                    var metricMap = getMetricMap($platform);
+                    for (var key in metricMap) {
+                        var lineChartDiv = '#' + metricMap[key] + 'LineChart';
 //                        var barChartDiv = '#' + kinesisMetricMap[key] + '-' + $resource + 'BarChart';
                         var $timeInterval = 1 * 60000;
-                        $('#'+kinesisMetricMap[key])
-                                .append('<div id="' + kinesisMetricMap[key] + '-' + $resource + '-LineChart" class="epoch category3" style="width: 350px; height: 200px">\n\
+                        $('#' + metricMap[key])
+                                .append('<div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
                              <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
-                            </span>' + kinesisMetricMap[key] + '</li></ul></div></div>');
+                            </span>' + metricMap[key] + '</li></ul></div></div>');
                         var lineChart = setupLineChart(lineChartDiv);
 //                        $this.parents('div[class="form-style-ctrl-stat"]')
 //                                .siblings('div[class="form-style-resource-share"]').append(
@@ -318,7 +349,7 @@
 //                            <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
 //                            </ul></div>');
 //                        var barChart = setupBarChart(barChartDiv);
-                        drawer(lineChart, $platform, $resource, $flowId, kinesisMetricMap[key], $timeInterval);
+                        drawer(lineChart, $platform, $resource, $flowId, metricMap[key], $timeInterval);
                     }
                 });
 
@@ -334,16 +365,16 @@
                 function getTimeStampSec(timeStampMill) {
                     return parseInt(timeStampMill / 1000);
                 }
-                
+
                 function drawer(lineChart, $platform, $resource, $flowId, $metric, $timeInterval) {
                     $.get('../getCloudWatchStats',
-                            {platform: $platform, resource: $resource, flowId: $flowId, metric: $metric, timeStamp:1000 * 60 * 2},
+                            {platform: $platform, resource: $resource, flowId: $flowId, metric: $metric, timeStamp: 1000 * 60 * 2},
                     function(data) {
                         if (!data) {
                             console.log(data);
                         } else {
 //                            $.each(statRecords, function(i, statRecord) {
-                                lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: data}]);
+                            lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: data}]);
 //                                    {time: getTimeStampSec(statRecord.timeStamp), y: statRecord.allocatedResource}]);
 //                                barChart.push([
 //                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: Math.random() * 100},
@@ -351,7 +382,7 @@
 //                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
 //                            });
                         }
-                        timeoutMap[$resource] = setTimeout(function() {
+                        timeoutMap[$metric] = setTimeout(function() {
                             drawer(lineChart, $platform, $resource, $flowId, $metric, $timeInterval);
                         }, $timeInterval);
                     });

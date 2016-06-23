@@ -67,7 +67,7 @@
             {
                 display:none;
                 border-radius:2px;
-                margin-top: 2px;
+                margin-top: 1px;
                 position:absolute;
                 top:100%;
                 left:0;
@@ -78,7 +78,7 @@
             #primary_nav_wrap ul ul li
             {
                 float:none;
-                width:135px;
+                width:140px;
 
             }
 
@@ -156,8 +156,12 @@
                     if (action === 'Elasticity') {
                         window.open('/Flower/redirectToCtrlStepForm/' + flowId);
                     }
+                    
                     if (action === 'Monitoring') {
-                        window.open('/Flower/redirectToMntrStepForm/' + flowId);
+                        window.open('/Flower/flowMntrServicePage/' + flowId);
+                    }
+                    if (action === 'Monitoring Service') {
+                        window.open('/Flower/mntr/redirectToMntrStepForm/' + flowId);
                     }
                 });
 
@@ -183,7 +187,7 @@
                                     </ul></li>\n\
                                 <li class="current-menu-item"><a href="#">Launch Service</a>\n\
                                     <ul><li><a href="#">Elasticity</a></li>\n\
-                                        <li><a href="#">Monitoring</a></li>\n\
+                                        <li><a href="#">Monitoring Service</a></li>\n\
                                         <li><a href="#">Recommender</a></li>\n\
                                     </ul></li></ul>');
 
