@@ -158,10 +158,10 @@
                     }
                     
                     if (action === 'Monitoring') {
-                        window.open('/Flower/flowMntrServicePage/' + flowId);
+                        window.open('/Flower/mntr/flowMntrServicePage/' + flowId);
                     }
                     if (action === 'Monitoring Service') {
-                        window.open('/Flower/mntr/redirectToMntrStepForm/' + flowId);
+                        window.open('/Flower/redirectToMntrStepForm/' + flowId);
                     }
                 });
 

@@ -5,8 +5,15 @@
  */
 package com.csiro.flower.controller;
 
+import com.csiro.flower.dao.UserDao;
+import com.csiro.flower.model.UserAccount;
+import com.csiro.flower.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -16,13 +23,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("user")
 public class UserManagementController {
 
+    @Autowired
+    UserService userService;
+
     @RequestMapping(value = "signup")
     public String viewSignupPage() {
         return "signup";
     }
 
-    @RequestMapping(value = "signin")
+    @RequestMapping(value = {"signin","signin/success"})
     public String viewSigninPage() {
         return "signin";
     }
+
+    @RequestMapping(value = "signupForm", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean createAccount(@ModelAttribute("userAccount") UserAccount userAccount) {
+        return userService.createAccount(userAccount);
+    }
+
 }

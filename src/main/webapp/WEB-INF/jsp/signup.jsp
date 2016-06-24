@@ -13,12 +13,53 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
-
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>
     </head>
-    <script>
 
+    <script type="text/javascript">
+
+        $(function() {
+
+
+            jQuery.extend(jQuery.validator.messages, {
+                required: ""
+            });
+
+            $("#signupForm").validate({
+                errorPlacement: function(error, element) {
+                    error.addClass('arrow');
+                    error.insertAfter(element);
+                },
+                rules: {
+                    "userName": "required",
+                    "userEmail": "required",
+                    "password": "required"
+                }});
+
+
+            $("#signupForm").on('submit', function(event) {
+                if (!$("#signupForm").valid()) {
+                    return false;
+                }
+                var $frm = $("#signupForm");
+                $.ajax({
+                    async: false,
+                    data: $frm.serializeArray(),
+                    type: $frm.attr('method'),
+                    url: $frm.attr('action'),
+                    success: function(data) {
+                        if (data === true) {
+                            window.location.replace("/Flower/user/signin/success");
+                        } else {
+                            $(".failed-request").text("Provided e-mail address already exists!");
+                        }
+                    }
+                });
+                event.preventDefault();
+            });
+        });
     </script>
     <body>
         <tiles:insertDefinition name="defaultbar" />
@@ -30,24 +71,23 @@
             <br>
         </div>
 
-
         <div  class="jumbotron_body">
             <div class="container">
-                <div class="row">   
+                <div class="row" style="margin-left:200px;">   
                     <div id="wizard" class="swMain">
                         <div class="stepContainer" style="height: 300px;">
                             <div class="content" style="display: block;height: 320px">
 
-                                <form id="signupForm" action="signupForm" method="post">
+                                <form id="signupForm" action="../user/signupForm" method="post">
                                     <fieldset>
                                         <div class="form-style-2"> 
                                             <div class="form-style-2-heading">Login Credentials</div>
-
+                                            <p class="failed-request"></p>
                                             <label>
                                                 <span>Name <span class="required">*</span></span>
-                                                <input type="text" class="input-field" name="name"/></label>
+                                                <input type="text" class="input-field" name="userName"/></label>
                                             <label><span>E-mail address <span class="required">*</span></span>
-                                                <input type="text" class="input-field" name="email"/>
+                                                <input type="text" class="input-field" name="userEmail"/>
                                             </label><label><span>New password <span class="required">*</span></span>
                                                 <input type="password" class="input-field" name="password" />
                                             </label><label></label>
