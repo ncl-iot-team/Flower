@@ -36,7 +36,7 @@
                     <p>Drill-down analysis </p>
                     <p>&nbsp;</p>
                 </div>
-                <div class="col-sm-12 text-center col-lg-6"><img class="img-circle" alt="140x140" style="width: 140px; height: 140px;" src="${pageContext.request.contextPath}/resources/img/Cloud.png" data-holder-rendered="true">
+<!--                <div class="col-sm-12 text-center col-lg-6"><img class="img-circle" alt="140x140" style="width: 140px; height: 140px;" src="${pageContext.request.contextPath}/resources/img/Cloud.png" data-holder-rendered="true">
                     <h3>Cloud Deployments Recommender</h3>
                     <p>Workload-Aware Deployment Recommendation</p>
                     <p>Cost-Aware Cloud Provider Recommendation</p>
@@ -48,7 +48,7 @@
 
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
-                </div>
+                </div>-->
             </div>
             <!--div class="row">
               <div class="col-lg-12 page-header text-center">

@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <html>
     <head>
@@ -15,7 +16,7 @@
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>
+        <!--<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>-->
     </head>
     <style>
         .success-msg-box {
@@ -35,45 +36,45 @@
     </style>
     <script>
         $(function() {
-            jQuery.extend(jQuery.validator.messages, {
-                required: ""
-            });
-
-            $("#signinForm").validate({
-                errorPlacement: function(error, element) {
-                    error.addClass('arrow');
-                    error.insertAfter(element);
-                },
-                rules: {
-                    "userEmail": "required",
-                    "password": "required"
-                }});
+//            jQuery.extend(jQuery.validator.messages, {
+//                required: ""
+//            });
+//
+//            $("#loginForm").validate({
+//                errorPlacement: function(error, element) {
+//                    error.addClass('arrow');
+//                    error.insertAfter(element);
+//                },
+//                rules: {
+//                    "userEmail": "required",
+//                    "password": "required"
+//                }});
             var str = window.location.pathname;
 
             if (str.indexOf('success') > -1) {
                 $("#msgBox").addClass('success-msg-box').text('Your account created successfully.');
             }
 
-            $("#signinForm").on('submit', function(event) {
-                if (!$("#signinForm").valid()) {
-                    return false;
-                }
-                var $frm = $("#signinForm");
-                $.ajax({
-                    async: false,
-                    data: $frm.serializeArray(),
-                    type: $frm.attr('method'),
-                    url: $frm.attr('action'),
-                    success: function(data) {
-                        if (data === true) {
-                            window.location.replace("/Flower/flowList");
-                        } else {
-                            $(".failed-request").text("Either e-mail or password is incorrect!");
-                        }
-                    }
-                });
-                event.preventDefault();
-            });
+//            $("#loginForm").on('submit', function(event) {
+//                if (!$("#loginForm").valid()) {
+//                    return false;
+//                }
+//                var $frm = $("#loginForm");
+//                $.ajax({
+//                    async: false,
+//                    data: $frm.serializeArray(),
+//                    type: $frm.attr('method'),
+//                    url: $frm.attr('action'),
+//                    success: function(data) {
+//                        if (data === true) {
+//                            window.location.replace("/Flower/flowList");
+//                        } else {
+//                            $(".failed-request").text("Either e-mail or password is incorrect!");
+//                        }
+//                    }
+//                });
+//                event.preventDefault();
+//            });
         });
     </script>
     <body>
@@ -94,7 +95,18 @@
                         <div class="stepContainer" style="height: 300px;">
                             <div class="content" style="display: block;height: 320px">
 
-                                <form id="signinForm" action="signinForm" method="post">
+
+                                <!-- /login?error=true -->
+                                <c:if test="${param.error == 'true'}">
+                                    <div style="color:red;margin:10px 0px;">
+
+                                        Login Failed!!!<br />
+                                        
+
+                                    </div>
+                                </c:if>
+
+                                <form name='loginForm' action="${pageContext.request.contextPath}/j_spring_security_check" method='POST'>
                                     <fieldset>
                                         <div class="form-style-2"> 
                                             <div class="form-style-2-heading">Login Credentials</div>
@@ -102,10 +114,11 @@
                                             <div id="msgBox"></div>
 
                                             <label><span>E-mail address <span class="required">*</span></span>
-                                                <input type="text" class="input-field" name="userEmail"/>
+                                                <input type="text" class="input-field" name="username"/>
                                             </label><label><span>Password <span class="required">*</span></span>
                                                 <input type="password" class="input-field" name="password" />
                                             </label><label></label>
+<!--                                            <input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>-->
                                         </div>
                                         <input class="btn btn-action" type="submit" value="Sign in" style="font-size:12px;margin-left: 153px;">
                                     </fieldset>

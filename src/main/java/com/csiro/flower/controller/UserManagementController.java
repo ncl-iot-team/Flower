@@ -31,9 +31,9 @@ public class UserManagementController {
         return "signup";
     }
 
-    @RequestMapping(value = {"signin","signin/success"})
+    @RequestMapping(value = {"login","login/success"})
     public String viewSigninPage() {
-        return "signin";
+        return "login";
     }
 
     @RequestMapping(value = "signupForm", method = RequestMethod.POST)
