@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page session="true"%>
 
 <html>
     <head>
@@ -31,7 +31,19 @@
             background-color: #DFF2BF;
             background-image:url("${pageContext.request.contextPath}/resources/img/done.png");
             background-size: 25px 25px;
-
+        }
+        .fail-msg-box {
+            font-weight: bold;
+            width: 367px;
+            border: 1px solid;
+            margin: 23px 0px;
+            padding:10px 10px 10px 50px;
+            background-repeat: no-repeat;
+            background-position: 10px center;
+            color: #ff0000;
+            background-color: #fff0f0;
+            background-image:url("${pageContext.request.contextPath}/resources/img/error1.png");
+            background-size: 25px 25px;
         }
     </style>
     <script>
@@ -49,10 +61,19 @@
 //                    "userEmail": "required",
 //                    "password": "required"
 //                }});
+            var qs = window.location.search;
+
+            if (qs.indexOf('success') > -1) {
+                $("#msgBox").addClass('success-msg-box').text('Your account created successfully.');
+            }
+            if (qs.indexOf('error') > -1) {
+                $("#msgBox").addClass('fail-msg-box').text('Login failed! username or password is incorrect.');
+            }
+
             var str = window.location.pathname;
 
-            if (str.indexOf('success') > -1) {
-                $("#msgBox").addClass('success-msg-box').text('Your account created successfully.');
+            if (str.indexOf('logout') > -1) {
+                $("#msgBox").addClass('success-msg-box').text('You have been logged out successfully.');
             }
 
 //            $("#loginForm").on('submit', function(event) {
@@ -95,26 +116,15 @@
                         <div class="stepContainer" style="height: 300px;">
                             <div class="content" style="display: block;height: 320px">
 
-
-                                <!-- /login?error=true -->
-                                <c:if test="${param.error == 'true'}">
-                                    <div style="color:red;margin:10px 0px;">
-
-                                        Login Failed!!!<br />
-                                        
-
-                                    </div>
-                                </c:if>
-
                                 <form name='loginForm' action="${pageContext.request.contextPath}/j_spring_security_check" method='POST'>
                                     <fieldset>
                                         <div class="form-style-2"> 
                                             <div class="form-style-2-heading">Login Credentials</div>
-                                            <p class="failed-request"></p>
+                                            
                                             <div id="msgBox"></div>
 
                                             <label><span>E-mail address <span class="required">*</span></span>
-                                                <input type="text" class="input-field" name="username"/>
+                                                <input type="text" class="input-field" name="user_email"/>
                                             </label><label><span>Password <span class="required">*</span></span>
                                                 <input type="password" class="input-field" name="password" />
                                             </label><label></label>

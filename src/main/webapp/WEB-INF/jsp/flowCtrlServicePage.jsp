@@ -9,7 +9,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-
+        <link href="${pageContext.request.contextPath}/resources/css/service-ui.css" rel="stylesheet" type="text/css">
         <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/epoch.css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -18,109 +18,6 @@
         <script src="${pageContext.request.contextPath}/resources/js/epoch.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/ctrl.service.js"></script>
 
-        <style>
-            .ui-accordion .ui-accordion-header {
-                /*text-align: center;*/
-                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                color:#23527c;
-                display: block;
-                cursor: pointer;
-                position: relative;
-                margin: 2px 0 0 0;
-                padding: .5em .5em .5em .7em;
-                min-height: 0; /* support: IE7 */
-                /*                border: 1px #c1e2b3 solid;*/
-
-            }
-            .ui-accordion .ui-accordion-icons {
-                padding-left: 2.2em;
-            }
-            .ui-accordion .ui-accordion-icons .ui-accordion-icons {
-                padding-left: 2.2em;
-            }
-            .ui-accordion .ui-accordion-header .ui-accordion-header-icon {
-                position: absolute;
-                left: .5em;
-                top: 50%;
-                margin-top: -8px;
-            }
-            .ui-accordion .ui-accordion-content {
-                padding: 1em 2.2em;
-                border: 0;
-                overflow: auto;
-                border: 1px solid #ddd;
-            }
-            img.icon{
-                width:30px; height:30px;
-            }
-
-        </style>
-        <style>
-
-            div.play,div.setting {
-                color: #ffffff;
-                width: 60px;
-                height: 22px;
-                text-align: center;
-                line-height: 23px;
-                font-size: 12px;
-                cursor: pointer;
-                position: relative;
-                background-color: #67B168;
-                -webkit-border-radius: 50%;
-                -moz-border-radius: 50%;
-                border-radius: 5%;
-                -webkit-transition: all .2s ease;
-                transition: all .2s ease;
-                margin-right: 5px; 
-                float: left;
-            }
-
-            div.play:hover,div.setting:hover,
-            div.play.active {
-                -webkit-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
-                -moz-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
-                box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
-                color: #fff;
-                background-color: #CD391F;
-            }
-
-            .form-style-ctrl-stat{
-                width: 950px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-            .form-style-ctrl-diag{
-                width: 690px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-            .form-style-resource-share{
-                width: 370px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-
-            .legend { list-style: none; font-size: 12px;}
-            .legend li { float: left; margin-right: 10px; }
-            .legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
-            .legend .allocated { background-color: #ff7f0e; }
-            .legend .used { background-color: #3182bd; }
-            .legend .pending { background-color: #ff7f0e; }
-            .legend .sharelimit { background-color: #3182bd; }
-            .legend .usedshare { background-color: #31a354; }
-
-            #wrapper   { overflow: auto }
-            #firstDiv  {  float: left;}
-            #secondDiv {  float: left;}
-
-        </style>
         <script type="text/javascript">
             $(function() {
 

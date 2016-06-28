@@ -16,33 +16,37 @@ and open the template in the editor.
         <intercept-url pattern="/user/*" access="permitAll" />
         <intercept-url pattern="/*/css/*" access="permitAll" />
         <intercept-url pattern="/*/img/*" access="permitAll" />
+        <intercept-url pattern="/*/js/jquery.validate.min.js" access="permitAll" />
 
-        <intercept-url pattern="/*/*/*" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/*/*" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/*" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/*/*/*" access="isAuthenticated()" />
+        <intercept-url pattern="/*/*" access="isAuthenticated()" />
+        <intercept-url pattern="/*" access="isAuthenticated()" />
         <form-login 
-            login-page="/user/login" default-target-url="/flowCreationForm" authentication-failure-url="/user/login?error=true" username-parameter="username"
+            login-page="/user/login" default-target-url="/flowList" authentication-failure-url="/user/login?do=error" username-parameter="user_email"
             password-parameter="password" login-processing-url="/j_spring_security_check"/>
         <csrf disabled="true"/>
-        <!--<logout logout-success-url="/logout"/>-->
+        <logout logout-success-url="/user/logout" logout-url="/j_spring_security_logout" />
     </http>
  
     <authentication-manager>
-        <authentication-provider>
+<!--        <authentication-provider>
             <user-service>
                 <user name="user1" password="12345" authorities="ROLE_USER" />
-                <!--<user name="admin1" password="12345" authorities="ROLE_USER, ROLE_ADMIN" />-->
+                <user name="admin1" password="12345" authorities="ROLE_USER, ROLE_ADMIN" />
             </user-service>
-        </authentication-provider>
- 
- 
- 
-        <!-- authentication from database -->
-        <!--        <authentication-provider>
-            <jdbc-user-service data-source-ref="ds"
-                               users-by-username-query="select * from user_login where username=?"
-                               authorities-by-username-query="Select username, concat('ROLE_',user_role) user_role from user_roles where username=?" />
+           
+            
         </authentication-provider>-->
+ 
+ 
+ 
+        <!--         authentication from database 
+        -->                
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="ds"
+                               users-by-username-query="select user_email, password, enabled from user_account where user_email=?"
+                               authorities-by-username-query="Select user_email, role from user_role where user_email=?" />
+        </authentication-provider>
  
     </authentication-manager>
  

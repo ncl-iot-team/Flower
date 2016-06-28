@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
         <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
+        <link href="${pageContext.request.contextPath}/resources/css/service-ui.css" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/epoch.css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -18,121 +19,6 @@
         <script src="${pageContext.request.contextPath}/resources/js/epoch.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/ctrl.service.js"></script>
 
-        <style>
-            .ui-accordion .ui-accordion-header {
-                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                color:#23527c;
-                display: block;
-                cursor: pointer;
-                position: relative;
-                margin: 2px 0 0 0;
-                padding: .5em .5em .5em .7em;
-                min-height: 0; 
-            }
-            .ui-accordion .ui-accordion-icons {
-                padding-left: 2.2em;
-            }
-            .ui-accordion .ui-accordion-icons .ui-accordion-icons {
-                padding-left: 2.2em;
-            }
-            .ui-accordion .ui-accordion-header .ui-accordion-header-icon {
-                position: absolute;
-                left: .5em;
-                top: 50%;
-                margin-top: -8px;
-            }
-            .ui-accordion .ui-accordion-content {
-                padding: 0px;//1em 2.2em;
-                border: 0;
-                overflow: auto;
-                border: 1px solid #ddd;
-            }
-            img.icon{
-                width:30px; height:30px;
-            }
-        </style>
-        <style>
-            .tabs-min { 
-                background: transparent; 
-                border: none; 
-            } 
-            .tabs-min .ui-widget-header { 
-                background: transparent; 
-                border: none; 
-                border-bottom: 1px solid #c0c0c0; 
-                -moz-border-radius: 0px; 
-                -webkit-border-radius: 0px; 
-                border-radius: 0px; 
-            } 
-            .tabs-min .ui-tabs-nav .ui-state-default { 
-                background: transparent; 
-                border: none; 
-            } 
-            .tabs-min .ui-tabs-nav .ui-state-active { 
-                background: transparent no-repeat bottom center; 
-                border: none; 
-            } 
-            .tabs-min .ui-tabs-nav .ui-state-default a { 
-                color: #c0c0c0; 
-            } 
-            .tabs-min .ui-tabs-nav .ui-state-active a { 
-                color: #459e00; 
-            }
-        </style>
-        <style>
-
-            .form-style-large-box{
-                width: 950px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-            .form-style-medium-box{
-                width: 855px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-
-            .form-style-xmedium-box{
-                width: 500px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-            .form-style-small-box{
-                width: 350px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-
-            .form-style-tiny-box{
-                width: 200px;
-                padding: 20px 12px 10px 20px;
-                font: 13px Arial, Helvetica, sans-serif;
-                position: relative;
-                float: left;
-            }
-
-            .legend { list-style: none; font-size: 12px;}
-            .legend li { float: left; margin-right: 10px; }
-            .legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
-            .legend .allocated { background-color: #ff7f0e; }
-            .legend .used { background-color: #3182bd; }
-            .legend .pending { background-color: #ff7f0e; }
-            .legend .sharelimit { background-color: #3182bd; }
-            .legend .usedshare { background-color: #31a354; }
-
-            #wrapper   { overflow: auto }
-            #firstDiv  {  float: left;}
-            #secondDiv {  float: left;}
-
-        </style>
         <script type="text/javascript">
             $(function() {
 

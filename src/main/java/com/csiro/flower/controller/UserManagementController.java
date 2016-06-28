@@ -5,9 +5,10 @@
  */
 package com.csiro.flower.controller;
 
-import com.csiro.flower.dao.UserDao;
 import com.csiro.flower.model.UserAccount;
 import com.csiro.flower.service.UserService;
+import java.sql.Timestamp;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,7 +32,7 @@ public class UserManagementController {
         return "signup";
     }
 
-    @RequestMapping(value = {"login","login/success"})
+    @RequestMapping(value = {"login","logout"})
     public String viewSigninPage() {
         return "login";
     }
@@ -39,6 +40,7 @@ public class UserManagementController {
     @RequestMapping(value = "signupForm", method = RequestMethod.POST)
     @ResponseBody
     public boolean createAccount(@ModelAttribute("userAccount") UserAccount userAccount) {
+        userAccount.setRegistrationDate(new Timestamp(new Date().getTime()));
         return userService.createAccount(userAccount);
     }
 

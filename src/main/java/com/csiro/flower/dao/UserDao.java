@@ -22,4 +22,6 @@ public interface UserDao {
     public boolean checkDuplicateEmail(String email);
 
     public UserAccount getAccountCredentials(String email, String password);
+    
+    public int saveUserRole(String user, String role);
 }

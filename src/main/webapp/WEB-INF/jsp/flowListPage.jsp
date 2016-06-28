@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <link href="${pageContext.request.contextPath}/resources/css/stepform.css" rel="stylesheet" type="text/css">
         <link href="${pageContext.request.contextPath}/resources/css/smart_wizard.css" rel="stylesheet" type="text/css">
+        <link href="${pageContext.request.contextPath}/resources/css/service-ui.css" rel="stylesheet" type="text/css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <style>
@@ -101,8 +102,8 @@
         </style>
         <script  type="text/javascript">
             $(function() {
-                $("#tabs").tabs();
-                var user = "ali";
+                $(".tabs-nohdr").tabs();
+                var user = '${pageContext.request.remoteUser}';
                 loadFlowDashboard();
 //                $('#flowDashboard').on('click', function() {
 //                    loadFlowDashboard();
@@ -156,7 +157,7 @@
                     if (action === 'Elasticity') {
                         window.open('/Flower/redirectToCtrlStepForm/' + flowId);
                     }
-                    
+
                     if (action === 'Monitoring') {
                         window.open('/Flower/mntr/flowMntrServicePage/' + flowId);
                     }
@@ -234,7 +235,7 @@
             <br>
         </div>
 
-        <div  class="jumbotron_body">
+<!--        <div  class="jumbotron_body">
             <div style="float:left;width:250px" >
                 <ul id="sortable">
                     <li class="ui-state-default-extention" style="margin-bottom: 5px">
@@ -264,7 +265,7 @@
                     </li>
 
                 </ul>
-            </div>
+            </div>-->
             <div class="container">
 
                 <div class="row" >
@@ -274,15 +275,15 @@
                         <nav id="primary_nav_wrap">
 
                         </nav>
-                        <div class="stepContainer" style="min-height: 630px;">
-                            <div id="stepDiv" class="content" style="position: absolute;top: 0;min-height: 630px;width: 1000px">
+                        <div class="stepContainer" style="min-height: 600px;">
+                            <div id="stepDiv" class="content" style="position: absolute;top: 0;min-height: 600px;width: 1000px">
 
                             </div>
-                            <div id="tabs" style="z-index: 200;position: absolute;bottom:10;min-height: 349px;font-size: 12px;min-width: 950px;">
+                            <div class="tabs-nohdr" style="z-index: 200;position: absolute;bottom:10;font-size: 12px;width: 1000px; border-radius: 0px;">
                                 <ul>
                                     <li><a href="#elasticityService">Elasticity Service</a></li>
-                                    <li><a href="#monitoringService">Monitoring Service</a></li>
-                                    <li><a href="#recommenderService">Deployment Recommender Service</a></li>
+                                    <li><a href="#monitoringService">Holistic Monitoring Service</a></li>
+                                    <!--<li><a href="#recommenderService">Deployment Recommender Service</a></li>-->
                                 </ul>
                                 <div id="elasticityService">
                                 </div>

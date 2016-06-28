@@ -1,0 +1,196 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 28/06/2016, 4:08:41 PM
+    Author     : kho01f
+*/
+
+.ui-accordion .ui-accordion-header {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color:#23527c;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    margin: 2px 0 0 0;
+    padding: .5em .5em .5em .7em;
+    min-height: 0; 
+}
+.ui-accordion .ui-accordion-icons {
+    padding-left: 2.2em;
+}
+.ui-accordion .ui-accordion-icons .ui-accordion-icons {
+    padding-left: 2.2em;
+}
+.ui-accordion .ui-accordion-header .ui-accordion-header-icon {
+    position: absolute;
+    left: .5em;
+    top: 50%;
+    margin-top: -8px;
+}
+.ui-accordion .ui-accordion-content {
+    padding: 0px;//1em 2.2em;
+    border: 0;
+    overflow: auto;
+    border: 1px solid #ddd;
+}
+img.icon{
+    width:30px; height:30px;
+}
+
+.tabs-min { 
+    background: transparent; 
+    border: none; 
+} 
+.tabs-min .ui-widget-header { 
+    background: transparent; 
+    border: none; 
+    border-bottom: 1px solid #c0c0c0; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px; 
+} 
+.tabs-min .ui-tabs-nav .ui-state-default { 
+    background: transparent; 
+    border: none; 
+} 
+.tabs-min .ui-tabs-nav .ui-state-active { 
+    background: transparent no-repeat bottom center; 
+    border: none; 
+} 
+.tabs-min .ui-tabs-nav .ui-state-default a { 
+    color: #c0c0c0; 
+} 
+.tabs-min .ui-tabs-nav .ui-state-active a { 
+    color: #459e00; 
+}
+
+.form-style-large-box{
+    width: 950px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+.form-style-medium-box{
+    width: 855px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+
+.form-style-xmedium-box{
+    width: 500px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+.form-style-small-box{
+    width: 350px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+
+.form-style-tiny-box{
+    width: 200px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+
+.legend { list-style: none; font-size: 12px;}
+.legend li { float: left; margin-right: 10px; }
+.legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
+.legend .allocated { background-color: #ff7f0e; }
+.legend .used { background-color: #3182bd; }
+.legend .pending { background-color: #ff7f0e; }
+.legend .sharelimit { background-color: #3182bd; }
+.legend .usedshare { background-color: #31a354; }
+
+#wrapper   { overflow: auto }
+#firstDiv  {  float: left;}
+#secondDiv {  float: left;}
+
+div.play,div.setting {
+    color: #ffffff;
+    width: 60px;
+    height: 22px;
+    text-align: center;
+    line-height: 23px;
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+    background-color: #67B168;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 5%;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+    margin-right: 5px; 
+    float: left;
+}
+
+div.play:hover,div.setting:hover,
+div.play.active {
+    -webkit-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
+    -moz-box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
+    box-shadow: inset 0 0 0 0 #CD391F, inset 0 0 0 0 #fff,inset 0 0 0 0px #cd3920;
+    color: #fff;
+    background-color: #CD391F;
+}
+
+.form-style-ctrl-stat{
+    width: 950px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+.form-style-ctrl-diag{
+    width: 690px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+.form-style-resource-share{
+    width: 370px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+    position: relative;
+    float: left;
+}
+
+.tabs-nohdr { 
+    padding: 0px; 
+    background: none; 
+    border-width: 0px; 
+} 
+.tabs-nohdr .ui-tabs-nav { 
+    padding-left: 0px; 
+    background: transparent; 
+    border-width: 0px 0px 1px 0px; 
+    border-radius: 0px; 
+} 
+.tabs-nohdr .ui-tabs-panel { 
+    min-height: 250px;
+    background: #ffffff; 
+    border-width: 0px 1px 1px 1px; 
+}
+
+.tabs-nohdr .ui-tabs-nav .ui-state-default a { 
+    color: #c0c0c0; 
+}
+.tabs-nohdr .ui-tabs-nav .ui-state-active a { 
+    color: #ffffff; 
+}
+.tabs-nohdr .ui-tabs-nav li{
+    background: #337AB7;
+}

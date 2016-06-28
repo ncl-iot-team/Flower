@@ -28,12 +28,14 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public int saveAccount(UserAccount userAccount) {
-        String sqlInsert = "INSERT INTO user_account (user_name, user_email, registration_date, password) VALUES (?,?,?,?)";
+        int enabled = 1;
+        String sqlInsert = "INSERT INTO user_account (user_name, user_email, registration_date, password, enabled) VALUES (?,?,?,?,?)";
         Object[] params = new Object[]{
             userAccount.getUserName(),
             userAccount.getUserEmail(),
             userAccount.getRegistrationDate(),
-            userAccount.getPassword()
+            userAccount.getPassword(),
+            enabled
         };
         return jdbcTemplate.update(sqlInsert, params);
     }
@@ -76,6 +78,12 @@ public class UserDaoImpl implements UserDao {
     public int saveLogout(int userId) {
         String sqlUpdate = "UPDATE user_login SET logout_date = ? WHERE user_fk_id = ?";
         return jdbcTemplate.update(sqlUpdate, new Object[]{new Timestamp(new Date().getTime()), userId});
+    }
+
+    @Override
+    public int saveUserRole(String user, String role) {
+        String sqlInsert = "INSERT INTO user_role (user_email, role) VALUES (?,?)";
+        return jdbcTemplate.update(sqlInsert, new Object[]{user, role});
     }
 
 }

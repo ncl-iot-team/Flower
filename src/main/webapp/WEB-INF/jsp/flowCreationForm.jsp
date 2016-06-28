@@ -386,7 +386,8 @@
                     <form id="flow-general-setting" action="submitFlowSettingForm" method="post">
                         <fieldset>
                             <div style="float:left"> <label class="conf">Analytics Flow Name <font color="red">*</font></label>
-                                <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/></div>
+                                <input type="text" name="flowName" id="flow-name" class="text ui-widget-content ui-corner-all"/>
+                             <input type="hidden" name="flowOwner" value="${pageContext.request.userPrincipal.name}" /></div>
                             <div style="float:left; margin-left: 50px">
                                 <!--<label class="conf">Flow Owner*</label>-->
 <!--                                <select name="flowOwner" id="flow-owner" class="text ui-widget-content ui-corner-all" style="width: 150px;height: 25px">

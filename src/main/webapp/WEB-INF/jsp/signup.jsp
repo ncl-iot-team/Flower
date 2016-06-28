@@ -17,11 +17,24 @@
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery.validate.min.js"></script>
     </head>
-
+    <style>
+        .fail-msg-box {
+            font-weight: bold;
+            width: 367px;
+            border: 1px solid;
+            margin: 23px 0px;
+            padding:10px 10px 10px 50px;
+            background-repeat: no-repeat;
+            background-position: 10px center;
+            color: #ff0000;
+            background-color: #fff0f0;
+            background-image:url("${pageContext.request.contextPath}/resources/img/error1.png");
+            background-size: 25px 25px;
+        }
+    </style>
     <script type="text/javascript">
 
         $(function() {
-
 
             jQuery.extend(jQuery.validator.messages, {
                 required: ""
@@ -51,9 +64,9 @@
                     url: $frm.attr('action'),
                     success: function(data) {
                         if (data === true) {
-                            window.location.replace("/Flower/user/signin/success");
+                            window.location.replace("/Flower/user/login?do=success");
                         } else {
-                            $(".failed-request").text("Provided e-mail address already exists!");
+                            $("#msgBox").addClass('fail-msg-box').text('Provided e-mail address already exists.');
                         }
                     }
                 });
@@ -82,7 +95,7 @@
                                     <fieldset>
                                         <div class="form-style-2"> 
                                             <div class="form-style-2-heading">Login Credentials</div>
-                                            <p class="failed-request"></p>
+                                            <div id="msgBox"></div>
                                             <label>
                                                 <span>Name <span class="required">*</span></span>
                                                 <input type="text" class="input-field" name="userName"/></label>
