@@ -38,9 +38,9 @@
                                     '</h3><div id=' + system + ' class="ui-accordion-content ui-helper-reset \n\
                                     ui-widget-content ui-corner-bottom">\n\
                                     </div>');
-                }
 
-                $('#ApacheStorm').append('<div class="tabs-min" style="z-index: 200;min-height: 349px;font-size: 12px;width: 100%;">\n\
+                    if (system === 'ApacheStorm') {
+                        $('#ApacheStorm').append('<div class="tabs-min" style="z-index: 200;min-height: 349px;font-size: 12px;width: 100%;">\n\
                                 <ul><li><a href="#clusterTab">Cluster</a></li>\n\
                                     <li><a href="#supervisorTab">Supervisor</a></li>\n\
                                     <li><a href="#topologyTab">Topology</a></li></ul>\n\
@@ -49,52 +49,48 @@
                                     <div class="form-style-3-heading">Cluster Summary</div>\n\
                                      <table id="clusterTbl"> \n\
                                      <thead>\n\
-                                     <tr><th>Resource Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Actions</th>\n\
-                                     <th></th></tr></thead><tbody> </tbody></table>\n\
+                                     <tr><th>Nimbus Uptime</th> \n\
+                                     <th>Supervisors</th><th>Total Slots</th> <th>Used Slots</th> \n\
+                                     <th>Free Slots</th> <th>Total Executors</th>\n\
+                                     <th>Total Tasks</th></tr></thead><tbody> </tbody></table>\n\
                                      </div><div class="form-style-tiny-box">\n\
                                      <div class="form-style-3-heading">Cluster Health Check</div>\n\
                                      </div>\n\
                                      <div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">CPU</div>\n\
+                                     <div class="form-style-3-heading">CPU Utilization</div>\n\
                                      </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Memory</div>\n\
+                                     <div class="form-style-3-heading">Network In</div>\n\
                                      </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network</div></div>\n\
+                                     <div class="form-style-3-heading">Network Out</div></div>\n\
                                 </div>\n\
                                 <div id="supervisorTab">\n\
                                 <div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Supervisors List</div>\n\
                                      <table id="supervisorTbl"> \n\
                                      <thead>\n\
-                                     <tr><th>Resource Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Actions</th>\n\
+                                     <tr><th>id</th><th>Host</th> \n\
+                                     <th>Uptime</th><th>Total Slots</th> <th>Used Slots</th> \n\
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
                                      </div><div class="form-style-tiny-box">\n\
                                      <div class="form-style-3-heading">Supervisor Health Check</div>\n\
                                      </div>\n\
                                      <div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">CPU</div>\n\
+                                     <div class="form-style-3-heading">CPU Utilization</div>\n\
                                      </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Memory</div>\n\
+                                     <div class="form-style-3-heading">Network In</div>\n\
                                      </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network</div></div>\n\
+                                     <div class="form-style-3-heading">Network Out</div></div>\n\
                                 </div>\n\
                                 <div id="topologyTab">\n\
-                                <div class="form-style-medium-box">\n\
+                                <div class="form-style-large-box">\n\
                                     <div class="form-style-3-heading">Topologies List</div>\n\
                                      <table id="topologyTbl"> \n\
                                      <thead>\n\
-                                     <tr><th>Resource Name</th><th>Controller Status</th> \n\
-                                     <th>Measurement Target</th><th>Ref. Value</th> <th>Scheduling</th> \n\
-                                     <th>Backoff No</th> <th>Actions</th>\n\
+                                     <tr><th>id</th><th>Name</th> \n\
+                                     <th>Status</th><th>Uptime</th> <th>Total Tasks</th> \n\
+                                     <th>Total Workers</th> <th>Total Executors</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
-                                     </div><div class="form-style-tiny-box">\n\
-                                     <div class="form-style-3-heading">Topology Health Check</div>\n\
-                                     </div>\n\
-                                     <div class="form-style-small-box">\n\
+                                     </div><div class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">CPU</div>\n\
                                      </div><div class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Memory</div>\n\
@@ -103,7 +99,40 @@
                                 </div>\n\
                             </div>');
 
-                $('#DynamoDB').append('<div class="form-style-medium-box">\n\
+                        $.getJSON("../loadClusterSummary/" + $flowId, function(data) {
+                            $('#clusterTbl tr:last').after('<tr><td>' + data.nimbusUptime + '</td>\n\
+                                                                <td>' + data.supervisors + '</td>\n\
+                                                                <td>' + data.slotsTotal + '</td>\n\
+                                                                <td>' + data.slotsUsed + '</td>\n\
+                                                                <td>' + data.slotsFree + '</td>\n\\n\
+                                                                <td>' + data.executorsTotal + '</td>\n\
+                                                                <td>' + data.tasksTotal + '</td></tr>');
+                        });
+                        $.getJSON("../loadSupervisorList/" + $flowId, function(list) {
+                            $.each(list.supervisors, function(i, supervisor) {
+                                $('#supervisorTbl tr:last').after('<tr><td>' + supervisor.id + '</td>\n\
+                                                                <td>' + supervisor.host + '</td>\n\
+                                                                <td>' + supervisor.uptime + '</td>\n\
+                                                                <td>' + supervisor.slotsTotal + '</td>\n\
+                                                                <td>' + supervisor.slotsUsed + '</td>\n\
+                                                                <td><input type="radio" name="supervisorList" value="' + supervisor.id + '"></tr>');
+                            });
+                        });
+                        $.getJSON("../loadTopologyList/" + $flowId, function(list) {
+                            $.each(list.topologies, function(i, topology) {
+                                $('#topologyTbl tr:last').after('<tr><td>' + topology.id + '</td>\n\
+                                                                <td>' + topology.name + '</td>\n\
+                                                                <td>' + topology.status + '</td>\n\
+                                                                <td>' + topology.uptime + '</td>\n\
+                                                                <td>' + topology.tasksTotal + '</td>\n\\n\
+                                                                <td>' + topology.workersTotal + '</td>\n\
+                                                                <td>' + topology.executorsTotal + '</td>\n\
+                                                                <td><input type="radio" name="topologyList" value="' + topology.id + '"></tr>');
+                            });
+                        });
+                    }
+                    if (system === 'DynamoDB') {
+                        $('#DynamoDB').append('<div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Tables List</div>\n\
                                      <table id="dynamoTbl"> \n\
                                      <thead>\n\
@@ -118,7 +147,21 @@
                                      <div class="form-style-3-heading">ReadThrottleEvents</div></div>\n\
                                      <div id="WriteThrottleEvents" class="form-style-xmedium-box">\n\
                                      <div class="form-style-3-heading">WriteThrottleEvents</div></div>');
-                $('#AmazonKinesis').append('<div class="form-style-medium-box">\n\
+                        $.get("../loadDynamoDBTbls/" + $flowId, function(tbls) {
+                            $.each(tbls, function(i, tbl) {
+                                $('#dynamoTbl tr:last')
+                                        .after('<tr><td>' + tbl + '</td>\n\
+                                                    <td>ACTIVE</td>\n\
+                                                    <td>2</td><td>2</td>\n\
+                                                    <td><img class="refresh" /> </td>\n\
+                                                    <td><input type="radio" name="DynamoDB" value="' + tbl + '">\n\
+                                                    <input type="radio" name="DynamoDB" style="display:none""></td>\n\
+                                                    </tr>');
+                            });
+                        });
+                    }
+                    if (system === 'AmazonKinesis') {
+                        $('#AmazonKinesis').append('<div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Stream List</div>\n\
                                      <table id="kinesisTbl"> \n\
                                      <thead>\n\
@@ -131,40 +174,22 @@
                                      <div class="form-style-3-heading">Read Throughput</div>\n\
                                      </div><div id="IncomingBytes" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">Write Throughput</div></div>');
-
-                $(".tabs-min").tabs();
-
-
-                $.get("../loadKinesisStreams/" + $flowId, function(strs) {
-                    $.each(strs, function(i, str) {
-                        $('#kinesisTbl tr:last')
-                                .after('<tr><td>' + str + '</td>\n\
+                        $.get("../loadKinesisStreams/" + $flowId, function(strs) {
+                            $.each(strs, function(i, str) {
+                                $('#kinesisTbl tr:last')
+                                        .after('<tr><td>' + str + '</td>\n\
                                                     <td>ACTIVE</td>\n\
                                                     <td>1</td><td>0</td>\n\
                                                     <td><img class="refresh" /> </td>\n\
                                                     <td><input type="radio" name="AmazonKinesis" value="' + str + '">\n\
                                                     <input type="radio" name="AmazonKinesis" style="display:none""></td>\n\
                                                     </tr>');
-                    });
+                            });
+                        });
+                    }
+                }
 
-                });
-
-                $.get("../loadDynamoDBTbls/" + $flowId, function(tbls) {
-                    $.each(tbls, function(i, tbl) {
-                        $('#dynamoTbl tr:last')
-                                .after('<tr><td>' + tbl + '</td>\n\
-                                                    <td>ACTIVE</td>\n\
-                                                    <td>2</td><td>2</td>\n\
-                                                    <td><img class="refresh" /> </td>\n\
-                                                    <td><input type="radio" name="DynamoDB" value="' + tbl + '">\n\
-                                                    <input type="radio" name="DynamoDB" style="display:none""></td>\n\
-                                                    </tr>');
-                    });
-
-                });
-
-
-
+                $(".tabs-min").tabs();
 
                 var timeoutMap = {};
                 function setupDeselectEvent() {

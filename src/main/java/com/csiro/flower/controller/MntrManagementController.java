@@ -7,20 +7,21 @@ package com.csiro.flower.controller;
 
 import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.FlowDao;
+import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.model.CloudSetting;
-import com.csiro.flower.model.CtrlMonitoringResultSet;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
+import com.csiro.flower.model.StormCluster;
 import com.csiro.flower.service.CloudWatchService;
 import com.csiro.flower.service.DynamoMgmtService;
 import com.csiro.flower.service.FlowManagerService;
 import com.csiro.flower.service.KinesisMgmtService;
+import com.csiro.flower.service.StormMgmtService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,6 +53,12 @@ public class MntrManagementController {
 
     @Autowired
     private CloudWatchService cloudWatchService;
+
+    @Autowired
+    private StormMgmtService stormMgmtService;
+
+    @Autowired
+    private StormClusterDao stormClusterDao;
 
     // this method submit and launch the ctrl service
     @RequestMapping(value = "/submitFlowMntrSettingForm/{flowId}", method = {RequestMethod.POST})
@@ -116,5 +123,26 @@ public class MntrManagementController {
 
         metric = metric.compareTo("GetRecordsBytes") == 0 ? "GetRecords.Bytes" : metric;
         return cloudWatchService.getSingleStat(platform, resource, metric, timeStamp) + Math.random() * 100;
+    }
+
+    @RequestMapping(value = "/loadClusterSummary/{flowId}")
+    public @ResponseBody
+    String getStormClusterSummary(@PathVariable int flowId) {
+        StormCluster stormCluster = stormClusterDao.get(flowId);
+        return stormMgmtService.getClusterSummary(stormCluster.getUiIp(), stormCluster.getUiPort());
+    }
+
+    @RequestMapping(value = "/loadSupervisorList/{flowId}")
+    public @ResponseBody
+    String getStormSupervisorList(@PathVariable int flowId) {
+        StormCluster stormCluster = stormClusterDao.get(flowId);
+        return stormMgmtService.getSupervisorList(stormCluster.getUiIp(), stormCluster.getUiPort());
+    }
+
+    @RequestMapping(value = "/loadTopologyList/{flowId}")
+    public @ResponseBody
+    String getStormTopologyList(@PathVariable int flowId) {
+        StormCluster stormCluster = stormClusterDao.get(flowId);
+        return stormMgmtService.getTopologyList(stormCluster.getUiIp(), stormCluster.getUiPort());
     }
 }

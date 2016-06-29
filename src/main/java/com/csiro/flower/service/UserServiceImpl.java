@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean createAccount(UserAccount userAccount) {
-        String role = "USER_ROLE";
+        String role = "ROLE_USER";
         boolean successRegistration = false;
         if (!userDao.checkDuplicateEmail(userAccount.getUserEmail())) {
             successRegistration = (userDao.saveAccount(userAccount) > 0 && userDao.saveUserRole(userAccount.getUserEmail(), role) > 0);

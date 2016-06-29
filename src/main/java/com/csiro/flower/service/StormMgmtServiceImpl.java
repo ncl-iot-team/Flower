@@ -28,6 +28,7 @@ import com.amazonaws.services.ec2.model.StopInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
 import com.csiro.flower.util.CloudServiceRegionUtil;
 import com.csiro.flower.util.HashMapUtil;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -54,11 +56,11 @@ public class StormMgmtServiceImpl implements StormMgmtService {
     private final String supervisorPrefix = "Worker";
     private final String nimbusHost = "nimbus.host";
     private Nimbus.Client nimbusClient;
-    private final String serviceName= "ec2";
+    private final String serviceName = "ec2";
 
     @Override
     public void initService(String provider, String accessKey, String secretKey, String region) {
-        ec2 = new AmazonEC2Client(new BasicAWSCredentials(accessKey,secretKey));
+        ec2 = new AmazonEC2Client(new BasicAWSCredentials(accessKey, secretKey));
         String ec2Endpoint = CloudServiceRegionUtil.resolveEndpoint(provider, serviceName, region);
         ec2.setEndpoint(ec2Endpoint);
     }
@@ -307,6 +309,30 @@ public class StormMgmtServiceImpl implements StormMgmtService {
         Map storm_conf = Utils.readStormConfig();
         storm_conf.put(nimbusHost, nimbusIp);
         nimbusClient = NimbusClient.getConfiguredClient(storm_conf).getClient();
+    }
+
+    @Override
+    public String getClusterSummary(String uiHost, String uiPort) {
+        String url = "http://{0}:{1}/api/v1/cluster/summary";
+        url = MessageFormat.format(url, uiHost, uiPort);
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(url, String.class);
+    }
+
+    @Override
+    public String getSupervisorList(String uiHost, String uiPort) {
+        String url = "http://{0}:{1}/api/v1/supervisor/summary";
+        url = MessageFormat.format(url, uiHost, uiPort);
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(url, String.class);
+    }
+
+    @Override
+    public String getTopologyList(String uiHost, String uiPort) {
+        String url = "http://{0}:{1}/api/v1/topology/summary";
+        url = MessageFormat.format(url, uiHost, uiPort);
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(url, String.class);
     }
 
 }
