@@ -36,4 +36,6 @@ public interface StormMgmtService {
     public String getSupervisorList(String uiHost, String uiPort);
 
     public String getTopologyList(String uiHost, String uiPort);
+    
+    public String getTopologyStats(String uiHost, String uiPort, String topologyId );
 }

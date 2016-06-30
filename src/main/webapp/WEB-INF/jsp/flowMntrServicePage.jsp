@@ -18,6 +18,7 @@
         <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script src="${pageContext.request.contextPath}/resources/js/epoch.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/ctrl.service.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/storm.stats.monitor.js"></script>
 
         <script type="text/javascript">
             $(function() {
@@ -56,12 +57,12 @@
                                      </div><div class="form-style-tiny-box">\n\
                                      <div class="form-style-3-heading">Cluster Health Check</div>\n\
                                      </div>\n\
-                                     <div class="form-style-small-box">\n\
+                                     <div id = "cluster-CPUUtilization" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">CPU Utilization</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network In</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network Out</div></div>\n\
+                                     </div><div id = "cluster-MemoryUtilization" class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">Memory Utilization</div>\n\
+                                     </div><div id = "cluster-NetworkUtilization" class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">Network Utilization</div></div>\n\
                                 </div>\n\
                                 <div id="supervisorTab">\n\
                                 <div class="form-style-medium-box">\n\
@@ -74,15 +75,15 @@
                                      </div><div class="form-style-tiny-box">\n\
                                      <div class="form-style-3-heading">Supervisor Health Check</div>\n\
                                      </div>\n\
-                                     <div class="form-style-small-box">\n\
+                                     <div id = "supervisor-CPUUtilization" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">CPU Utilization</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network In</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network Out</div></div>\n\
+                                     </div><div id = "supervisor-MemoryUtilization" class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">Memory Utilization</div>\n\
+                                     </div><div id = "supervisor-NetworkUtilization" class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">Network Utilization</div></div>\n\
                                 </div>\n\
                                 <div id="topologyTab">\n\
-                                <div class="form-style-large-box">\n\
+                                <div class="form-style-large-box" style="width:1010px">\n\
                                     <div class="form-style-3-heading">Topologies List</div>\n\
                                      <table id="topologyTbl"> \n\
                                      <thead>\n\
@@ -130,8 +131,17 @@
                                                                 <td><input type="radio" name="topologyList" value="' + topology.id + '"></tr>');
                             });
                         });
+
+                        launchClusterDiagrams($flowId);
                     }
                     if (system === 'DynamoDB') {
+
+                        var dynamoMetricMap = {};
+                        dynamoMetricMap["ConsumedReadCapacityUnits"] = 'ConsumedReadCapacityUnits';
+                        dynamoMetricMap["ConsumedWriteCapacityUnits"] = 'ConsumedWriteCapacityUnits';
+                        dynamoMetricMap["WriteThrottleEvents"] = 'WriteThrottleEvents';
+                        dynamoMetricMap["ReadThrottleEvents"] = 'ReadThrottleEvents';
+
                         $('#DynamoDB').append('<div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Tables List</div>\n\
                                      <table id="dynamoTbl"> \n\
@@ -161,6 +171,12 @@
                         });
                     }
                     if (system === 'AmazonKinesis') {
+
+                        var kinesisMetricMap = {};
+                        kinesisMetricMap["IncomingRecords"] = 'IncomingRecords';
+                        kinesisMetricMap["WriteThroughput"] = 'IncomingBytes';
+                        kinesisMetricMap["ReadThroughput"] = 'GetRecordsBytes';
+
                         $('#AmazonKinesis').append('<div class="form-style-medium-box">\n\
                                     <div class="form-style-3-heading">Stream List</div>\n\
                                      <table id="kinesisTbl"> \n\
@@ -191,6 +207,40 @@
 
                 $(".tabs-min").tabs();
 
+
+                function launchClusterDiagrams($flowId) {
+
+                    var stormClusterMetricMap = {};
+                    stormClusterMetricMap["cluster-CPUUtilization"] = 'cluster-CPUUtilization';
+                    stormClusterMetricMap["cluster-MemoryUtilization"] = 'cluster-MemoryUtilization';
+                    stormClusterMetricMap["cluster-NetworkUtilization"] = 'cluster-NetworkUtilization';
+                    stormClusterMetricMap["supervisor-CPUUtilization"] = 'supervisor-CPUUtilization';
+                    stormClusterMetricMap["supervisor-MemoryUtilization"] = 'supervisor-MemoryUtilization';
+                    stormClusterMetricMap["supervisor-NetworkUtilization"] = 'supervisor-NetworkUtilization';
+
+                    var $timeInterval = 1 * 5000;
+                    for (var key in stormClusterMetricMap) {
+                        var lineChartDiv = '#' + stormClusterMetricMap[key] + 'LineChart';
+                        $('#' + stormClusterMetricMap[key])
+                                .append('<div id="' + stormClusterMetricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
+                             <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
+                            </span>' + stormClusterMetricMap[key] + '</li></ul></div></div>');
+                        var lineChart = setupLineChart(lineChartDiv);
+                        stormDigaramDrawer(lineChart, stormClusterMetricMap[key], $timeInterval);
+                    }
+                }
+
+                function stormDigaramDrawer(lineChart, $metric, $timeInterval) {
+//                    $.get('../getStormClusterStats',
+//                            {flowId: $flowId, metric: $metric, timeStamp: 1000 * 60 * 2},
+//                    function(data) {
+                    lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: Math.random() * 100}]);
+                    setTimeout(function() {
+                        stormDigaramDrawer(lineChart, $metric, $timeInterval);
+                    }, $timeInterval);
+//                    });
+                }
+
                 var timeoutMap = {};
                 function setupDeselectEvent() {
                     var selected = {};
@@ -203,17 +253,6 @@
                     });
                 }
 
-                var kinesisMetricMap = {};
-                kinesisMetricMap["IncomingRecords"] = 'IncomingRecords';
-                kinesisMetricMap["WriteThroughput"] = 'IncomingBytes';
-                kinesisMetricMap["ReadThroughput"] = 'GetRecordsBytes';
-
-                var dynamoMetricMap = {};
-                dynamoMetricMap["ConsumedReadCapacityUnits"] = 'ConsumedReadCapacityUnits';
-                dynamoMetricMap["ConsumedWriteCapacityUnits"] = 'ConsumedWriteCapacityUnits';
-                dynamoMetricMap["WriteThrottleEvents"] = 'WriteThrottleEvents';
-                dynamoMetricMap["ReadThrottleEvents"] = 'ReadThrottleEvents';
-
                 function getMetricMap(system) {
                     if (system === "AmazonKinesis") {
                         return kinesisMetricMap;
@@ -223,10 +262,6 @@
                 }
 
                 setupDeselectEvent(true);
-//                var resourceMap = {};
-//                resourceMap["DynamoDB"] = 'WriteCapacityUnits';
-//                resourceMap["AmazonKinesis"] = 'No. of Shards';
-//                resourceMap["ApacheStorm"] = 'No. of VMs';
                 $(document).on('deselect', 'input:radio', function() {
                     var $this = $(this);
                     var $platform = $this.attr('name');
@@ -236,30 +271,52 @@
                         delete timeoutMap[metricMap[key]];
                         $('#' + metricMap[key] + 'LineChart').remove();
                     }
-//                    $('#' + $resource + 'BarChart').parent('.wrapper').remove();
                 }).on('change', 'input:radio', function() {
                     var $this = $(this);
                     var $resource = $this.val();
                     var $platform = $this.attr('name');
                     var metricMap = getMetricMap($platform);
+                    var $timeInterval = 1 * 60000;
                     for (var key in metricMap) {
                         var lineChartDiv = '#' + metricMap[key] + 'LineChart';
-//                        var barChartDiv = '#' + kinesisMetricMap[key] + '-' + $resource + 'BarChart';
-                        var $timeInterval = 1 * 60000;
                         $('#' + metricMap[key])
                                 .append('<div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
                              <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
                             </span>' + metricMap[key] + '</li></ul></div></div>');
                         var lineChart = setupLineChart(lineChartDiv);
-//                        $this.parents('div[class="form-style-ctrl-stat"]')
-//                                .siblings('div[class="form-style-resource-share"]').append(
-//                                '<div class="wrapper"><div id="' + $platform + '-' + $resource + 'BarChart" class="epoch category3" style="width: 350px; height: 200px"></div>\n\
-//                            <ul class="legend">\n\
-//                            <li><span class="usedshare"></span>Allocated ' + resourceMap[$ctrlName] + '</li>\n\
-//                            <li><span class="pending"></span>Pending Resizing</li>\n\
-//                            <li><span class="sharelimit"></span>' + resourceMap[$ctrlName] + ' Share</li>\n\
-//                            </ul></div>');
-//                        var barChart = setupBarChart(barChartDiv);
+                        drawer(lineChart, $platform, $resource, $flowId, metricMap[key], $timeInterval);
+                    }
+                });
+
+                $(document).on('deselect', 'input[name=topologyList]', function() {
+                    var $this = $(this);
+                    var metricMap = {};
+                    metricMap[""] = '';
+                    for (var key in metricMap) {
+                        clearTimeout(timeoutMap[metricMap[key]]);
+                        delete timeoutMap[metricMap[key]];
+                        $('#' + metricMap[key] + 'LineChart').remove();
+                    }
+                }).on('change', 'input[name=topologyList]', function() {
+                    var $this = $(this);
+                    var $topologyId = $this.val();
+                    var $timeInterval = 1 * 60000;
+
+                    $.getJSON('../getTopologyStats?flowId=%s&topologyId=%s', {flowId: $flowId, topologyId: $topologyId}, function(data) {
+                        $.each(data.topologies, function(i, topology) {
+                        });
+
+                    });
+
+
+
+                    for (var key in metricMap) {
+                        var lineChartDiv = '#' + metricMap[key] + 'LineChart';
+                        $('#' + metricMap[key])
+                                .append('<div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
+                             <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
+                            </span>' + metricMap[key] + '</li></ul></div></div>');
+                        var lineChart = setupLineChart(lineChartDiv);
                         drawer(lineChart, $platform, $resource, $flowId, metricMap[key], $timeInterval);
                     }
                 });
@@ -284,14 +341,7 @@
                         if (!data) {
                             console.log(data);
                         } else {
-//                            $.each(statRecords, function(i, statRecord) {
                             lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: data}]);
-//                                    {time: getTimeStampSec(statRecord.timeStamp), y: statRecord.allocatedResource}]);
-//                                barChart.push([
-//                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: Math.random() * 100},
-//                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.nextCtrlDecisionValue},
-//                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
-//                            });
                         }
                         timeoutMap[$metric] = setTimeout(function() {
                             drawer(lineChart, $platform, $resource, $flowId, $metric, $timeInterval);
@@ -371,44 +421,11 @@
             });
         </script>
     </head>
-    <%--
-    Technique 1:
-    $('#ApacheStormTbl tr:last')
-        .after('<tr><td>' + '${flowSetting.stormCtrl.targetTopology}' + '</td>\n\
-        <td>Active</td>\n\
-        <td>' + '${flowSetting.stormCtrl.measurementTarget}' + '</td>\n\
-        <td>' + '${flowSetting.stormCtrl.refValue}' + '</td> \n\
-        <td>' + '${flowSetting.stormCtrl.monitoringPeriod}' + '</td>\n\
-        <td>' + '${flowSetting.stormCtrl.backoffNo}' + '</td>\n\
-        <td>7.03</td>\n\
-        <td><div id="' + '${flowSetting.stormCtrl.targetTopology}' + '" class="play active" style="text-shadow:none">pause</div></td>\n\
-        <td><input type="radio" name="ApacheStormRadio" value="" checked="checked" ></td></tr>');
-    
-    Technique 2: Iterate through model object using jsp tags
-    <c:forEach items="${flowSetting.kinesisCtrls}" var="kCtrl">
-    $('#AmazonKinesisTbl tr:last')
-    .after('<tr><td>' + '${kCtrl.streamName}' + '</td>\n\
-    <td>Running</td>\n\
-    <td>' + '${kCtrl.measurementTarget}' + '</td>\n\
-    <td>' + '${kCtrl.refValue}' + '</td> \n\
-    <td>' + '${kCtrl.monitoringPeriod}' + '</td>\n\
-    <td>' + '${kCtrl.backoffNo}' + '</td>\n\
-    <td>7.03</td>\n\
-    <td><div id="' + '${kCtrl.streamName}' + '" class="play active" style="text-shadow:none">stop</div></td>\n\
-    <td><input type="radio" name="' + system + 'Radio" value="' + '${kCtrl.streamName}' + '" \n\
-    checked="checked" ></td></tr>');
-    </c:forEach>
-    --%>
     <body>
         <tiles:insertDefinition name="defaultbar" />
 
         <div class="col-xs-12">
             <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
-            <hr>
-            <!--            <p id="sman">
-            
-                        </p>-->
-            <br>
         </div>
 
         <div id="settingForm">
