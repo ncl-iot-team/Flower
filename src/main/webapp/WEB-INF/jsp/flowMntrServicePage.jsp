@@ -91,12 +91,15 @@
                                      <th>Status</th><th>Uptime</th> <th>Total Tasks</th> \n\
                                      <th>Total Workers</th> <th>Total Executors</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">CPU</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Memory</div>\n\
-                                     </div><div class="form-style-small-box">\n\
-                                     <div class="form-style-3-heading">Network</div></div>\n\
+                                     </div><div class="form-style-large-box" style="width:1099px">\n\
+                                     <div class="tabs-min"  style="width:1099px">\n\
+                                    <ul><li><a href="#topologyStats">Topology Stats</a></li>\n\
+                                    <li><a href="#spoutsStats">Spouts</a></li>\n\
+                                    <li><a href="#boltsStats">Bolts</a></li>\n\
+                                    </ul><div id="topologyStats"></div>\n\
+                                    <div id="spoutsStats"></div>\n\
+                                    <div id="boltsStats"></div>\n\
+                                    </div></div>\n\
                                 </div>\n\
                             </div>');
 
@@ -206,10 +209,9 @@
                 }
 
                 $(".tabs-min").tabs();
-
+//                 $(".tabs-nohdr").tabs();
 
                 function launchClusterDiagrams($flowId) {
-
                     var stormClusterMetricMap = {};
                     stormClusterMetricMap["cluster-CPUUtilization"] = 'cluster-CPUUtilization';
                     stormClusterMetricMap["cluster-MemoryUtilization"] = 'cluster-MemoryUtilization';
@@ -241,7 +243,6 @@
 //                    });
                 }
 
-                var timeoutMap = {};
                 function setupDeselectEvent() {
                     var selected = {};
                     $(document).on('click', 'input[type="radio"]', function() {
@@ -253,16 +254,22 @@
                     });
                 }
 
-                function getMetricMap(system) {
-                    if (system === "AmazonKinesis") {
-                        return kinesisMetricMap;
-                    } else if (system === "DynamoDB") {
-                        return dynamoMetricMap;
+                function getMetricMap(mapName) {
+                    switch (mapName) {
+                        case "AmazonKinesis":
+                            return kinesisMetricMap;
+                        case "DynamoDB":
+                            return dynamoMetricMap;
+                        case "spouts":
+                            return spoutMetricMap;
+                        case "bolts":
+                            return boltMetricMap;
                     }
                 }
 
                 setupDeselectEvent(true);
-                $(document).on('deselect', 'input:radio', function() {
+                var timeoutMap = {};
+                $(document).on('deselect', 'input[name=AmazonKinesis],input[name=DynamoDB]', function() {
                     var $this = $(this);
                     var $platform = $this.attr('name');
                     var metricMap = getMetricMap($platform);
@@ -271,7 +278,7 @@
                         delete timeoutMap[metricMap[key]];
                         $('#' + metricMap[key] + 'LineChart').remove();
                     }
-                }).on('change', 'input:radio', function() {
+                }).on('change', 'input[name=AmazonKinesis],input[name=DynamoDB]', function() {
                     var $this = $(this);
                     var $resource = $this.val();
                     var $platform = $this.attr('name');
@@ -279,56 +286,13 @@
                     var $timeInterval = 1 * 60000;
                     for (var key in metricMap) {
                         var lineChartDiv = '#' + metricMap[key] + 'LineChart';
-                        $('#' + metricMap[key])
-                                .append('<div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
+                        $('#' + metricMap[key]).append('<div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
                              <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
                             </span>' + metricMap[key] + '</li></ul></div></div>');
                         var lineChart = setupLineChart(lineChartDiv);
                         drawer(lineChart, $platform, $resource, $flowId, metricMap[key], $timeInterval);
                     }
                 });
-
-                $(document).on('deselect', 'input[name=topologyList]', function() {
-                    var $this = $(this);
-                    var metricMap = {};
-                    metricMap[""] = '';
-                    for (var key in metricMap) {
-                        clearTimeout(timeoutMap[metricMap[key]]);
-                        delete timeoutMap[metricMap[key]];
-                        $('#' + metricMap[key] + 'LineChart').remove();
-                    }
-                }).on('change', 'input[name=topologyList]', function() {
-                    var $this = $(this);
-                    var $topologyId = $this.val();
-                    var $timeInterval = 1 * 60000;
-
-                    $.getJSON('../getTopologyStats?flowId=%s&topologyId=%s', {flowId: $flowId, topologyId: $topologyId}, function(data) {
-                        $.each(data.topologies, function(i, topology) {
-                        });
-
-                    });
-
-
-
-                    for (var key in metricMap) {
-                        var lineChartDiv = '#' + metricMap[key] + 'LineChart';
-                        $('#' + metricMap[key])
-                                .append('<div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
-                             <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
-                            </span>' + metricMap[key] + '</li></ul></div></div>');
-                        var lineChart = setupLineChart(lineChartDiv);
-                        drawer(lineChart, $platform, $resource, $flowId, metricMap[key], $timeInterval);
-                    }
-                });
-
-                function setupLineChart(chartDiv) {
-                    var graph = $(chartDiv).epoch({
-                        type: 'time.line',
-                        data: [{label: "metric", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
-                        axes: ['bottom', 'left', 'right']
-                    });
-                    return graph;
-                }
 
                 function getTimeStampSec(timeStampMill) {
                     return parseInt(timeStampMill / 1000);
@@ -349,6 +313,139 @@
                     });
                 }
 
+                var topologyMetricMap = {};
+                topologyMetricMap["topologyStats-emitted"] = 'topologyStats-emitted';
+                topologyMetricMap["topologyStats-trasferred"] = 'topologyStats-trasferred';
+                topologyMetricMap["topologyStats-completeLatency"] = 'topologyStats-completeLatency';
+                topologyMetricMap["topologyStats-acked"] = 'topologyStats-acked';
+                topologyMetricMap["topologyStats-failed"] = 'topologyStats-failed';
+                var topologyTimeoutMap = {};
+                $(document).on('deselect', 'input[name=topologyList]', function() {
+                    for (var key in topologyMetricMap) {
+                        clearTimeout(topologyTimeoutMap[topologyMetricMap[key]]);
+                        delete timeoutMap[topologyMetricMap[key]];
+//                        $('#' + topologyMetricMap[key] + 'LineChart').remove();
+                        $('#topologyStats').children().remove();
+                    }
+                }).on('change', 'input[name=topologyList]', function() {
+                    var $topologyId = $(this).val();
+                    var $timeInterval = 1 * 60000;
+                    for (var key in topologyMetricMap) {
+                        var lineChartDiv = '#' + topologyMetricMap[key] + 'LineChart';
+                        $('#topologyStats').append('<div class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">' + topologyMetricMap[key] + '</div>\n\
+                                     <div id="' + topologyMetricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
+                                     <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
+                                     </span>' + topologyMetricMap[key] + '</li></ul></div></div></div>');
+                        var lineChart = setupLineChart(lineChartDiv);
+                        topologyStatDrawer(lineChart, $flowId, $topologyId, topologyMetricMap[key], $timeInterval);
+                    }
+
+                    $('#spoutsStats').append('<div class="form-style-large-box" style="width:700px">\n\
+                                    <table id="spoutTbl"> \n\
+                                     <thead>\n\
+                                     <tr><th>Spout id</th><th>Executors</th> \n\
+                                     <th>Tasks</th>\n\
+                                     <th></th></tr></thead><tbody> </tbody></table></div>');
+                    $('#boltsStats').append('<div class="form-style-large-box" style="width:700px">\n\
+                                     <table id="boltTbl"> \n\
+                                     <thead>\n\
+                                     <tr><th>Bolt id</th><th>Executors</th> \n\
+                                     <th>Tasks</th>\n\
+                                     <th></th></tr></thead><tbody> </tbody></table></div>');
+
+                    $.getJSON('../getTopologyStats?flowId=' + $flowId + '&topologyId=' + $topologyId, function(data) {
+                        $.each(data.spouts, function(i, spout) {
+                            $('#spoutTbl tr:last').after('<tr><td>' + spout.spoutId + '</td>\n\
+                                      <td>' + spout.executors + '</td>\n\
+                                       <td>' + spout.tasks + '</td>\n\
+                                        <td><input type="radio" name="spouts" value="' + spout.spoutId + '">\n\
+                                         <input type="radio" name="spouts" style="display:none""></td>\n\
+                                          </tr>');
+                        });
+                        $.each(data.bolts, function(i, bolt) {
+                            $('#boltTbl tr:last').after('<tr><td>' + bolt.boltId + '</td>\n\
+                                      <td>' + bolt.executors + '</td>\n\
+                                       <td>' + bolt.tasks + '</td>\n\
+                                        <td><input type="radio" name="bolts" value="' + bolt.boltId + '">\n\
+                                         <input type="radio" name="bolts" style="display:none""></td>\n\
+                                          </tr>');
+                        });
+                    });
+                });
+
+                function topologyStatDrawer(lineChart, $flowId, $topologyId, $metric, $timeInterval) {
+                    $.getJSON('../getTopologyStats?flowId=' + $flowId + '&topologyId=' + $topologyId, function(data) {
+                        var metricValue = data[$metric.split('-')[0]][0][$metric.split('-')[1]];
+                        lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: metricValue}]);
+                        topologyTimeoutMap[$metric] = setTimeout(function() {
+                            topologyStatDrawer(lineChart, $flowId, $topologyId, $metric, $timeInterval);
+                        }, $timeInterval);
+                    });
+                }
+
+                var spoutMetricMap = {};
+                spoutMetricMap["spoutSummary-emitted"] = 'spoutSummary-emitted';
+                spoutMetricMap["spoutSummary-trasferred"] = 'spoutSummary-trasferred';
+                spoutMetricMap["spoutSummary-completeLatency"] = 'spoutSummary-completeLatency';
+                spoutMetricMap["spoutSummary-acked"] = 'spoutSummary-acked';
+                spoutMetricMap["spoutSummary-failed"] = 'spoutSummary-failed';
+
+                var boltMetricMap = {};
+                boltMetricMap["boltStats-emitted"] = 'boltStats-emitted';
+                boltMetricMap["boltStats-trasferred"] = 'boltStats-trasferred';
+                boltMetricMap["boltStats-processLatency"] = 'boltStats-processLatency';
+                boltMetricMap["boltStats-acked"] = 'boltStats-acked';
+                spoutMetricMap["boltStats-failed"] = 'boltStats-failed';
+
+                var spoutTimeoutMap = {};
+                $(document).on('deselect', 'input[name=spouts],[name=bolts]', function() {
+                    var componentType = $(this).attr('name');
+                    var metricMap = getMetricMap(componentType);
+                    for (var key in metricMap) {
+                        clearTimeout(spoutTimeoutMap[metricMap[key]]);
+                        delete timeoutMap[metricMap[key]];
+                        $('#' + componentType + 'Stats').children().remove();
+                    }
+                }).on('change', 'input[name=spouts],[name=bolts]', function() {
+                    var componentType = $(this).attr('name');
+                    var metricMap = getMetricMap(componentType);
+                    var $topologyId = $('input[name=topologyList]:checked').val();
+                    var $spoutId = $(this).val();
+                    var $timeInterval = 1 * 60000;
+
+                    for (var key in metricMap) {
+                        var lineChartDiv = '#' + metricMap[key] + 'LineChart';
+                        $('#' + componentType + 'Stats').append('<div class="form-style-small-box">\n\
+                                     <div class="form-style-3-heading">' + metricMap[key] + '</div>\n\
+                                     <div id="' + metricMap[key] + 'LineChart" class="epoch category3" style="width: 100%; height: 200px">\n\
+                                     <div style="z-index: 1"><ul class="legend"><li><span class="used">\n\
+                                     </span>' + metricMap[key] + '</li></ul></div></div></div>');
+                        var lineChart = setupLineChart(lineChartDiv);
+                        spoutStatDrawer(lineChart, $flowId, $topologyId, $spoutId, metricMap[key], $timeInterval);
+                    }
+
+                });
+                function spoutStatDrawer(lineChart, $flowId, $topologyId, $spoutId, $metric, $timeInterval) {
+                    $.getJSON('../getComponentStats?flowId=' + $flowId + '&topologyId=' + $topologyId + '&componentId=' + $spoutId, function(data) {
+                        var metricValue = data[$metric.split('-')[0]][0][$metric.split('-')[1]];
+                        lineChart.push([{time: getTimeStampSec((new Date()).getTime()), y: metricValue}]);
+                        spoutTimeoutMap[$metric] = setTimeout(function() {
+                            spoutStatDrawer(lineChart, $flowId, $topologyId, $spoutId, $metric, $timeInterval);
+                        }, $timeInterval);
+                    });
+                }
+
+
+                function setupLineChart(chartDiv) {
+                    var graph = $(chartDiv).epoch({
+                        type: 'time.line',
+                        data: [{label: "metric", values: [{time: getTimeStampSec((new Date()).getTime()), y: 0}]}],
+                        axes: ['bottom', 'left', 'right']
+                    });
+                    return graph;
+                }
+
                 function setupBarChart(chartDiv) {
                     var bar = $(chartDiv).epoch({
                         type: 'time.bar',
@@ -363,18 +460,6 @@
 //                            bar.getVisibleLayers()[layer_num].className = "layer " + catname;
                     return bar;
                 }
-
-//                function setupPieChart(chartDiv) {
-//                    var i = parseInt(Math.random() * 100);
-//                    var pie = $(chartDiv).epoch({
-//                        type: 'pie',
-//                        data: [{label: i.toString(), value: i}, {label: (100 - i).toString(), value: 100 - i}],
-//                        inner: 40,
-//                        width: 150,
-//                        height: 150
-//                    });
-//                    return pie;
-//                }
 
 
                 var headers = $('#accordion .accordion-header');

@@ -337,8 +337,14 @@ public class StormMgmtServiceImpl implements StormMgmtService {
 
     @Override
     public String getTopologyStats(String uiHost, String uiPort, String topologyId) {
-        String url = "http://{0}:{1}/api/v1/topology/{3}/component/spout";
-        url = MessageFormat.format(url, uiHost, uiPort, topologyId);
+        String url = "http://" + uiHost + ":" + uiPort + "/api/v1/topology/" + topologyId;
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(url, String.class);
+    }
+
+    @Override
+    public String getComponentStats(String uiHost, String uiPort, String topologyId, String componentId) {
+        String url = "http://" + uiHost + ":" + uiPort + "/api/v1/topology/" + topologyId + "/component/" + componentId;
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForObject(url, String.class);
     }

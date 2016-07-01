@@ -155,4 +155,14 @@ public class MntrManagementController {
         StormCluster stormCluster = stormClusterDao.get(flowId);
         return stormMgmtService.getTopologyStats(stormCluster.getUiIp(), stormCluster.getUiPort(), topologyId);
     }
+
+    @RequestMapping(value = "/getComponentStats")
+    public @ResponseBody
+    String getComponentStats(HttpServletRequest request) {
+        int flowId = Integer.parseInt(request.getParameter("flowId"));
+        String topologyId = request.getParameter("topologyId");
+        String componentId = request.getParameter("componentId");
+        StormCluster stormCluster = stormClusterDao.get(flowId);
+        return stormMgmtService.getComponentStats(stormCluster.getUiIp(), stormCluster.getUiPort(), topologyId, componentId);
+    }
 }
