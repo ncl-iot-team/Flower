@@ -218,7 +218,7 @@
                 }
 
                 function getNicePlatformList(platforms) {
-                    return platforms.replace(',', ' -> ');
+                    return platforms.split(',').join(' -> ');
                 }
             });
         </script>

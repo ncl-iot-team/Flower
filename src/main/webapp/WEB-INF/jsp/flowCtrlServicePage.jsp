@@ -32,7 +32,7 @@
                             .after('<h3 class="accordion-header ui-accordion-header \n\
                                     ui-helper-reset ui-state-default ui-accordion-icons \n\
                                     ui-corner-all"><span class="ui-accordion-header-icon ui-icon \n\
-                                    ui-icon-triangle-1-e"></span><img class="icon" \n\
+                                    ui-icon-triangle-1-e"></span><img class="accordion-icon" \n\
                                     src="${pageContext.request.contextPath}/resources/img/'
                                     + systems[i] + '.png" /> ' + systems[i] +
                                     '</h3><div class="ui-accordion-content ui-helper-reset \n\
@@ -375,10 +375,6 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
             <hr>
-<!--            <p id="sman">
-
-            </p>-->
-            <br>
         </div>
 
         <div id="settingForm">

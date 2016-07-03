@@ -33,7 +33,7 @@
                             .after('<h3 class="accordion-header ui-accordion-header \n\
                                     ui-helper-reset ui-state-default ui-accordion-icons \n\
                                     ui-corner-all"><span class="ui-accordion-header-icon ui-icon \n\
-                                    ui-icon-triangle-1-e"></span><img class="icon" \n\
+                                    ui-icon-triangle-1-e"></span><img class="accordion-icon" \n\
                                     src="${pageContext.request.contextPath}/resources/img/'
                                     + systems[i] + '.png" /> ' + systems[i] +
                                     '</h3><div id=' + system + ' class="ui-accordion-content ui-helper-reset \n\
@@ -46,16 +46,14 @@
                                     <li><a href="#supervisorTab">Supervisor</a></li>\n\
                                     <li><a href="#topologyTab">Topology</a></li></ul>\n\
                                 <div id="clusterTab">\n\
-                                    <div class="form-style-medium-box">\n\
+                                    <div class="form-style-large-box">\n\
                                     <div class="form-style-3-heading">Cluster Summary</div>\n\
                                      <table id="clusterTbl"> \n\
                                      <thead>\n\
-                                     <tr><th>Nimbus Uptime</th> \n\
+                                     <tr><th>Storm Version</th><th>Nimbus Uptime</th> \n\
                                      <th>Supervisors</th><th>Total Slots</th> <th>Used Slots</th> \n\
                                      <th>Free Slots</th> <th>Total Executors</th>\n\
                                      <th>Total Tasks</th></tr></thead><tbody> </tbody></table>\n\
-                                     </div><div class="form-style-tiny-box">\n\
-                                     <div class="form-style-3-heading">Cluster Health Check</div>\n\
                                      </div>\n\
                                      <div id = "cluster-CPUUtilization" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">CPU Utilization</div>\n\
@@ -65,15 +63,14 @@
                                      <div class="form-style-3-heading">Network Utilization</div></div>\n\
                                 </div>\n\
                                 <div id="supervisorTab">\n\
-                                <div class="form-style-medium-box">\n\
+                                <div class="form-style-large-box">\n\
                                     <div class="form-style-3-heading">Supervisors List</div>\n\
                                      <table id="supervisorTbl"> \n\
                                      <thead>\n\
                                      <tr><th>id</th><th>Host</th> \n\
                                      <th>Uptime</th><th>Total Slots</th> <th>Used Slots</th> \n\
+                                     <th>Total Memory</th><th>Total CPU</th><th>Used Memory</th><th>Used CPU</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table>\n\
-                                     </div><div class="form-style-tiny-box">\n\
-                                     <div class="form-style-3-heading">Supervisor Health Check</div>\n\
                                      </div>\n\
                                      <div id = "supervisor-CPUUtilization" class="form-style-small-box">\n\
                                      <div class="form-style-3-heading">CPU Utilization</div>\n\
@@ -104,7 +101,8 @@
                             </div>');
 
                         $.getJSON("../loadClusterSummary/" + $flowId, function(data) {
-                            $('#clusterTbl tr:last').after('<tr><td>' + data.nimbusUptime + '</td>\n\
+                            $('#clusterTbl tr:last').after('<tr><td>' + data.stormVersion + '</td>\n\
+                                                                <td>' + data.nimbusUptime + '</td>\n\
                                                                 <td>' + data.supervisors + '</td>\n\
                                                                 <td>' + data.slotsTotal + '</td>\n\
                                                                 <td>' + data.slotsUsed + '</td>\n\
@@ -119,6 +117,10 @@
                                                                 <td>' + supervisor.uptime + '</td>\n\
                                                                 <td>' + supervisor.slotsTotal + '</td>\n\
                                                                 <td>' + supervisor.slotsUsed + '</td>\n\
+                                                                <td>' + supervisor.totalMem + '</td>\n\
+                                                                <td>' + supervisor.totalCpu + '</td>\n\
+                                                                <td>' + supervisor.usedMem + '</td>\n\
+                                                                <td>' + supervisor.usedCPU + '</td>\n\
                                                                 <td><input type="radio" name="supervisorList" value="' + supervisor.id + '"></tr>');
                             });
                         });
@@ -216,6 +218,7 @@
                     stormClusterMetricMap["cluster-CPUUtilization"] = 'cluster-CPUUtilization';
                     stormClusterMetricMap["cluster-MemoryUtilization"] = 'cluster-MemoryUtilization';
                     stormClusterMetricMap["cluster-NetworkUtilization"] = 'cluster-NetworkUtilization';
+                    
                     stormClusterMetricMap["supervisor-CPUUtilization"] = 'supervisor-CPUUtilization';
                     stormClusterMetricMap["supervisor-MemoryUtilization"] = 'supervisor-MemoryUtilization';
                     stormClusterMetricMap["supervisor-NetworkUtilization"] = 'supervisor-NetworkUtilization';
@@ -326,6 +329,9 @@
                         delete timeoutMap[topologyMetricMap[key]];
 //                        $('#' + topologyMetricMap[key] + 'LineChart').remove();
                         $('#topologyStats').children().remove();
+                        $('#spoutsStats').children().remove();
+                        $('#boltsStats').children().remove();
+
                     }
                 }).on('change', 'input[name=topologyList]', function() {
                     var $topologyId = $(this).val();
@@ -341,17 +347,17 @@
                         topologyStatDrawer(lineChart, $flowId, $topologyId, topologyMetricMap[key], $timeInterval);
                     }
 
-                    $('#spoutsStats').append('<div class="form-style-large-box" style="width:700px">\n\
+                    $('#spoutsStats').append('<div class="form-style-large-box">\n\
                                     <table id="spoutTbl"> \n\
                                      <thead>\n\
                                      <tr><th>Spout id</th><th>Executors</th> \n\
-                                     <th>Tasks</th>\n\
+                                     <th>Tasks</th><th>Last Error</th><th>Elapsed Sec. Since Error</th><th>Error Log Link</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table></div>');
-                    $('#boltsStats').append('<div class="form-style-large-box" style="width:700px">\n\
+                    $('#boltsStats').append('<div class="form-style-large-box">\n\
                                      <table id="boltTbl"> \n\
                                      <thead>\n\
                                      <tr><th>Bolt id</th><th>Executors</th> \n\
-                                     <th>Tasks</th>\n\
+                                     <th>Tasks</th><th>Last Error</th><th>Elapsed Sec. Since Error</th><th>Error Log Link</th>\n\
                                      <th></th></tr></thead><tbody> </tbody></table></div>');
 
                     $.getJSON('../getTopologyStats?flowId=' + $flowId + '&topologyId=' + $topologyId, function(data) {
@@ -359,16 +365,22 @@
                             $('#spoutTbl tr:last').after('<tr><td>' + spout.spoutId + '</td>\n\
                                       <td>' + spout.executors + '</td>\n\
                                        <td>' + spout.tasks + '</td>\n\
+                                       <td>' + spout.lastError + '</td>\n\
+                                       <td>' + spout.errorLapsedSecs + '</td>\n\
+                                       <td>' + spout.errorWorkerLogLink + '</td>\n\
                                         <td><input type="radio" name="spouts" value="' + spout.spoutId + '">\n\
-                                         <input type="radio" name="spouts" style="display:none""></td>\n\
+                                         </td>\n\
                                           </tr>');
                         });
                         $.each(data.bolts, function(i, bolt) {
                             $('#boltTbl tr:last').after('<tr><td>' + bolt.boltId + '</td>\n\
                                       <td>' + bolt.executors + '</td>\n\
                                        <td>' + bolt.tasks + '</td>\n\
+                                       <td>' + bolt.lastError + '</td>\n\
+                                       <td>' + bolt.errorLapsedSecs + '</td>\n\
+                                       <td>' + bolt.errorWorkerLogLink + '</td>\n\
                                         <td><input type="radio" name="bolts" value="' + bolt.boltId + '">\n\
-                                         <input type="radio" name="bolts" style="display:none""></td>\n\
+                                         </td>\n\
                                           </tr>');
                         });
                     });
@@ -405,7 +417,7 @@
                     for (var key in metricMap) {
                         clearTimeout(spoutTimeoutMap[metricMap[key]]);
                         delete timeoutMap[metricMap[key]];
-                        $('#' + componentType + 'Stats').children().remove();
+                        $('#' + componentType + 'Stats').find('.form-style-small-box').remove();
                     }
                 }).on('change', 'input[name=spouts],[name=bolts]', function() {
                     var componentType = $(this).attr('name');
@@ -510,7 +522,8 @@
         <tiles:insertDefinition name="defaultbar" />
 
         <div class="col-xs-12">
-            <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
+            <h3><strong style="color: #555">Holistic Monitoring of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
+            <hr>
         </div>
 
         <div id="settingForm">
