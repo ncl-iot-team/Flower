@@ -238,7 +238,7 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555"></strong>Flow Configuration</h3>
             <hr>
-            <p id="ssman">Say something!
+            <p id="ssman">To configure the flow elasticity manager defined in the previous step, please complete the following wizard.
             </p>
             <br>
         </div>

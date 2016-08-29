@@ -270,7 +270,7 @@
 
                 <div class="row" >
 
-                    <div id="wizard" class="swMain" style=position:relative;height:70%;" >
+                    <div id="wizard" class="swMain" style=position:relative;height:75%;" >
 
                         <nav id="primary_nav_wrap">
 
