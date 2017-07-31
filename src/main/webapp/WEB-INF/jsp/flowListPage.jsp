@@ -273,6 +273,7 @@
 
                     <div id="wizard" class="swMain" style=position:relative;height:77%;" >
 
+
                         <nav id="primary_nav_wrap">
 
                         </nav>
