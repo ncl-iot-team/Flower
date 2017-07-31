@@ -238,7 +238,7 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555"></strong>Flow Configuration</h3>
             <hr>
-            <p id="ssman">Say something!
+            <p id="ssman">Please complete the below step form. You can modify the default settings now or after the controller has been launched.  
             </p>
             <br>
         </div>

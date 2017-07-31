@@ -87,7 +87,7 @@
                         <p class="lead"></p>
                     </div>
                     <div class=" text-center col-sm-6 col-sm-offset-3 col-md-3 col-xs-offset-4 col-xs-5 col-lg-offset-0 col-lg-2"> 
-                        <a class="btn  btn-block btn-lg btn-success" href="Flower/user/signup" title="">Sign up now!</a> 
+                        <a class="btn  btn-block btn-lg btn-success" href="${pageContext.request.contextPath}/user/signup" title="">Sign up now!</a> 
                         <!--div class="col-xs-12 col-md-9 col-lg-9">
              <p class="lead"></p>
            </div-->

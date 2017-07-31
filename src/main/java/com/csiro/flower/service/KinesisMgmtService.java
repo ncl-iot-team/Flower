@@ -6,6 +6,7 @@
 package com.csiro.flower.service;
 
 import com.amazonaws.services.kinesis.model.Shard;
+import com.csiro.flower.model.KinesisStream;
 import java.util.List;
 import java.util.Map;
 
@@ -26,5 +27,7 @@ public interface KinesisMgmtService {
     public List<Shard> getOpenShards(String streamName);
 
     public Map<String, Integer> getStreamShardMap();
+    
+    public List<KinesisStream> getStreamDetails();
 
 }

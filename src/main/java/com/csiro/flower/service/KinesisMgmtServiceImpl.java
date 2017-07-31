@@ -16,6 +16,7 @@ import com.amazonaws.services.kinesis.model.MergeShardsRequest;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.amazonaws.services.kinesis.model.Shard;
 import com.amazonaws.services.kinesis.model.SplitShardRequest;
+import com.csiro.flower.model.KinesisStream;
 import com.csiro.flower.util.HashMapUtil;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -48,6 +49,15 @@ public class KinesisMgmtServiceImpl implements KinesisMgmtService {
     @Override
     public List<String> getStreamList() {
         return kinesis.listStreams().getStreamNames();
+    }
+    
+    @Override
+    public List<KinesisStream> getStreamDetails(){
+        List<KinesisStream> streamList = new ArrayList<KinesisStream>();
+        for(String stream: getStreamList()){
+            streamList.add(new KinesisStream(stream, getOpenShards(stream).size(), getClosedShards(stream).size()));
+        } 
+        return streamList;
     }
 
     // decreaseShards method merges shards together to reduce the number of shards
@@ -168,6 +178,19 @@ public class KinesisMgmtServiceImpl implements KinesisMgmtService {
             }
         }
         return openShards;
+    }
+    
+        public List<Shard> getClosedShards(String streamName) {
+        List<Shard> shards = getListOfShards(streamName);
+        List<Shard> closedShards = new ArrayList<Shard>();
+
+        for (Shard shard : shards) {
+            // Shard is OPEN if getEndingSequenceNumber is NULL
+            if (null != shard.getSequenceNumberRange().getEndingSequenceNumber()) {
+                closedShards.add(shard);
+            }
+        }
+        return closedShards;
     }
 
     public List<Shard> getListOfShards(String streamName) {

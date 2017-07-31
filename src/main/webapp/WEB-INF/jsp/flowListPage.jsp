@@ -53,7 +53,7 @@
 
             #primary_nav_wrap ul li.current-menu-item
             {
-                background:#67B168;//#337AB7;
+                background:#67B168;
                 margin-right: 2px;
                 margin-bottom: 1px;
                 border-radius:2px;
@@ -72,7 +72,7 @@
                 position:absolute;
                 top:100%;
                 left:0;
-                background:#67B168;//#337AB7;
+                background:#67B168;
                 padding:0
             }
 
@@ -226,11 +226,12 @@
 
     <body>
         <tiles:insertDefinition name="defaultbar" />
-
+        
         <div class="col-xs-12">
             <h3><strong style="color: #555"></strong>Flow Management Dashboard</h3>
             <hr>
             <p id="ssman">
+                Using the below dashboard you will be able to launch and manage new or existing analytics flows.
             </p>
             <br>
         </div>
@@ -270,7 +271,7 @@
 
                 <div class="row" >
 
-                    <div id="wizard" class="swMain" style=position:relative;height:70%;" >
+                    <div id="wizard" class="swMain" style=position:relative;height:77%;" >
 
                         <nav id="primary_nav_wrap">
 

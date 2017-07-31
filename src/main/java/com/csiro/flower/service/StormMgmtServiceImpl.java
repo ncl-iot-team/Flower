@@ -53,6 +53,7 @@ public class StormMgmtServiceImpl implements StormMgmtService {
     private final String stoppedState = "stopped";
     private final String runningState = "running";
     private final String activeStatus = "ACTIVE";
+//    private final String supervisorPrefix = "Nimbus";
     private final String supervisorPrefix = "Worker";
     private final String nimbusHost = "nimbus.host";
     private Nimbus.Client nimbusClient;
@@ -145,7 +146,11 @@ public class StormMgmtServiceImpl implements StormMgmtService {
     @Override
     public void stopWorkers(int no) {
         int stoppedWorkerCount = 0;
+        if(getLowCostToStopRunningWorkers().isEmpty()){
+            return ;
+        }
         HashMap<String, String> stoppedInstances = stopInstances(getLowCostToStopRunningWorkers().subList(0, no), true);
+        
         for (String state : stoppedInstances.values()) {
             if (state.matches(stoppedState)) {
                 stoppedWorkerCount++;

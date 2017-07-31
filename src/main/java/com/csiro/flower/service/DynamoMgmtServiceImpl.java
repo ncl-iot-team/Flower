@@ -14,6 +14,7 @@ import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
+import com.csiro.flower.model.DynamoDBTable;
 import com.csiro.flower.util.CloudServiceRegionUtil;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +61,16 @@ public class DynamoMgmtServiceImpl implements DynamoMgmtService {
     public ProvisionedThroughputDescription getProvisionedThroughput(String tableName) {
         TableDescription tableDescription = dynamoDB.getTable(tableName).describe();
         return tableDescription.getProvisionedThroughput();
+    }
+    
+    public List<DynamoDBTable> getDynamoDBTableDetail(){
+        List<DynamoDBTable> tableList = new ArrayList<DynamoDBTable>();
+        for(String tbl: getTableList()){
+            tableList.add(new DynamoDBTable(tbl, 
+                    dynamoDB.getTable(tbl).describe().getProvisionedThroughput().getReadCapacityUnits(), 
+                    dynamoDB.getTable(tbl).describe().getProvisionedThroughput().getWriteCapacityUnits()));
+        }
+        return tableList;
     }
 
     @Override

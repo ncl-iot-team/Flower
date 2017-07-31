@@ -9,8 +9,10 @@ import com.csiro.flower.dao.CloudSettingDao;
 import com.csiro.flower.dao.FlowDao;
 import com.csiro.flower.dao.StormClusterDao;
 import com.csiro.flower.model.CloudSetting;
+import com.csiro.flower.model.DynamoDBTable;
 import com.csiro.flower.model.Flow;
 import com.csiro.flower.model.FlowDetailSetting;
+import com.csiro.flower.model.KinesisStream;
 import com.csiro.flower.model.StormCluster;
 import com.csiro.flower.service.CloudWatchService;
 import com.csiro.flower.service.DynamoMgmtService;
@@ -84,26 +86,26 @@ public class MntrManagementController {
 
     @RequestMapping(value = "/loadKinesisStreams/{flowId}")
     @ResponseBody
-    public List<String> getStreamList(@PathVariable int flowId) {
+    public List<KinesisStream> getStreamList(@PathVariable int flowId) {
         CloudSetting cloudSetting = cloudSettingDao.get(flowId);
         kinesisMgmtService.initService(
                 cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
-        return kinesisMgmtService.getStreamList();
+        return kinesisMgmtService.getStreamDetails();
     }
 
     @RequestMapping(value = "/loadDynamoDBTbls/{flowId}")
     @ResponseBody
-    public List<String> getTableList(@PathVariable int flowId) {
+    public List<DynamoDBTable> getTableList(@PathVariable int flowId) {
         CloudSetting cloudSetting = cloudSettingDao.get(flowId);
         dynamoMgmtService.initService(
                 cloudSetting.getCloudProvider(),
                 cloudSetting.getAccessKey(),
                 cloudSetting.getSecretKey(),
                 cloudSetting.getRegion());
-        return dynamoMgmtService.getTableList();
+        return dynamoMgmtService.getDynamoDBTableDetail();
     }
 
     @RequestMapping(value = "/getCloudWatchStats")
@@ -123,7 +125,7 @@ public class MntrManagementController {
                 cloudSetting.getRegion());
 
         metric = metric.compareTo("GetRecordsBytes") == 0 ? "GetRecords.Bytes" : metric;
-        return cloudWatchService.getSingleStat(platform, resource, metric, timeStamp) + Math.random() * 100;
+        return cloudWatchService.getSingleStat(platform, resource, metric, timeStamp);
     }
 
     @RequestMapping(value = "/loadClusterSummary/{flowId}")

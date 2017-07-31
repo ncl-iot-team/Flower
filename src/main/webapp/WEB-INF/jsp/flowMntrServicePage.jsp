@@ -165,11 +165,11 @@
                         $.get("../loadDynamoDBTbls/" + $flowId, function(tbls) {
                             $.each(tbls, function(i, tbl) {
                                 $('#dynamoTbl tr:last')
-                                        .after('<tr><td>' + tbl + '</td>\n\
+                                        .after('<tr><td>' + tbl.tableName + '</td>\n\
                                                     <td>ACTIVE</td>\n\
-                                                    <td>2</td><td>2</td>\n\
+                                                    <td>'+ tbl.provisionedReadThroughput +'</td><td>'+ tbl.provisionedWriteThroughput+'</td>\n\
                                                     <td><img class="refresh" /> </td>\n\
-                                                    <td><input type="radio" name="DynamoDB" value="' + tbl + '">\n\
+                                                    <td><input type="radio" name="DynamoDB" value="' + tbl.tableName + '">\n\
                                                     <input type="radio" name="DynamoDB" style="display:none""></td>\n\
                                                     </tr>');
                             });
@@ -198,11 +198,11 @@
                         $.get("../loadKinesisStreams/" + $flowId, function(strs) {
                             $.each(strs, function(i, str) {
                                 $('#kinesisTbl tr:last')
-                                        .after('<tr><td>' + str + '</td>\n\
+                                        .after('<tr><td>' + str.streamName + '</td>\n\
                                                     <td>ACTIVE</td>\n\
-                                                    <td>1</td><td>0</td>\n\
+                                                    <td>'+ str.openShardsNo +'</td><td>'+ str.closedShardsNo +'</td>\n\
                                                     <td><img class="refresh" /> </td>\n\
-                                                    <td><input type="radio" name="AmazonKinesis" value="' + str + '">\n\
+                                                    <td><input type="radio" name="AmazonKinesis" value="' + str.streamName + '">\n\
                                                     <input type="radio" name="AmazonKinesis" style="display:none""></td>\n\
                                                     </tr>');
                             });

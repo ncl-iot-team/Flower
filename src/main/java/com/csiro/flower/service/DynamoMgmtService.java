@@ -6,6 +6,7 @@
 package com.csiro.flower.service;
 
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
+import com.csiro.flower.model.DynamoDBTable;
 import java.util.List;
 
 /**
@@ -21,4 +22,6 @@ public interface DynamoMgmtService {
     public void updateProvisionedThroughput(String tableName, long readCapacityUnit, long writeCapacityUnit);
 
     public ProvisionedThroughputDescription getProvisionedThroughput(String tableName);
+    
+    public List<DynamoDBTable> getDynamoDBTableDetail(); 
 }

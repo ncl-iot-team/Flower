@@ -191,11 +191,18 @@
                             console.log(ctrlStatRecords.length);
                         } else {
                             $.each(ctrlStatRecords, function(i, ctrlStatRecord) {
+                                var displayValue;
+                                if ($ctrlName === 'ApacheStorm') 
+                                    displayValue = ctrlStatRecord.allocatedResource * 100;
+                                else if($ctrlName === 'AmazonKinesis')
+                                    displayValue = ctrlStatRecord.allocatedResource * 1000;
+                                else 
+                                    displayValue = ctrlStatRecord.allocatedResource;
                                 lineChart.push([
                                     {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.measurementTargetValue},
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: displayValue}]);
                                 barChart.push([
-                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: Math.random() * 100},
+                                    {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: 10},
                                     {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.nextCtrlDecisionValue},
                                     {time: getTimeStampSec(ctrlStatRecord.timeStamp), y: ctrlStatRecord.allocatedResource}]);
                             });
@@ -375,6 +382,9 @@
         <div class="col-xs-12">
             <h3><strong style="color: #555">Elasticity Management of <font color="#67B168">${flow.flowName}</font> Flow</strong></h3>
             <hr>
+            <p id="ssman">You can monitor the controllers using the bellow dashboards. You can also modify the settings of the controller while it is running.  
+            </p>
+
         </div>
 
         <div id="settingForm">
