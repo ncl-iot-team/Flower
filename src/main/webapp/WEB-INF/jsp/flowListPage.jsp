@@ -192,11 +192,13 @@
                                         <li><a href="#">Recommender</a></li>\n\
                                     </ul></li></ul>');
 
+
+
                     $('#stepDiv').append('<table id="flowDashboardTbl"> \n\
                                      <thead><tr><th></th><th>Flow Id</th><th>Flow Name</th> \n\
                                      <th>Flow Platforms</th><th>Launch Time</th>\n\
                                     </tr></thead><tbody> </tbody></table>');
-                    $.get('getFlowList/' + user, function(flows) {
+                    $.get('getFlowList/' +  encodeURIComponent(user), function(flows) {
                         $.each(flows, function(i, flow) {
                             $('#flowDashboardTbl tr:last').after('<tr><td><input type="radio" name="flowDashboardRadio" value="' + flow.flowId + '"></td>\n\
                                                             <td>' + flow.flowId + '</td>\n\

@@ -8,6 +8,9 @@ package com.csiro.flower.controller;
 //import java.util.Map;
 import com.csiro.flower.dao.FlowDao;
 import com.csiro.flower.model.Flow;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -77,7 +80,7 @@ public class FlowLoaderController {
         return "flowListPage";
     }
 
-    @RequestMapping("/getFlowList/{user}")
+    @RequestMapping("/getFlowList/{user:.+}")
     @ResponseBody
     public List<Flow> getFlowList(@PathVariable String user) {
         List<Flow> list = flowDao.getAll(user);

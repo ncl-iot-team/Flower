@@ -1,75 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>  
-<beans xmlns="http://www.springframework.org/schema/beans"  
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
-       xmlns:context="http://www.springframework.org/schema/context"  
-       xmlns:mvc="http://www.springframework.org/schema/mvc"  
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd" >  
-  
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+       xmlns:aop="http://www.springframework.org/schema/aop">
+
     <mvc:annotation-driven/>
     <context:annotation-config/>
-    <context:component-scan base-package="com.csiro.flower.controller"/> 
-    <context:component-scan base-package="com.csiro.flower.dao" />
-    <context:component-scan base-package="com.csiro.flower.model" />
-    <context:component-scan base-package="com.csiro.flower.service" />
-    <context:component-scan base-package="com.csiro.flower.util" />
+    <context:component-scan base-package="com.csiro.flower.controller"/>
+    <context:component-scan base-package="com.csiro.flower.dao"/>
+    <context:component-scan base-package="com.csiro.flower.model"/>
+    <context:component-scan base-package="com.csiro.flower.service"/>
+    <context:component-scan base-package="com.csiro.flower.util"/>
 
-	<bean id="ctrlFactoryService" class="com.csiro.flower.service.CtrlFactoryService">
-		<lookup-method name="getDynamoCtrlServiceImpl" bean="dynamoCtrlServiceImpl"/>
-                <lookup-method name="getStormCtrlServiceImpl" bean="stormCtrlServiceImpl"/>
-		<lookup-method name="getKinesisCtrlServiceImpl" bean="kinesisCtrlServiceImpl"/>
-	</bean>
-
-	<bean id="dynamoCtrlServiceImpl" class="com.csiro.flower.service.DynamoCtrlServiceImpl" scope="prototype"/>
-	<bean id="stormCtrlServiceImpl" class="com.csiro.flower.service.StormCtrlServiceImpl" scope="prototype"/>
-	<bean id="kinesisCtrlServiceImpl" class="com.csiro.flower.service.KinesisCtrlServiceImpl" scope="prototype"/>
-
-  
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
-        <property name="prefix">  
-            <value>/WEB-INF/jsp/</value>  
-        </property>  
-        <property name="suffix">  
-            <value>.jsp</value>  
-        </property>  
-    </bean>  
-    
-<!--    <bean id = "flowLoaderController" class="com.csiro.flower.controller.FlowLoaderController">
-        <property name="datasource" ref="DBCon"/>
+    <bean id="ctrlFactoryService" class="com.csiro.flower.service.CtrlFactoryService">
+        <lookup-method name="getDynamoCtrlServiceImpl" bean="dynamoCtrlServiceImpl"/>
+        <lookup-method name="getStormCtrlServiceImpl" bean="stormCtrlServiceImpl"/>
+        <lookup-method name="getKinesisCtrlServiceImpl" bean="kinesisCtrlServiceImpl"/>
     </bean>
-    
-    <bean id="DBCon" class="com.csiro.flower.controller.Datasource"></bean>
-    -->
-    
+
+    <bean id="dynamoCtrlServiceImpl" class="com.csiro.flower.service.DynamoCtrlServiceImpl" scope="prototype"/>
+    <bean id="stormCtrlServiceImpl" class="com.csiro.flower.service.StormCtrlServiceImpl" scope="prototype"/>
+    <bean id="kinesisCtrlServiceImpl" class="com.csiro.flower.service.KinesisCtrlServiceImpl" scope="prototype"/>
+
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/WEB-INF/jsp/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <!--    <bean id = "flowLoaderController" class="com.csiro.flower.controller.FlowLoaderController">
+            <property name="datasource" ref="DBCon"/>
+        </bean>
+
+        <bean id="DBCon" class="com.csiro.flower.controller.Datasource"></bean>
+        -->
+
     <!--    <bean
     class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
     p:location="db.properties"/> -->
-    
-    <!-- JNDI configuration -->
-    <bean id="ds"
-          class="org.springframework.jndi.JndiObjectFactoryBean" >
-        <property name="jndiName" value="java:comp/env/jdbc/flowerDB"/>
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>classpath:db.properties</value>
+        </property>
     </bean>
-    
+
+    <!-- Load Configuration from propertyConfigurer bean-->
+    <bean id="ds" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${dataSource.driverClassName}"/>
+        <property name="url" value="${dataSource.url}"/>
+        <property name="username" value="${dataSource.username}"/>
+        <property name="password" value="${dataSource.password}"/>
+    </bean>
+
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="ds"/>
     </bean>
-        
-            
+
+
     <!-- Transaction Manger -->
     <bean id="transactionManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
           scope="singleton">
-        <property name="dataSource" ref="ds" />
+        <property name="dataSource" ref="ds"/>
     </bean>
-    
-    <tx:annotation-driven  transaction-manager="transactionManager"/>
-    
-    <mvc:resources mapping="/resources/**" location="/resources/" />
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
 
     <!-- Tiles configuration -->
     <bean id="tilesConfigurer"
@@ -80,5 +88,5 @@
             </list>
         </property>
     </bean>
-  
+
 </beans> 
