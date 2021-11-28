@@ -7,3 +7,9 @@
 [submodule "iot-emulation-kit/edge-mon"]
 	path = iot-emulation-kit/edge-mon
 	url = git@github.com:ncl-iot-team/edge-mon.git
+[submodule "iot-emulation-kit/dataingest-gatekeeper"]
+	path = iot-emulation-kit/dataingest-gatekeeper
+	url = git@github.com:ncl-iot-team/dataingest-gatekeeper
+[submodule "iot-emulation-kit/osmotic-controller"]
+	path = iot-emulation-kit/osmotic-controller
+	url = git@github.com:ncl-iot-team/osmotic-controller
